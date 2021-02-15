@@ -30,6 +30,7 @@ namespace Werewolf.Users
         public void Dispose()
         {
             database.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
