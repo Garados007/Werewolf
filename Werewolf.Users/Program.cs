@@ -13,7 +13,8 @@ namespace Werewolf.Users
         static void Main()
         {
             var config = new IniParser().Parse("config.ini");
-            using var db = new Database(config[0].GetString("db-path", "werewolf-user.litedb"));
+            var group = config.GetGroup("user-db") ?? new IniGroup("user-db");
+            using var db = new Database(group.GetString("db-path", "werewolf-user.litedb"));
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -26,7 +27,7 @@ namespace Werewolf.Users
             api = new TcpApiServer<Api.UserNotificationClient, ApiServer>(
                 new IPEndPoint(
                     IPAddress.Any,
-                    config[0].GetInt32("api-port", 30600)
+                    group.GetInt32("api-port", 30600)
                 ),
                 _ => {},
                 server => server.Set(db, api!)
