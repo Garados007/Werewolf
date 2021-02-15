@@ -9,12 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Users", "Werewolf.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{187B9586-D3F9-4D88-8217-02FEB52B4BA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Theme.Base", "Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj", "{05032AFB-5848-46C4-A571-4CFFD203A88E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Theme.Base", "Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj", "{05032AFB-5848-46C4-A571-4CFFD203A88E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{26C4CCF1-6F3F-46D4-A693-0E0D9AA7B6CB}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Theme.Default", "Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj", "{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,12 +64,25 @@ Global
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Release|x64.Build.0 = Release|Any CPU
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Release|x86.ActiveCfg = Release|Any CPU
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Release|x86.Build.0 = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|x64.Build.0 = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Debug|x86.Build.0 = Debug|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|x64.ActiveCfg = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|x64.Build.0 = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|x86.ActiveCfg = Release|Any CPU
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{05032AFB-5848-46C4-A571-4CFFD203A88E} = {187B9586-D3F9-4D88-8217-02FEB52B4BA8}
+		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2} = {187B9586-D3F9-4D88-8217-02FEB52B4BA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFF967DB-B00A-4F05-B808-FA8F3EBE21DD}
