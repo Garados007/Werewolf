@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package werewolf.users.api;
+
+option csharp_namespace = "Werewolf.Users.Api";
+
+import "google/protobuf/empty.proto";
+
+// The user api. This is provided from the db itself.
+service UserApi {
+    // requests a single user
+    rpc GetUser(UserId)
+        returns (UserInfo);
+    // update the user config or their connected ids. The stats field is ignored.
+    rpc UpdateUser(UserInfo)
+        returns (google.protobuf.Empty);
+    // update the user stats and recompute the level.
+    rpc UpdateStats(UpdateUserStats)
+        returns (google.protobuf.Empty);
+    // create a new user. The id and stats fields are ignored. It returns the new id.
+    rpc CreateUser(UserInfo)
+        returns (UserId);
+}
+
+// the notification api. This is implemented by the consumer of the db to receive new events.
+service UserNotification {
+    // receive new user infos (anything could be changed).
+    rpc UpdatedUser(UserInfo)
+        returns (google.protobuf.Empty);
+}
+
+// The full information about any user.
+message UserInfo {
+    // the internal id of the user
+    UserId id = 1;
+    // the connected Ids of the user
+    UserConnectedIds connected_Id = 2;
+    // the user configuration
+    UserConfig config = 3;
+    // the user stats
+    UserStats stats = 4;
+}
+
+// the id of an user
+message UserId {
+    // the 12 byte id
+    bytes id = 1;
+}
+
+// For every login system the user could have its own id. Here is the collection of them
+message UserConnectedIds {
+    // is true if the user has a linked Discord account
+    bool has_discord_id = 1;
+    // the user id for the linked Discord account
+    uint64 discord_id = 2;
+}
+
+// the user configuration
+message UserConfig {
+    // the name of the user
+    string username = 1;
+    // the absolute url of the user image
+    string image = 2;
+    // the theme color of the user in the format #abcdef. Default is #ffffff
+    string theme_color = 3;
+    // the absolute path for the background image
+    string background_image = 4;
+    // the identifier for the language
+    string language = 5;
+}
+
+// the stats for a single user
+message UserStats {
+    // the times the user won a game
+    uint32 win_games = 1;
+    // the times the user was killed
+    uint32 killed = 2;
+    // the times the user loose a game
+    uint32 loose_games = 3;
+    // the times the user was the leader
+    uint32 leader = 4;
+    // the current level of the user
+    uint32 level = 5;
+    // the current xp that are collected on the current level
+    uint64 current_xp = 6;
+}
+
+// the diff message for the user stats. This is sent by the game server to update the db.
+message UpdateUserStats {
+    // the user id
+    UserId id = 1;
+    // the stat diff. The level field is ignored (this is computed by the db later).
+    UserStats stats = 2;
+}

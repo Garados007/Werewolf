@@ -1,4 +1,9 @@
+# visual studio stuff
 .vscode
 .vs
+# builds
 bin
 obj
+# generated stuff
+*.g.cs
+*.service.cs

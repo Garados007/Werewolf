@@ -4,4 +4,19 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="sRPC" Version="2.5.1" />
+    <PackageReference Include="sRPC.Tools" Version="2.5.1">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Srpc_AutoSearchProj>true</Srpc_AutoSearchProj>
+    <Srpc_EmptySupport>true</Srpc_EmptySupport>
+    <Srpc_OutputFormat>2</Srpc_OutputFormat>
+  </PropertyGroup>
+
 </Project>
