@@ -52,8 +52,8 @@ namespace Werewolf.Theme.Votings
         public IEnumerable<UserId> GetResultUserIds()
         {
             return GetResults()
-                .Select(x => options.TryGetValue(x, out (UserId, VoteOption) r) ? (UserId?)r.Item1 : null)
-                .Where(x => x != null)
+                .Select(x => options.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
+                .Where(x => x is not null)
                 .Cast<UserId>();
         }
 

@@ -1,0 +1,129 @@
+﻿syntax = "proto3";
+
+package werewolf.game.api;
+
+option csharp_namespace = "Werewolf.Game.Api";
+
+import "google/protobuf/empty.proto";
+
+// the game api. This is provided from the game server or multiplexer.
+service GameApi {
+    // requests the user id of an user. If the user doesn't exists a new
+    // one will be created.
+    rpc GetOrCreateUser(UserCreateInfo)
+        returns (UserId);
+    // creates a new group and set this user as a leader
+    rpc CreateGroup(UserId)
+        returns (GameRoom);
+    // joins a group
+    rpc JoinGroup(GroupUserId)
+        returns (ActionState);
+    // leaves a group
+    rpc LeaveGroup(GroupUserId)
+        returns (ActionState);
+    // get the current server state
+    rpc GetServerState(google.protobuf.Empty)
+        returns (ServerState);
+}
+
+// the notification api. This is implemented by the consumer to receive notifications.
+service GameNotification {
+    // notify that a room has been updated.
+    rpc RoomUpdated(GameRoom)
+        returns (google.protobuf.Empty);
+    // notify that the server has been updated.
+    rpc ServerUpdated(ServerState)
+        returns (google.protobuf.Empty);
+}
+
+// The information to fetch or create a user.
+message UserCreateInfo {
+    // the connected Ids of the user
+    UserConnectedIds connected_Id = 1;
+    // the user configuration
+    UserConfig config = 2;
+}
+
+// the id of an user
+message UserId {
+    // the 12 byte id
+    bytes id = 1;
+}
+
+// For every login system the user could have its own id. Here is the collection of them
+message UserConnectedIds {
+    // is true if the user has a linked Discord account
+    bool has_discord_id = 1;
+    // the user id for the linked Discord account
+    uint64 discord_id = 2;
+}
+
+// the user configuration
+message UserConfig {
+    // the name of the user
+    string username = 1;
+    // the absolute url of the user image
+    string image = 2;
+    reserved 3, 4;
+    // the identifier for the language
+    string language = 5;
+}
+
+// the date of a game room
+message GameRoom {
+    // the internal id of the room
+    uint32 room_id = 1;
+    // the name of the server itself
+    string server_name = 2;
+    // the leader of the group
+    UserId leader = 3;
+    // the user in this group
+    repeated GameUserInfo user = 4;
+    // the number of user in this group
+    uint32 user_count = 5;
+    // the maximum number for user in this group
+    uint32 max_user_count = 6;
+}
+
+// the information about a user inside a group
+message GameUserInfo {
+    // the internal id of the user
+    UserId id = 1;
+    // the connected ids of the user
+    UserConnectedIds connected_Id = 2;
+    // the user configuration
+    UserConfig config = 3;
+    // the URL for this user to join the game
+    string join_url = 4;
+}
+
+// this holds the information to identify a user and a group.
+// this is used to join or leave a group
+message GroupUserId {
+    // the room id
+    uint32 room_id = 1;
+    // the name of the server where this group is located
+    string server_name = 2;
+    // the user id
+    UserId user_id = 3;
+}
+
+// the action result state
+message ActionState {
+    // true if the action succeeded
+    bool success = 1;
+    // the optional error message
+    string error = 2;
+}
+
+// contains the information of the current server. The multiplexer
+// combines the result of all client server
+message ServerState {
+    // the number of active rooms
+    uint64 active_rooms = 1;
+    // the number of connected user (this could be different from
+    // the number of connections).
+    uint64 connected_user = 2;
+    // the number of maximum rooms for this server.
+    uint64 max_rooms = 3;
+}

@@ -15,13 +15,13 @@ namespace Werewolf.Theme.Events
             => (Role, ExecutionRound, Target) = (role, executionRound, target);
 
         public override bool CanSendTo(GameRoom game, UserInfo user)
-            => Target == null || Target == user.Id;
+            => Target is null || Target == user.Id;
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
             var id = game.TryGetId(Role);
             var ownRole = game.TryGetRole(user.Id);
-            var seenRole = id != null ?
+            var seenRole = id is not null ?
                 Role.GetSeenRole(game, ExecutionRound, user, id, Role) : null;
             writer.WriteString("id", id?.ToString());
             writer.WriteStartArray("tags");

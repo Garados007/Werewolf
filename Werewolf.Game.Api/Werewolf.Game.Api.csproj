@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Srpc_AutoSearchProj>true</Srpc_AutoSearchProj>
+    <Srpc_EmptySupport>true</Srpc_EmptySupport>
+    <Srpc_OutputFormat>2</Srpc_OutputFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="sRPC" Version="2.6.0" />
+    <PackageReference Include="sRPC.Tools" Version="2.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+</Project>
