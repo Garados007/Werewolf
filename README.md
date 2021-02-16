@@ -46,9 +46,6 @@ a load balancer.
 If this multiplexer needs to create a room it searches for a available game server first and
 directs to them.
 
-This multiplexer has a simpler Rest Api (this is a subset of the game server Rest Api) to let the
-client know which game server it has to use.
-
 You can also use this multiplexer (this is also availble in the game server) to provide static
 content. If you have a proxy like NginX in front it is recommended to let them handle the static
 content. All static content is provided on `/content/` on every server.

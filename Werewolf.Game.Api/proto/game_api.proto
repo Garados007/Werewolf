@@ -126,4 +126,9 @@ message ServerState {
     uint64 connected_user = 2;
     // the number of maximum rooms for this server.
     uint64 max_rooms = 3;
+    // the number of connected server (this is always 1 for game server)
+    uint32 connected_server = 4;
+    // the list of the connected server names 
+    // (this contains only a single element if this is a game server)
+    repeated string connected_server_names = 5;
 }
