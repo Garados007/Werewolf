@@ -19,4 +19,19 @@
     <ProjectReference Include="..\Werewolf.Game.Api\Werewolf.Game.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="config.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <ContentFiles Include="..\content\**\*.*"/>
+  </ItemGroup>
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy 
+      SourceFiles="@(ContentFiles)" 
+      DestinationFiles="@(ContentFiles->'$(OutDir)\content\%(RecursiveDir)%(Filename)%(Extension)')" 
+      SkipUnchangedFiles="true" 
+      />
+  </Target>
+
 </Project>
