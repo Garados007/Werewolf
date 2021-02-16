@@ -1,0 +1,25 @@
+{
+    "languages": {
+        "de": "Deutsch"
+    },
+    "icons": {
+        "de": "de",
+        "en": "gb"
+    },
+    "themes": {
+        "Mabron.DiscordBots.Games.Werwolf.Themes.Default.DefaultTheme": {
+            "default": {
+                "de": "Standard-Theme"
+            },
+            "rotlicht": {
+                "de": "AIDS im Rotlichtviertel (Beta)"
+            },
+            "military": {
+                "de": "Saboteure beim Millitär (Beta)"
+            },
+            "bar": {
+                "de": "Bierpanscher in der Kneipe (Beta)"
+            }
+        }
+    }
+}

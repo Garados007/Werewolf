@@ -1,0 +1,359 @@
+@import url("events.css");
+@import url("error-box.css");
+
+@import url("modals.css");
+@import url("theme-editor.css");
+@import url("editor.css");
+@import url("winner-box.css");
+@import url("player-notification.css");
+@import url("chat-box.css");
+
+:root {
+  /* the default base color of the page */
+  --color-base: #fff;
+  /* the background color of the page */
+  --color-background: #fff;
+
+  /* the color with the highest contrast */
+  --text-color: #000;
+  /* blended color of color base and text color. factor is 30-40% */
+  --text-color-light: #666;
+  /* the inverted text color */
+  --text-inv-color: #fff;
+  /* the highlight text color */
+  --text-hightlight: #000;
+
+  /* a light color for some light backgrounds */
+  --color-light: #ccc;
+  --color-light-transparent: #cccb;
+  /* a medium color for active backgrounds */
+  --color-medium: #aaa;
+  /* a dark color for backgrounds, shadows and borders */
+  --color-dark: #888;
+  --color-dark-transparent: #888b;
+  --color-dark-semitransparent: #888d;
+  /* a more darker color for some dark active backgrounds */
+  --color-darker: #444;
+  --color-darker-transparent: #444b;
+
+  /* the url for the background image */
+  --bg-url: url("");
+}
+* {
+  scrollbar-color: var(--color-medium) var(--color-base);
+}
+::-webkit-scrollbar {
+  background-color: var(--color-base);
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-medium);
+  box-shadow: inset 0 0 0.4em var(--color-base);
+}
+.elm-debug-extra-output {
+  position: relative;
+  z-index: 1;
+}
+body {
+  font-family: sans-serif;
+  background-color: var(--color-background);
+  color: var(--text-color);
+}
+.styles .background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: var(--bg-url);
+  z-index: -1;
+}
+.styles .background.old {
+  background-image: var(--bg-old-url);
+}
+.frame-status-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+.frame-status {
+  margin: 1em;
+  font-size: 2em;
+  border: 0.3em solid var(--color-dark);
+  border-radius: 0.8em;
+  padding: 0.5em 0.8em;
+}
+.frame-game-outer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /*! width: 100vw; */
+  height: 100vh;
+}
+.frame-game-left {
+  width: 20em;
+  overflow-y: auto;
+  height: 100%;
+  flex-shrink: 0;
+}
+.frame-game-body {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  /*! align-items: center; */
+  justify-content: center;
+  overflow-y: auto;
+  height: 100%;
+}
+.frame-game-body.top {
+  align-items: unset;
+}
+
+.user-frame {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto auto;
+  margin: 0.5em 1em;
+  border: 0.3em solid var(--color-dark);
+  padding: 0.5em 0.8em;
+  border-radius: 0.8em;
+  position: relative;
+}
+.user-frame.dead img {
+  filter: gray; /* IE6-9 */
+  -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+  filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+}
+.user-frame.dead .user-name {
+  color: var(--text-color-light);
+}
+.user-frame svg {
+  height: 1em;
+  width: 1em;
+  fill: var(--text-color);
+}
+.user-frame .user-info-stats,
+.user-frame .user-info-level {
+  grid-column: 1 / 3;
+  display: none;
+}
+.user-frame:hover .user-info-stats {
+  display: flex;
+}
+.user-frame .user-info-stats > div {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-around;
+}
+.user-frame .user-info-stats > div:hover {
+  background-color: var(--color-base);
+}
+.user-frame:hover .user-info-level,
+.winner .user-info-level {
+  display: block;
+}
+.winner .user-info-level {
+  width: 100%;
+}
+.user-info-level .text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8em;
+}
+.user-info-level .outer {
+  position: relative;
+  height: 0.2em;
+  background-color: var(--color-base);
+}
+.user-info-level .outer > div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: var(--color-light);
+}
+.winner .user-info-level .outer {
+  background-color: var(--color-light);
+}
+.winner .user-info-level .outer > div {
+  background-color: var(--color-darker);
+}
+.user-image-box {
+  padding-right: 0.5em;
+}
+.user-image img {
+  width: 3em;
+  height: 3em;
+  border-radius: 40%;
+  transition: border-radius 0.25s;
+}
+.user-frame:hover .user-image img {
+  border-radius: 0;
+}
+.user-frame .user-name {
+  font-size: 1.2em;
+}
+.user-frame .kick {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5em 0.8em;
+  cursor: pointer;
+}
+.user-frame:hover .kick {
+  display: block;
+}
+.user-frame:hover .kick:hover {
+  background-color: var(--color-dark);
+}
+
+
+.phase-header,
+.phase-controls {
+  border: 0.3em solid var(--color-dark);
+  padding: 1.5em;
+  width: 50em;
+  max-width: 100%;
+  margin: 1em 0;
+  box-sizing: border-box;
+}
+.phase-header .title {
+  font-size: 2.5em;
+  text-align: center;
+}
+.phase-votings {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+.voting-box {
+  margin: 1em;
+  border: 0.3em solid var(--color-dark);
+  width: 25em;
+  max-width: 100%;
+}
+.voting-box .voting-header {
+  border-bottom: 0.1em solid var(--color-dark);
+}
+.voting-header .title {
+  font-size: 1.5em;
+  padding: 0.5em 0.8em;
+  text-align: center;
+}
+.voting-header .status {
+  display: flex;
+}
+.voting-header .status > div {
+  flex-grow: 1;
+  padding: 0.2em;
+  background-color: var(--text-inv-color);
+  color: red;
+}
+.voting-header .can-vote-state {
+  text-align: right;
+}
+.voting-header .started-state.started,
+.voting-header .can-vote-state.can-vote {
+  color: green;
+}
+.voting-box .button {
+  margin: 0.5em;
+  padding: 0.5em 0.8em;
+  text-align: center;
+  border: 0.1em solid var(--color-dark);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative;
+}
+.voting-box .voting-option .bar {
+  position: absolute;
+  background-color: var(--color-light-transparent);
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.voting-box .voting-option span {
+  position: relative;
+}
+.voting-box .button:hover,
+.voting-options .voted {
+  background-color: var(--color-medium);
+}
+.voting-controls {
+  border-top: 0.1em solid var(--color-dark);
+}
+.phase-controls {
+  padding: 0;
+  display: flex;
+}
+.phase-controls .button {
+  flex-grow: 1;
+  text-align: center;
+  padding: 1em 1.5em;
+  font-size: 1.3em;
+  cursor: pointer;
+}
+.phase-controls .button:hover {
+  background-color: var(--color-medium);
+}
+.settings-bar {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+.settings-bar svg {
+  height: 2em;
+  width: 2em;
+  fill: var(--color-medium);
+  cursor: pointer;
+  margin: 0 0 0.75em;
+}
+.settings-bar svg:hover {
+  fill: var(--color-darker);
+}
+.settings-bar svg .hightlight {
+  fill: var(--text-hightlight);
+}
+@media (max-width: 900px) {
+  .frame-game-outer {
+    flex-direction: column;
+    height: unset;
+  }
+  .frame-game-left {
+    width: unset;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-right: 3em;
+  }
+  .user-container {
+    flex: 0 1 20em;
+  }
+  .frame-game-body {
+    position: unset;
+  }
+  .phase-header,
+  .phase-controls {
+    flex-direction: column-reverse;
+    width: unset;
+  }
+  .phase-controls > *:nth-child(1) {
+    border-top: 0.05em solid var(--color-dark);
+  }
+  .theme-editor .pane:not(.countries) {
+    flex-direction: column;
+  }
+  .chat-box {
+    position: fixed;
+  }
+}

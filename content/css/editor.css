@@ -1,0 +1,181 @@
+.editor {
+  max-width: 100%;
+  flex-grow: 1;
+  padding: 0.6em 3em 0.6em 1em;
+}
+.editor-roles {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.editor-role-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-light-transparent);
+  margin: 0.5em 1em;
+  width: 10em;
+  position: relative;
+}
+.editor-role-info {
+  position: absolute;
+  top: 0.25em;
+  right: 0.25em;
+  border-radius: 100%;
+  border: 0.1em solid;
+  width: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.editor-role-info:hover {
+  color: var(--color-dark);
+  border: 0.15em solid;
+}
+.role-info {
+  padding: 0 1em;
+  max-width: 35em;
+}
+.role-info p {
+  margin: 0.5em 0;
+}
+.editor-role-image {
+  height: 4em;
+  margin: 1em 0.6em;
+}
+.editor-role-name {
+  padding: 0 0.5em 0.5em;
+  flex-grow: 1;
+  text-align: center;
+}
+.editor-role-number {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding: 0 0.5em 0.5em;
+  box-sizing: border-box;
+}
+.editor-role-number input {
+  box-sizing: border-box;
+  flex: 1;
+  font-family: inherit;
+  border: none;
+  min-width: 1em;
+  text-align: right;
+}
+.editor-role-number .down,
+.editor-role-number .up {
+  width: 1em;
+  flex: 0;
+  cursor: pointer;
+  margin: 0 0.25em 0 0;
+}
+.editor-role-number .down {
+  margin: 0 0 0 0.25em;
+}
+.editor-role-number .down:before,
+.editor-role-number .up:before {
+  display: block;
+  content: " ";
+  border-top: 0 solid transparent;
+  border-left: 0.5em solid transparent;
+  border-right: 0.5em solid transparent;
+  border-bottom: 1em solid var(--color-dark-transparent);
+}
+.editor-role-number .down:before {
+  transform: rotate(180deg);
+}
+.editor-role-number .down:hover:before,
+.editor-role-number .up:hover:before {
+  border-bottom: 1em solid var(--color-dark);
+}
+.editor-role-number:not(.editable) input {
+  text-align: center;
+}
+.editor-role-number:not(.editable) .down,
+.editor-role-number:not(.editable) .up {
+  display: none;
+}
+
+.editor-bar-box {
+  margin: 4em auto;
+  position: relative;
+  max-width: 35em;
+}
+.editor-bar-fill-outer {
+  margin: 2em 0;
+  position: relative;
+  height: 2em;
+  background-color: var(--color-dark-transparent);
+}
+.editor-bar-fill-inner {
+  position: absolute;
+  height: 100%;
+  background-color: var(--color-darker-transparent);
+  transition: width 0.3s;
+}
+.editor-bar-player-box, .editor-bar-roles-box {
+  position: absolute;
+  top: 0;
+  width: 0;
+  transition: left 0.3s;
+}
+.editor-bar-player-box .line, .editor-bar-roles-box .line {
+  position: absolute;
+  height: 2.5em;
+  bottom: -2em;
+  border: 0.1em solid var(--text-color);
+  transform: translateX(-50%);
+}
+.editor-bar-player-box .number, .editor-bar-roles-box .number {
+  position: absolute;
+  bottom: 0.6em;
+  transform: translateX(-50%);
+}
+.editor-bar-player-box .line {
+  bottom: unset;;
+  top: 0em;
+}
+.editor-bar-player-box .number {
+  bottom: unset;
+  top: 2.6em;
+}
+.editor-checks {
+  margin: 0 auto;
+  max-width: 35em;
+}
+.editor-checks label {
+  display: block;
+}
+.editor-checks label.disabled {
+  color: var(--text-color-light);
+  text-decoration: line-through;
+}
+.editor .start-button {
+  margin: 2em auto;
+  max-width: 35em;
+  box-sizing: border-box;
+  padding: 0.5em 0.8em;
+  background-color: var(--color-light-transparent);
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.1em;
+  border-radius: 0.4em;
+}
+.editor .start-button.disabled {
+  cursor: not-allowed;
+}
+.editor .theme-selector {
+  margin: 2em auto 0;
+  max-width: 35em;
+}
+.editor .theme-selector select {
+  margin: 0 auto;
+  font-size: 1.5em;
+  max-width: 100%;
+  color: inherit;
+  background-color: var(--color-dark-transparent);
+}

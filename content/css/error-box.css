@@ -1,0 +1,32 @@
+.error-box {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  max-height: 100vh;
+  max-width: 100vw;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.error-box .error-entry {
+  background-color: var(--color-dark);
+  color: var(--text-inv-color);
+  padding: 0.5em 0.8em;
+  margin: 0.5em;
+  box-shadow: 0.2em 0.2em 0.8em var(--color-dark);
+  max-width: 100%;
+  box-sizing: border-box;
+  width: fit-content;
+}
+.error-box .remove {
+  display: float;
+  float: right;
+  margin: -0.25em -0.5em 0.25em 0.25em;
+  padding: 0.25em 0.5em;
+  cursor: pointer;
+}
+.error-box .remove:hover {
+  background-color: var(--color-darker);
+}

@@ -1,0 +1,45 @@
+.theme-editor .pane {
+  display: flex;
+  flex-direction: row;
+}
+.theme-editor .group {
+  flex-grow: 1;
+}
+.theme-editor .group:first-child {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+}
+.theme-editor .group:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+  justify-content: center;
+}
+.theme-editor .group:nth-child(2) input {
+  width: 100%;
+  box-sizing: border-box;
+}
+.theme-editor .group:nth-child(2) img {
+  max-width: 25em;
+  max-height: 15em;
+}
+.theme-editor .pane.countries {
+  justify-content: space-evenly;
+}
+.theme-editor .pane.countries > div {
+  cursor: pointer;
+  margin: 0.25em 1em 1em;
+}
+.theme-editor .pane.countries > div.selected {
+  background-color: var(--color-light);
+}
+.theme-editor .pane.countries > div:hover {
+  background-color: var(--color-dark);
+}
+.theme-editor .pane.countries .flag-icon {
+  font-size: 3em;
+  margin: 0.15em 0.2em;
+}

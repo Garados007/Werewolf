@@ -7,7 +7,7 @@ using Serilog;
 
 namespace Werewolf.Game.Multiplexer
 {
-    public class GameNotificationServer : Api.GameNotificationServerBase
+    public class GameNotificationServer : GameNotificationServerBase
     {
         private ClientConnector? connector;
         private IPEndPoint? endPoint;
@@ -40,7 +40,7 @@ namespace Werewolf.Game.Multiplexer
                         }
                     }
                 }
-            )));
+            )), CancellationToken.None);
             return Task.CompletedTask;
         }
 
@@ -66,7 +66,7 @@ namespace Werewolf.Game.Multiplexer
                         }
                     }
                 }
-            )));
+            )), CancellationToken.None);
             return Task.CompletedTask;
         }
     }

@@ -1,0 +1,73 @@
+.chat-box {
+  position: absolute;
+  bottom: 0;
+  margin: 0 1.5em;
+  right: 0;
+  width: 30em;
+  max-width: 90%;
+  max-width: calc(100%-3em);
+  display: flex;
+  flex-direction: column;
+  height: 25em;
+  max-height: 100%;
+  background-color: var(--color-dark-semitransparent);
+  color: var(--text-inv-color);
+}
+.chat-box .chat-history {
+    flex: 1 1;
+    overflow-y: auto;
+}
+.chat-box .chat-input-box {
+    display: flex;
+    flex-direction: row;
+}
+.chat-box .chat-input-box textarea {
+    flex: 1 1;
+    box-sizing: border-box;
+    background-color: var(--color-dark);
+    color: var(--text-inv-color);
+    border: none;
+    font-family: inherit;
+}
+.chat-box .chat-input-send {
+    width: 3em;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-dark);
+}
+.chat-box .chat-input-send:hover {
+    background-color: var(--color-medium);
+}
+.chat-box .chat-input-send::before {
+    content: ">";
+}
+.chat-box .chat-box-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+    background-color: var(--color-dark-transparent);
+}
+.chat-box .chat-box-close:hover {
+    background-color: var(--color-medium);
+}
+.chat-box .chat > span + span {
+    margin: 0 0 0 0.25em;
+}
+.chat-box .chat {
+    padding: 0.25em 0.4em;
+}
+.chat-box .chat:hover {
+    background-color: var(--color-dark);
+}
+.chat-box .chat:not(.can-send) {
+    color: var(--text-color-dark);
+    text-decoration: line-through;
+}
+.chat-box .chat .chat-message {
+    white-space: pre-line;
+    overflow-wrap: break-word;
+}

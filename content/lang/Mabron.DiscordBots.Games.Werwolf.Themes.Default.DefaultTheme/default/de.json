@@ -1,0 +1,98 @@
+{
+    "theme": {
+        "names": {
+            "game-leader": "Spielleiter",
+            "member": "Mitspieler",
+            "player": "Spieler"
+        },
+        "roles": {
+            "Amor": "Amor",
+            "Angel": "Engel",
+            "Flutist": "Flötenspieler",
+            "Girl": "Kleines Mädchen",
+            "Healer": "Heiler",
+            "Hunter": "Jäger",
+            "Idiot": "Dorfdepp",
+            "OldMan": "Alte Mann",
+            "Oracle": "Seherin",
+            "PureSoul": "Reiner",
+            "ScapeGoat": "Sündenbock",
+            "TwoSisters": "Zwei Schwestern",
+            "ThreeBrothers": "Drei Brüder",
+            "Villager": "Dorfbewohner",
+            "Werwolf": "Werwolf",
+            "Witch": "Hexe",
+            "Unknown": "???"
+        },
+        "role-info": {
+            "Amor": "Amor kann am Anfang des Spiels zwei Verliebte bestimmen, dessen Schicksal von nun an verbunden ist. Sollte einer der Verliebten sterben, so stirbt der andere sofort an Kummer.",
+            "Angel": "Das Ziel des Engels ist es in der ersten Runde (1 Tag- und Nachtphase) zu sterben. Sollte dies eintreffen, dann gewinnt der Engel sofort.\nSollte mit Engel gespielt werden, so fängt das Spiel mit einer Tag- statt Nachtphase an.\nSollte der Engel es nicht schaffen in der ersten Runde zu sterben, so wird dieser automatisch zu einen normalen Dorfbewohner.",
+            "Flutist": "Der Flötenspieler ist vor langer Zeit vom Dorf vertrieben wurden und will nun Rache ausüben. Er stellt eine eigene Partei und bestimmt jede Nacht zwei Verzauberte. Der Flötenspieler und alle Verzauberten kennen alle Verzauberten, aber die Verzauberten wissen nicht, wer der Flötenspieler ist.\nDas Spiel ist sofort beendet, wenn nur noch Verzauberte oder der Flötenspieler leben. Dann gewinnt der Flötenspieler.\nGibt es 7 oder weniger Mitspieler, so darf der Flötenspieler nur einen Verzauberten pro Nacht bestimmen.\nTipp für die anderen Mitspieler: Versucht den Flötenspieler möglichst früh loszuwerden.",
+            "Girl": "Das kleine Mädchen darf während der Phase der Werwölfe versuchen die Augen leicht aufzumachen, um die Werwölfe zu sehen. Gleichzeitig geht sie auch das Risiko ein, dass die Werwölfe sie dabei erwischen.\nMit einer gewissen Wahrscheinlichkeit kann das Mädchen einzelne Werwölfe sehen. Mit einer gewissen Wahrscheinlichkeit wird das Mädchen von einzelnen Werwölfen erwischt.",
+            "Healer": "Der Heiler wird in der Nacht vor den Werwölfen aufgerufen und bestimmt einen Spieler, welche diese Runde nicht von den Werwölfen umgebracht werden kann. Dies wissen aber die Werwölfe nicht.\nDer Heiler kann nicht ein und denselben Spieler in zwei aufeinander folgenden Nächten vor den Werwölfen schützen.",
+            "Hunter": "Der Jäger kann bevor er stirbt noch einen letzten Schuss abgeben und so eventuell einen der Werwölfe zur Strecke bringen.",
+            "Idiot": "Der Dorfdepp kann nicht vom Dorf direkt umgebracht werden. Sollte der Dorfdepp vom Dorf ausgewählt werden, so deckt dieser seine Rolle auf und das Dorf vergibt ihn. Gleichzeitig verliert der Dorfdepp aber sein Wahlrecht bei zukünftigen Abstimmungen.\nWar der Dorfdepp vorher Bürgermeister, so ist die Funktion des Bürgermeisters endgültig verloren und kann nicht weitergegeben werden.\nWird mit den alten Mann gespielt, so tritt folgendes in Kraft: Sobald der alte Mann verstorben ist, wird der Dorfdepp automatisch vom Dorf gelyncht, sobald seine Rolle offen liegt.",
+            "OldMan": "Der alte Mann hat so viel Lebenserfahrung gesammelt, dass dieser sich nicht von einer einzelnen Attacke der Werwölfe umbringen lässt. Stattdessen müssen diese zweimal ran. Bei allen anderen (Hexe, Jäger, Dorf, etc.) bringt seine Lebenserfahrung keinen besonderen Vorteil.\nWird mit den Dorfdepp gespielt: Sobald der alte Mann stirbt, geht auch die Weisheit dem Dorf verloren und kann sich nicht mehr zurückhalten, wenn die Rolle des Dorfdepps aufgedeckt wird und bringt ihn sofort um.",
+            "PureSoul": "Die reine Seele ist ein normaler Dorfbewohner und alle können sehen wer die reine Seele ist.",
+            "ScapeGoat": "Der Sündenbock wird automatisch als Ziel ausgerufen, wenn bei einer Dorfabstimmung ein Unentschieden entsteht. Dies will der Sündenbock natürlich vermeiden.\nWird der Sündenbock durch ein Unentschieden als Ziel ausgerufen und dadurch vom Dorf umgebracht, dann bekommt der Sündenbock das Recht bei der kommenden Dorfwahl zu bestimmen wer abstimmen darf und wer nicht. Wenn er nur einen bestimmt und dieser direkt von den Werwölfen umgebracht wird, so entfällt die nächste Dorfauswahl.",
+            "Villager": "Ein normaler Dorfbewohner ohne besonderen Fähigkeiten.",
+            "Werwolf": "Ein Werwolf dessen Ziel es ist alle Dorfbewohner auszurotten.\nDie Werwölfe werden jede Nacht einmal aufgerufen um für ihr Opfer zu stimmen.",
+            "Witch": "Die Hexe hat zwei besondere Tränke im Spiel, welche sie jeweils nur einmal benutzen darf.\nDer eine ist der Lebenstrank. Mit diesen kann sie das aktuelle Opfer der Werwölfe vor dem Tod beschützen.\nDer andere ist der Todestrank. Mit diesen kann sie einen anderen Spiel umbringen.\nSie kann in der Nacht einen, beide oder keinen der Tränke nutzen."
+        },
+        "phases": {
+            "AmorPhase": "Amor sucht das Liebespaar",
+            "DailyVictimElectionPhase": "Tag: Dorfwahl",
+            "ElectMajorPhase": "Bürgermeisterwahl",
+            "FlutistPhase": "Flötenspieler sammelt Jünger",
+            "HealerPhase": "Heiler wendet Praktiken an",
+            "HunterPhase": "Rache des Jägers",
+            "InheritMajorPhase": "Vererbung des Bürgermeisters",
+            "OraclePhase": "Alte Seherin",
+            "ScapeGoatPhase": "Auswahl der Stimmberechtigten",
+            "WerwolfPhase": "Nacht: Werwölfe",
+            "WitchPhase": "Braustunde der Hexe"
+        },
+        "tags": {
+            "not-alive": "(tot)",
+            "loved": "(verliebt)",
+            "werwolf-select": "(Werwolfopfer)",
+            "enchant-flutist": "(verzaubert)",
+            "major": "(Bürgermeister)"
+        },
+        "voting-title": {
+            "default": "Wähle eine Option",
+            "ScapeGoatPhase+ScapeGoatSelect": "Verteile Stimmrechte",
+            "WitchPhase+WitchSafe": "Lebenstrank nutzen",
+            "WitchPhase+WitchKill": "Todestrank nutzen"
+        },
+        "voting-options": {
+            "default": {
+                "do-nothing": "Nichts tun",
+                "player": "{player}"
+            },
+            "ScapeGoatPhase+ScapeGoatSelect": {
+                "stop-voting": "Abstimmung beenden"
+            },
+            "WitchPhase+WitchSafe": {
+                "player": "{player} retten"
+            },
+            "WerwolfPhase+GirlVote": {
+                "spy": "Ausspionieren"
+            }
+        },
+        "event": {
+            "player-notification": {
+                "village-kill": "Das Dorf hat entschieden den/die Spieler zu töten.",
+                "killed-by-major": "Der Hauptmann hat entschieden den Spieler zu töten.",
+                "scapegoat-kill": "Der Sündebock musste sterben da ihr euch nicht entscheiden konntet.",
+                "new-voted-major": "Ein neuer Hauptmann wurde bestimmt!",
+                "hunter-kill": "Der Jäger hat geschossen.",
+                "new-major": "Der Hauptmann wurde vererbt.",
+                "night-kills": "Leider haben nicht alle die Nacht überlebt.",
+                "scapegoat-vote": "Der Sündenbock hat entschieden welche Spieler am kommenden Tag abstimmen dürfen.",
+                "old-man-and-idiot-killed": "Das Dorf hatte seine Vernunft verloren und den Dorfdepp gelyncht.",
+                "KilledByLove": "Der Liebeskummer war zu stark und man ist an gebrochenen Herzen gestorben."
+            }
+        }
+    }
+}

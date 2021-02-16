@@ -1,0 +1,61 @@
+{
+    "settings": {
+        "game-room": {
+            "leader-is-player": "Spielleiter ist auch ein Mitspieler",
+            "dead-can-see-all-roles": "Tote können alle Rollen sehen",
+            "all-can-see-role-of-dead": "Alle können die Rolle der Toten sehen",
+            "auto-start-votings": "Votings automatisch starten",
+            "auto-finish-votings": "Votings automatisch beenden",
+            "votings-timeout": "Votings automatisch nach einen Timeout beenden",
+            "auto-finish-rounds": "Runden automatisch beenden wenn kein Voting mehr existiert",
+            "start": "Start"
+        }
+    },
+    "game": {
+        "voting": {
+            "started": "Gestarted",
+            "not-started": "Nicht gestarted",
+            "can-vote": "Darf abstimmen",
+            "cannot-vote": "Darf nicht abstimmen",
+            "nobody-has-voted": "Niemand hat bisher so abgestimmt",
+            "has-voted-list": "Bisher so abgestimmt haben: {list}",
+            "button": {
+                "start": "Starten",
+                "end": "Beenden",
+                "add-time-hint": "In {time-left} Sekunden wird das Voting automatisch beendet. Hier klicken um auf {max-time} Sekunden zurückzusetzen.",
+                "add-time": "Zeitzugabe ({time-left})"
+            }
+        },
+        "phase": {
+            "end": "Spiel beenden",
+            "next": "Nächste Runde"
+        },
+        "loading": {
+            "is-loading": "Daten werden geladen ...",
+            "not-found": "Spiel nicht gefunden."
+        }
+    },
+    "modals": {
+        "theme-editor": {
+            "title": "Theme Einstellungen",
+            "background-url": "Hintergrundbild (URL)"
+        },
+        "winner": {
+            "title": "Sieger"
+        },
+        "player-notification": {
+            "title": "Spielerbenachrichtigung"
+        }
+    },
+    "user-stats": {
+        "won-games": "gewonnene Spiele",
+        "died": "gestorben",
+        "played-games": "gespielte Spiele",
+        "leader": "Spielleiter",
+        "level": "Level",
+        "player-kick": "Spieler kicken"
+    },
+    "chat": {
+        "not-allowed": "Die Nachricht durfte nicht gesendet werden."
+    }
+}
