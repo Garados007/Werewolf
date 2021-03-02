@@ -16,11 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Theme.Default", "Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj", "{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Theme.Default", "Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj", "{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game.Api", "Werewolf.Game.Api\Werewolf.Game.Api.csproj", "{4B39F801-8667-4936-A5B5-3CEE1DCC0195}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Game.Api", "Werewolf.Game.Api\Werewolf.Game.Api.csproj", "{4B39F801-8667-4936-A5B5-3CEE1DCC0195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game.Multiplexer", "Werewolf.Game.Multiplexer\Werewolf.Game.Multiplexer.csproj", "{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Game.Multiplexer", "Werewolf.Game.Multiplexer\Werewolf.Game.Multiplexer.csproj", "{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game", "Werewolf.Game\Werewolf.Game.csproj", "{88A85118-6292-45F5-8C07-DF51571002F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +106,18 @@ Global
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x64.Build.0 = Release|Any CPU
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x86.Build.0 = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|x64.Build.0 = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Debug|x86.Build.0 = Debug|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|x64.ActiveCfg = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|x64.Build.0 = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|x86.ActiveCfg = Release|Any CPU
+		{88A85118-6292-45F5-8C07-DF51571002F3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
