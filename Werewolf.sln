@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game.Api", "Werewo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game.Multiplexer", "Werewolf.Game.Multiplexer\Werewolf.Game.Multiplexer.csproj", "{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalon.The.Resistance", "Themes\Avalon.The.Resistance\Avalon.The.Resistance.csproj", "{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,18 @@ Global
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x64.Build.0 = Release|Any CPU
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FD7F9F7-933F-4CB8-8A92-6F148E81DB62}.Release|x86.Build.0 = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|x64.Build.0 = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Debug|x86.Build.0 = Debug|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|x64.ActiveCfg = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|x64.Build.0 = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|x86.ActiveCfg = Release|Any CPU
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -111,6 +125,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{05032AFB-5848-46C4-A571-4CFFD203A88E} = {187B9586-D3F9-4D88-8217-02FEB52B4BA8}
 		{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2} = {187B9586-D3F9-4D88-8217-02FEB52B4BA8}
+		{05B933EC-3BBA-4686-BDD0-B37B24CC3E37} = {187B9586-D3F9-4D88-8217-02FEB52B4BA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFF967DB-B00A-4F05-B808-FA8F3EBE21DD}

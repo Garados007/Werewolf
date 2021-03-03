@@ -4,7 +4,7 @@ namespace Werewolf.Theme.Default
 {
     public abstract class BaseRole : Role
     {
-        protected BaseRole(Theme theme) : base(theme)
+        public BaseRole(Theme theme) : base(theme)
         {
         }
 
