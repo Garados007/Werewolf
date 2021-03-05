@@ -10,9 +10,9 @@ namespace Werewolf.Theme.Default.Phases
     {
         public class DailyVote : PlayerVotingBase
         {
-            readonly HashSet<Role>? allowedVoter = null;
+            private readonly HashSet<Role>? allowedVoter;
 
-            public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
                 // check if scape goat phase
@@ -70,7 +70,7 @@ namespace Werewolf.Theme.Default.Phases
 
         public class MajorPick : PlayerVotingBase
         {
-            public MajorPick(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public MajorPick(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
             }

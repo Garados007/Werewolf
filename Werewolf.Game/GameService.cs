@@ -5,7 +5,7 @@ namespace Werewolf.Game
 {
     public class GameService : WebService
     {
-        public GameService() 
+        public GameService()
             : base(ServerStage.ParseRequest)
         {
         }

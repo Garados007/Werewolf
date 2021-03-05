@@ -13,39 +13,36 @@ namespace Werewolf.Theme.Phases
         where TPhase1 : Phase, new()
         where TPhase2 : Phase, new()
     {
-        readonly TPhase1 phase1 = new TPhase1();
-        readonly TPhase2 phase2 = new TPhase2();
-
-        protected TPhase1 Phase1 => phase1;
-        protected TPhase2 Phase2 => phase2;
+        protected TPhase1 Phase1 { get; } = new TPhase1();
+        protected TPhase2 Phase2 { get; } = new TPhase2();
 
         public override bool CanExecute(GameRoom game)
-            => phase1.CanExecute(game) || phase2.CanExecute(game);
+            => Phase1.CanExecute(game) || Phase2.CanExecute(game);
 
         public override async Task InitAsync(GameRoom game)
         {
             await base.InitAsync(game);
-            await phase1.InitAsync(game);
-            await phase2.InitAsync(game);
+            await Phase1.InitAsync(game);
+            await Phase2.InitAsync(game);
         }
 
-        public override bool IsGamePhase => phase1.IsGamePhase || phase2.IsGamePhase;
+        public override bool IsGamePhase => Phase1.IsGamePhase || Phase2.IsGamePhase;
 
         public override IEnumerable<Voting> Votings =>
-            base.Votings.Concat(phase1.Votings).Concat(phase2.Votings);
+            base.Votings.Concat(Phase1.Votings).Concat(Phase2.Votings);
 
         public override void RemoveVoting(Voting voting)
         {
             base.RemoveVoting(voting);
-            phase1.RemoveVoting(voting);
-            phase2.RemoveVoting(voting);
+            Phase1.RemoveVoting(voting);
+            Phase2.RemoveVoting(voting);
         }
 
         public override void ExecuteMultipleWinner(Voting voting, GameRoom game)
         {
             base.ExecuteMultipleWinner(voting, game);
-            phase1.ExecuteMultipleWinner(voting, game);
-            phase2.ExecuteMultipleWinner(voting, game);
+            Phase1.ExecuteMultipleWinner(voting, game);
+            Phase2.ExecuteMultipleWinner(voting, game);
         }
 
         public override bool CanMessage(GameRoom game, Role role)

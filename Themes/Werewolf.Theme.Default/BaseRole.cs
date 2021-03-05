@@ -8,9 +8,9 @@ namespace Werewolf.Theme.Default
         {
         }
 
-        public bool IsSelectedByHealer { get; set; } = false;
+        public bool IsSelectedByHealer { get; set; }
 
-        private bool isViewedByOracle = false;
+        private bool isViewedByOracle;
         public bool IsViewedByOracle
         {
             get => isViewedByOracle;
@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        private bool isLoved = false;
+        private bool isLoved;
         public bool IsLoved
         {
             get => isLoved;
@@ -32,9 +32,9 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        public bool HasVotePermitFromScapeGoat { get; set; } = false;
+        public bool HasVotePermitFromScapeGoat { get; set; }
 
-        private bool isEnchantedByFlutist = false;
+        private bool isEnchantedByFlutist;
         public bool IsEnchantedByFlutist
         {
             get => isEnchantedByFlutist;
@@ -57,18 +57,16 @@ namespace Werewolf.Theme.Default
 
         public override Role ViewRole(Role viewer)
         {
-            if (IsViewedByOracle && viewer is Roles.Oracle)
-                return this;
-            return base.ViewRole(viewer);
+            return IsViewedByOracle && viewer is Roles.Oracle
+                ? this
+                : base.ViewRole(viewer);
         }
 
         public virtual bool ViewLoved(Role viewer)
         {
-            if (viewer is not BaseRole viewer_)
-                return false;
-            if (viewer_.IsLoved || viewer is Roles.Amor)
-                return IsLoved;
-            return false;
+            return viewer is BaseRole viewer_
+                && (viewer_.IsLoved || viewer is Roles.Amor)
+                && IsLoved;
         }
 
         public override void ChangeToAboutToKill(GameRoom game)

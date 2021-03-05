@@ -4,9 +4,9 @@ namespace Werewolf.Theme.Default.Roles
 {
     public class OldMan : VillagerBase
     {
-        public bool WasKilledByWolvesOneTime { get; set; } = false;
+        public bool WasKilledByWolvesOneTime { get; set; }
 
-        public bool WasKilledByVillager { get; set; } = false;
+        public bool WasKilledByVillager { get; set; }
 
         public OldMan(Theme theme) : base(theme)
         {

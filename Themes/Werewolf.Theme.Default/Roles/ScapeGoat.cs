@@ -2,11 +2,11 @@
 {
     public class ScapeGoat : VillagerBase
     {
-        public bool WasKilledByVillage { get; set; } = false;
+        public bool WasKilledByVillage { get; set; }
 
-        public bool HasRevenge { get; set; } = false;
+        public bool HasRevenge { get; set; }
 
-        public bool HasDecided { get; set; } = false;
+        public bool HasDecided { get; set; }
 
         public ScapeGoat(Theme theme) : base(theme)
         {

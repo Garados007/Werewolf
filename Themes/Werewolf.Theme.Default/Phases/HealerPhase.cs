@@ -10,7 +10,7 @@ namespace Werewolf.Theme.Default.Phases
     {
         public class HealerVote : PlayerVotingBase
         {
-            public HealerVote(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public HealerVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
             }

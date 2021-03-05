@@ -47,7 +47,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public Witch Witch { get; }
 
-            public WitchKill(Witch witch, GameRoom game, IEnumerable<UserId>? participants = null) 
+            public WitchKill(Witch witch, GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
                 Witch = witch;

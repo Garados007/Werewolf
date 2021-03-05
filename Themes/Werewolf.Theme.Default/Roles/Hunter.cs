@@ -6,7 +6,7 @@
         {
         }
 
-        public bool HasKilled { get; set; } = false;
+        public bool HasKilled { get; set; }
 
         public override string Name => "Jäger";
 
@@ -17,9 +17,9 @@
 
         public override Role ViewRole(Role viewer)
         {
-            if (viewer is Hunter)
-                return this;
-            return base.ViewRole(viewer);
+            return viewer is Hunter
+                ? this
+                : base.ViewRole(viewer);
         }
     }
 }

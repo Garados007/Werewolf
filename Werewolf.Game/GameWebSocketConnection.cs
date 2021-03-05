@@ -13,13 +13,13 @@ namespace Werewolf.Game
 
         public UserInfo User { get; }
 
-        public GameWebSocketConnection(Stream networkStream, GameRoom game, UserInfo user) 
+        public GameWebSocketConnection(Stream networkStream, GameRoom game, UserInfo user)
             : base(networkStream)
         {
             Game = game;
             User = user;
             GameController.Current.AddWsConnection(this);
-            Closed += (_, __) => 
+            Closed += (_, __) =>
             {
                 GameController.Current.RemoveWsConnection(this);
             };
@@ -41,7 +41,7 @@ namespace Werewolf.Game
             var writer = new Utf8JsonWriter(m);
             @event.Write(writer, Game, User);
             await writer.FlushAsync();
-            
+
             var frame = new Frame
             {
                 OpCode = OpCode.Text,

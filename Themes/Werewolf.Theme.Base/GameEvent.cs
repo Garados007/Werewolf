@@ -9,7 +9,7 @@ namespace Werewolf.Theme
 
         public virtual string GameEventType
             => GetType().Name;
-        
+
         public void Write(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
             writer.WriteStartObject();

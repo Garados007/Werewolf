@@ -8,7 +8,7 @@ namespace Werewolf.Theme.Default.KillInfos
 
         public override IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer)
         {
-            if (viewer == null || viewer is Roles.Werwolf || viewer is Roles.Witch)
+            if (viewer is null or Roles.Werwolf or Roles.Witch)
                 yield return "werwolf-select";
         }
     }

@@ -2,7 +2,7 @@
 {
     public class Idiot : VillagerBase
     {
-        private bool isRevealed = false;
+        private bool isRevealed;
         public bool IsRevealed
         {
             get => isRevealed;
@@ -21,9 +21,9 @@
 
         public override Role ViewRole(Role viewer)
         {
-            if (IsRevealed)
-                return this;
-            return base.ViewRole(viewer);
+            return IsRevealed
+                ? this
+                : base.ViewRole(viewer);
         }
 
         public override string Name => "Dorfdepp";

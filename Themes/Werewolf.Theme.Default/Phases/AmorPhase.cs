@@ -10,7 +10,7 @@ namespace Werewolf.Theme.Default.Phases
     {
         public class AmorPick : PlayerVotingBase
         {
-            public AmorPick(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public AmorPick(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
             }
@@ -46,7 +46,7 @@ namespace Werewolf.Theme.Default.Phases
                 !game.Participants.Values.Where(x => x is BaseRole role && role.IsLoved).Any();
         }
 
-        AmorPick? pick1, pick2;
+        private AmorPick? pick1, pick2;
 
         protected override void Init(GameRoom game)
         {

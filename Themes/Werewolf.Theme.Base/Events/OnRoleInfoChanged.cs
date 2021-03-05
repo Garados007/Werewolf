@@ -26,7 +26,7 @@ namespace Werewolf.Theme.Events
             writer.WriteString("id", id?.ToString());
             writer.WriteStartArray("tags");
             foreach (var tag in Role.GetSeenTags(game, user, ownRole, Role))
-                    writer.WriteStringValue(tag);
+                writer.WriteStringValue(tag);
             writer.WriteEndArray();
             writer.WriteString("role", seenRole?.GetType().Name);
         }

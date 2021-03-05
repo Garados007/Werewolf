@@ -67,9 +67,9 @@ namespace Werewolf.Theme
 
             public Step Current { get; private set; }
 
-            public bool IsExecuted { get; internal set; } = false;
+            public bool IsExecuted { get; internal set; }
 
-            public bool IsEntered { get; internal set; } = false;
+            public bool IsEntered { get; internal set; }
 
             public PhaseGroup(Step entry)
                 => (Entry, Current) = (entry, entry);

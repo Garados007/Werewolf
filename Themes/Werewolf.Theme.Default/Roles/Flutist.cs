@@ -2,7 +2,7 @@
 {
     public class Flutist : BaseRole
     {
-        public Flutist(Theme theme) 
+        public Flutist(Theme theme)
             : base(theme)
         {
         }

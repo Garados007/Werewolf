@@ -12,9 +12,7 @@ namespace Werewolf.Theme
             {
                 var name = GetType().FullName ?? "";
                 var ind = name.LastIndexOf('.');
-                if (ind >= 0)
-                    return name[(ind + 1)..];
-                else return name;
+                return ind >= 0 ? name[(ind + 1)..] : name;
             }
         }
 
@@ -36,7 +34,7 @@ namespace Werewolf.Theme
 
         public virtual bool IsGamePhase => true;
 
-        readonly List<Voting> votings = new List<Voting>();
+        private readonly List<Voting> votings = new List<Voting>();
         public virtual IEnumerable<Voting> Votings => votings.ToArray();
 
         private GameRoom? game;
@@ -48,13 +46,13 @@ namespace Werewolf.Theme
             votings.Add(voting);
             voting.Started = game?.AutostartVotings ?? false;
             if (game?.UseVotingTimeouts ?? false)
-                voting.SetTimeout(game, true);
+                _ = voting.SetTimeout(game, true);
             game?.SendEvent(new Events.AddVoting(voting));
         }
 
         public virtual void RemoveVoting(Voting voting)
         {
-            votings.Remove(voting); 
+            _ = votings.Remove(voting);
             game?.SendEvent(new Events.RemoveVoting(voting.Id));
         }
 

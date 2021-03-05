@@ -10,7 +10,7 @@ namespace Werewolf.Theme.Default.Phases
     {
         public class InheritMajor : PlayerVotingBase
         {
-            public InheritMajor(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public InheritMajor(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
             }

@@ -15,9 +15,9 @@
 
         public override Role ViewRole(Role viewer)
         {
-            if (viewer is Oracle)
-                return this;
-            return base.ViewRole(viewer);
+            return viewer is Oracle
+                ? this
+                : base.ViewRole(viewer);
         }
     }
 }

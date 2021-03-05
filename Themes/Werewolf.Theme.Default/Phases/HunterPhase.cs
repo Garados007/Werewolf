@@ -13,7 +13,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public Hunter Hunter { get; }
 
-            public HunterKill(GameRoom game, Hunter hunter, IEnumerable<UserId>? participants = null) 
+            public HunterKill(GameRoom game, Hunter hunter, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
                 Hunter = hunter;

@@ -20,7 +20,7 @@ namespace Werewolf.Theme.Phases
                         var lid = role.KillInfo?.NotificationId ?? "";
                         if (!dict.TryGetValue(lid, out HashSet<UserId>? set))
                             dict.Add(lid, set = new HashSet<UserId>());
-                        set.Add(id);
+                        _ = set.Add(id);
                         doExecute = true;
                     }
                 if (doExecute)

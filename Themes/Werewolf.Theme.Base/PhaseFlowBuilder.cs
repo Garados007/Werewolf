@@ -6,7 +6,8 @@ namespace Werewolf.Theme
 {
     public class PhaseFlowBuilder
     {
-        readonly List<OneOf<Stage, Phase, PhaseFlow.PhaseGroup>> phases = new List<OneOf<Stage, Phase, PhaseFlow.PhaseGroup>>();
+        private readonly List<OneOf<Stage, Phase, PhaseFlow.PhaseGroup>> phases
+            = new List<OneOf<Stage, Phase, PhaseFlow.PhaseGroup>>();
 
         public void Add(Phase phase)
         {
@@ -37,9 +38,7 @@ namespace Werewolf.Theme
         public PhaseFlow? BuildPhaseFlow()
         {
             var group = BuildGroup();
-            if (group == null)
-                return null;
-            else return new PhaseFlow(group.Entry);
+            return group == null ? null : new PhaseFlow(group.Entry);
         }
 
         public PhaseFlow.PhaseGroup? BuildGroup()
@@ -58,20 +57,16 @@ namespace Werewolf.Theme
                 }
                 if (stage == null)
                     return null;
-                PhaseFlow.Step step;
-                if (phaseOrPhaseGroup.TryPickT0(out Phase phase, out PhaseFlow.PhaseGroup group))
-                    step = new PhaseFlow.Step(stage, phase);
-                else step = new PhaseFlow.Step(stage, group);
-
+                var step = phaseOrPhaseGroup.TryPickT0(out Phase phase, out PhaseFlow.PhaseGroup group)
+                    ? new PhaseFlow.Step(stage, phase)
+                    : new PhaseFlow.Step(stage, group);
                 if (last != null)
                     last.Next = step;
                 last = step;
                 init ??= step;
             }
 
-            if (init != null)
-                return new PhaseFlow.PhaseGroup(init);
-            else return null;
+            return init != null ? new PhaseFlow.PhaseGroup(init) : null;
         }
     }
 }

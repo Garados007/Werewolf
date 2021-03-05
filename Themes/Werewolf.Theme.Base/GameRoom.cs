@@ -12,16 +12,13 @@ namespace Werewolf.Theme
     {
         public int Id { get; }
 
-        public uint ExecutionRound { get; private set; } = 0;
+        public uint ExecutionRound { get; private set; }
 
-        UserId leader = new UserId();
+        private UserId leader = new UserId();
         public UserId Leader
         {
             get => leader;
-            set
-            {
-                SendEvent(new Events.OnLeaderChanged(leader = value));
-            }
+            set => SendEvent(new Events.OnLeaderChanged(leader = value));
         }
 
         public PhaseFlow? Phase { get; private set; }
@@ -32,7 +29,7 @@ namespace Werewolf.Theme
 
         public ConcurrentDictionary<Role, int> RoleConfiguration { get; }
 
-        bool leaderIsPlayer = false;
+        private bool leaderIsPlayer;
         public bool LeaderIsPlayer
         {
             get => leaderIsPlayer;
@@ -40,24 +37,24 @@ namespace Werewolf.Theme
             {
                 if (leaderIsPlayer == value)
                     return;
-                if (value)
-                    Participants.TryAdd(Leader, null);
-                else Participants.TryRemove(Leader, out _);
+                _ = value
+                    ? Participants.TryAdd(Leader, null)
+                    : Participants.TryRemove(Leader, out _);
                 leaderIsPlayer = value;
             }
         }
 
-        public bool DeadCanSeeAllRoles { get; set; } = false;
+        public bool DeadCanSeeAllRoles { get; set; }
 
-        public bool AllCanSeeRoleOfDead { get; set; } = false;
+        public bool AllCanSeeRoleOfDead { get; set; }
 
-        public bool AutostartVotings { get; set; } = false;
+        public bool AutostartVotings { get; set; }
 
-        public bool AutoFinishVotings { get; set; } = false;
+        public bool AutoFinishVotings { get; set; }
 
-        public bool UseVotingTimeouts { get; set; } = false;
+        public bool UseVotingTimeouts { get; set; }
 
-        public bool AutoFinishRounds { get; set; } = false;
+        public bool AutoFinishRounds { get; set; }
 
         public Theme? Theme { get; set; }
 
@@ -80,7 +77,7 @@ namespace Werewolf.Theme
             if (Leader == user.Id || Participants.ContainsKey(user.Id))
                 return false;
 
-            Participants.TryAdd(user.Id, null);
+            _ = Participants.TryAdd(user.Id, null);
             UserCache[user.Id] = user;
             SendEvent(new Events.AddParticipant(user));
             return true;
@@ -91,7 +88,7 @@ namespace Werewolf.Theme
             if (!Participants.IsEmpty && user.Id == Leader)
                 return false;
             if (Participants!.Remove(user.Id, out _))
-                UserCache.Remove(user.Id, out _);
+                _ = UserCache.Remove(user.Id, out _);
             SendEvent(new Events.RemoveParticipant(user.Id));
             return true;
         }
@@ -111,9 +108,7 @@ namespace Werewolf.Theme
 
         public Role? TryGetRole(UserId id)
         {
-            if (Participants.TryGetValue(id, out Role? role))
-                return role;
-            else return null;
+            return Participants.TryGetValue(id, out Role? role) ? role : null;
         }
 
         public UserId? TryGetId(Role role)
@@ -126,14 +121,14 @@ namespace Werewolf.Theme
 
         public bool FullConfiguration => RoleConfiguration.Values.Sum() == Participants.Count;
 
-        int lockNextPhase = 0;
+        private int lockNextPhase;
         public async Task NextPhaseAsync()
         {
             if (Interlocked.Exchange(ref lockNextPhase, 1) != 0)
                 return;
             if (Phase != null && !await Phase.NextAsync(this))
                 Phase = null;
-            Interlocked.Exchange(ref lockNextPhase, 0);
+            _ = Interlocked.Exchange(ref lockNextPhase, 0);
         }
 
         public async Task StartGameAsync()
@@ -148,8 +143,8 @@ namespace Werewolf.Theme
             // update user cache
             var users = UserCache.Keys.ToArray();
             foreach (var user in users)
-                UserCache[user] = 
-                    await Theme!.Users.GetUser(user, false) 
+                UserCache[user] =
+                    await Theme!.Users.GetUser(user, false)
                     ?? throw new InvalidCastException();
             // post init
             Theme?.PostInit(this);
@@ -217,7 +212,7 @@ namespace Werewolf.Theme
                 if (role != null)
                     SendEvent(new Events.OnRoleInfoChanged(role, ExecutionRound));
         }
-    
+
         public event EventHandler<GameEvent>? OnEvent;
 
         public void SendEvent<T>(T @event)

@@ -12,22 +12,22 @@ namespace Werewolf.Game.Multiplexer
 {
     public class ClientConnector : IDisposable
     {
-        readonly List<TcpApiClient<Api.GameApiClient, GameNotificationServer>> connections
+        private readonly List<TcpApiClient<Api.GameApiClient, GameNotificationServer>> connections
             = new List<TcpApiClient<Api.GameApiClient, GameNotificationServer>>();
-        readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
-        TcpApiClient<Api.GameApiClient, GameNotificationServer>[]? enumerationBuffer = null;
+        private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim();
+        private TcpApiClient<Api.GameApiClient, GameNotificationServer>[]? enumerationBuffer;
         private bool disposedValue;
-        readonly TcpApiServer<Api.GameNotificationClient, GameApiServer> outgoing;
+        private readonly TcpApiServer<Api.GameNotificationClient, GameApiServer> outgoing;
 
-        public IEnumerable<Api.GameNotificationClient> NotificationClients 
+        public IEnumerable<Api.GameNotificationClient> NotificationClients
             => outgoing.RequestApis;
-        
+
         public IEnumerable<(IPEndPoint endPoint, Api.GameApiClient api)> ApiClients
         {
             get
             {
                 @lock.EnterReadLock();
-                try 
+                try
                 {
                     enumerationBuffer ??= connections.ToArray();
                     return enumerationBuffer.Select(x => (x.EndPoint, x.RequestApi));
@@ -60,7 +60,7 @@ namespace Werewolf.Game.Multiplexer
         {
             outgoing = new TcpApiServer<Api.GameNotificationClient, GameApiServer>(
                 new IPEndPoint(IPAddress.Any, outgoingPort),
-                x => {},
+                x => { },
                 x => x.SetConnector(this)
             );
             SyncClients(timeout);
@@ -68,7 +68,8 @@ namespace Werewolf.Game.Multiplexer
 
         private void SyncClients(int timeout)
         {
-            Task.Run(async () => {
+            _ = Task.Run(async () =>
+            {
                 while (!disposedValue)
                 {
                     await Task.WhenAll(ApiClients.Select(async x =>
@@ -83,7 +84,7 @@ namespace Werewolf.Game.Multiplexer
                             return;
                         }
                         if (state != null)
-                            ServerStates.AddOrUpdate(x.endPoint, state, (_, _) => state);
+                            _ = ServerStates.AddOrUpdate(x.endPoint, state, (_, _) => state);
                     }));
                     await Task.Delay(TimeSpan.FromSeconds(3));
                 }
@@ -92,17 +93,17 @@ namespace Werewolf.Game.Multiplexer
 
         public void AddConnection(IPEndPoint endPoint, int timeout)
         {
-            _ = Task.Run(async () => 
+            _ = Task.Run(async () =>
             {
                 var connection = new TcpApiClient<Api.GameApiClient, GameNotificationServer>(
                     endPoint,
-                    x => {},
+                    x => { },
                     x => x.SetConnector(this, endPoint, timeout)
                 );
                 await connection.WaitConnect.ConfigureAwait(false);
                 @lock.EnterWriteLock();
-                try 
-                { 
+                try
+                {
                     connections.Add(connection);
                     enumerationBuffer = null;
                 }

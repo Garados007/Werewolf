@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
-using MaxLib.Ini;
+﻿using MaxLib.Ini;
 using MaxLib.Ini.Parser;
+using MaxLib.WebServer;
+using MaxLib.WebServer.Services;
 using Serilog;
 using Serilog.Events;
 using System;
 using System.Net;
-using MaxLib.WebServer;
-using MaxLib.WebServer.Services;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Werewolf.Game
 {
-    class Program
+    internal class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             var config = new IniParser().Parse("config.ini");
             var group = GetGroup(config, args) ?? new IniGroup("multiplexer");
@@ -56,12 +55,12 @@ namespace Werewolf.Game
             server.Stop();
         }
 
-        static readonly Regex urlRegex = new Regex(
+        private static readonly Regex urlRegex = new Regex(
             @"^(?<domain>(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]):(?<port>\d+)$",
             RegexOptions.Compiled
         );
 
-        static async Task<IPEndPoint?> GetEndpointAsync(string value)
+        private static async Task<IPEndPoint?> GetEndpointAsync(string value)
         {
             if (IPEndPoint.TryParse(value, out IPEndPoint? result))
                 return result;
@@ -69,14 +68,12 @@ namespace Werewolf.Game
             if (!match.Success)
                 return null;
             var ips = await Dns.GetHostAddressesAsync(match.Groups["domain"].Value);
-            if (ips.Length == 0)
-                return null;
-            if (!ushort.TryParse(match.Groups["port"].Value, out ushort port))
-                return null;
-            return new IPEndPoint(ips[0], port);
+            return ips.Length == 0 || !ushort.TryParse(match.Groups["port"].Value, out ushort port)
+                ? null
+                : new IPEndPoint(ips[0], port);
         }
 
-        static readonly MessageTemplate serilogMessageTemplate =
+        private static readonly MessageTemplate serilogMessageTemplate =
             new Serilog.Parsing.MessageTemplateParser().Parse(
                 "{infoType}: {info}"
             );
@@ -114,9 +111,9 @@ namespace Werewolf.Game
 
         private static IniGroup? GetGroup(IniFile file, string[] args)
         {
-            if (args.Length == 0)
-                return file.GetGroup("game-server");
-            else return GetGroup(file, args[0]);
+            return args.Length == 0
+                ? file.GetGroup("game-server")
+                : GetGroup(file, args[0]);
         }
     }
 }

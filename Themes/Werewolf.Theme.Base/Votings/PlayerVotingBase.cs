@@ -7,13 +7,13 @@ namespace Werewolf.Theme.Votings
 {
     public abstract class PlayerVotingBase : Voting
     {
-        protected readonly ConcurrentDictionary<int, (UserId id, VoteOption opt)> options
+        protected ConcurrentDictionary<int, (UserId id, VoteOption opt)> OptionsDict { get; }
             = new ConcurrentDictionary<int, (UserId id, VoteOption opt)>();
 
         public override IEnumerable<(int id, VoteOption option)> Options
-            => options.Select(x => (x.Key, x.Value.opt));
+            => OptionsDict.Select(x => (x.Key, x.Value.opt));
 
-        protected virtual bool AllowDoNothingOption { get; } = false;
+        protected virtual bool AllowDoNothingOption { get; }
 
         protected int? NoOptionId { get; }
 
@@ -28,7 +28,7 @@ namespace Werewolf.Theme.Votings
             if (AllowDoNothingOption)
             {
                 NoOptionId = index++;
-                options.TryAdd(NoOptionId.Value, (new UserId(), new VoteOption(DoNothingOptionTextId)));
+                _ = OptionsDict.TryAdd(NoOptionId.Value, (new UserId(), new VoteOption(DoNothingOptionTextId)));
             }
             else NoOptionId = null;
 
@@ -40,7 +40,7 @@ namespace Werewolf.Theme.Votings
             {
                 if (!game.UserCache.TryGetValue(id, out UserInfo? user))
                     user = null;
-                options.TryAdd(index++, (id, new VoteOption(PlayerTextId, ("player", user?.Config.Username ?? $"User {id}"))));
+                _ = OptionsDict.TryAdd(index++, (id, new VoteOption(PlayerTextId, ("player", user?.Config.Username ?? $"User {id}"))));
             }
         }
 
@@ -52,14 +52,14 @@ namespace Werewolf.Theme.Votings
         public IEnumerable<UserId> GetResultUserIds()
         {
             return GetResults()
-                .Select(x => options.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
+                .Select(x => OptionsDict.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
                 .Where(x => x is not null)
                 .Cast<UserId>();
         }
 
         public sealed override void Execute(GameRoom game, int id)
         {
-            if (id != NoOptionId && options.TryGetValue(id, out (UserId user, VoteOption opt) result))
+            if (id != NoOptionId && OptionsDict.TryGetValue(id, out (UserId user, VoteOption opt) result))
             {
                 if (game.Participants.TryGetValue(result.user, out Role? role) && role != null)
                     Execute(game, result.user, role);
@@ -70,12 +70,12 @@ namespace Werewolf.Theme.Votings
 
         public virtual void RemoveOption(UserId user)
         {
-            var key = options
+            var key = OptionsDict
                 .Where(x => x.Value.id == user)
                 .Select(x => (int?)x.Key)
                 .FirstOrDefault();
             if (key != null)
-                options.Remove(key.Value, out _);
+                _ = OptionsDict.Remove(key.Value, out _);
         }
     }
 }

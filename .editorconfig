@@ -2,3 +2,34 @@
 
 # IDE0001: Namen vereinfachen
 dotnet_diagnostic.IDE0001.severity = suggestion
+
+# Default severity for analyzer diagnostics with category 'Performance'
+dotnet_analyzer_diagnostic.category-Performance.severity = warning
+dotnet_analyzer_diagnostic.severity = suggestion
+
+dotnet_diagnostic.severity = suggestion
+
+
+# CA1716: Bezeichner dürfen nicht mit Schlüsselwörtern übereinstimmen
+dotnet_diagnostic.CA1716.severity = none
+
+# IDE0021: Blocktextkörper für Konstruktoren verwenden
+dotnet_diagnostic.IDE0021.severity = silent
+
+# IDE0022: Blocktextkörper für Methoden verwenden
+dotnet_diagnostic.IDE0022.severity = silent
+
+# IDE0011: Geschweifte Klammern hinzufügen
+dotnet_diagnostic.IDE0011.severity = silent
+
+# IDE0024: Blocktextkörper für Operatoren verwenden
+dotnet_diagnostic.IDE0024.severity = silent
+
+# IDE0008: Expliziten Typ verwenden
+dotnet_diagnostic.IDE0008.severity = silent
+
+# IDE0046: In bedingten Ausdruck konvertieren
+dotnet_diagnostic.IDE0046.severity = warning
+
+# IDE0078: Musterabgleich verwenden
+dotnet_diagnostic.IDE0078.severity = warning

@@ -10,9 +10,9 @@ using MaxLib.WebServer.Services;
 
 namespace Werewolf.Game.Multiplexer
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var config = new IniParser().Parse("config.ini");
             var group = config.GetGroup("user-db") ?? new IniGroup("multiplexer");
@@ -27,7 +27,7 @@ namespace Werewolf.Game.Multiplexer
                 group.GetInt32("api-port", 30700),
                 group.GetInt32("game-server-timeout", 5000)
             );
-            
+
             foreach (var option in GetClients(group))
             {
                 if (!IPEndPoint.TryParse(option.String, out IPEndPoint? endPoint))
@@ -55,12 +55,12 @@ namespace Werewolf.Game.Multiplexer
 
             server.Start();
 
-            while (Console.ReadKey().Key != ConsoleKey.Q);
+            while (Console.ReadKey().Key != ConsoleKey.Q) ;
 
             server.Stop();
         }
 
-        static readonly MessageTemplate serilogMessageTemplate =
+        private static readonly MessageTemplate serilogMessageTemplate =
             new Serilog.Parsing.MessageTemplateParser().Parse(
                 "{infoType}: {info}"
             );
@@ -88,10 +88,10 @@ namespace Werewolf.Game.Multiplexer
             ));
         }
 
-        static IEnumerable<IniOption> GetClients(IniGroup group)
+        private static IEnumerable<IniOption> GetClients(IniGroup group)
         {
             foreach (var entry in group)
-                if (entry is IniOption option && option.Name.StartsWith("client."))
+                if (entry is IniOption option && option.Name.StartsWith("client.", StringComparison.InvariantCulture))
                     yield return option;
         }
     }

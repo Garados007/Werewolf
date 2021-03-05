@@ -34,9 +34,9 @@ namespace Werewolf.Theme.Default.Roles
 
         public override Role ViewRole(Role viewer)
         {
-            if (viewer is WerwolfBase wolf && IsSeenByWolf(wolf))
-                return this;
-            return base.ViewRole(viewer);
+            return viewer is WerwolfBase wolf && IsSeenByWolf(wolf)
+                ? this
+                : base.ViewRole(viewer);
         }
     }
 }

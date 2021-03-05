@@ -4,13 +4,11 @@ namespace Werewolf.Users
     {
         public ulong? DiscordId { get; set; }
 
-        public DbUserConnected(){}
+        public DbUserConnected() { }
 
         public DbUserConnected(Api.UserConnectedIds api)
         {
-            if (api.HasDiscordId)
-                DiscordId = api.DiscordId;
-            else DiscordId = null;
+            DiscordId = api.HasDiscordId ? api.DiscordId : (ulong?)null;
         }
 
         public Api.UserConnectedIds ToApi()

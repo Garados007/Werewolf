@@ -14,14 +14,15 @@ namespace Werewolf.Game
             = new GameController();
 
         public static UserFactory? UserFactory { get; set; }
-        
-        private GameController() {}
 
-        readonly ConcurrentDictionary<int, GameRoom> rooms = new ConcurrentDictionary<int, GameRoom>();
+        private GameController() { }
 
-        readonly HashSet<GameWebSocketConnection> wsConnections
+        private readonly ConcurrentDictionary<int, GameRoom> rooms
+            = new ConcurrentDictionary<int, GameRoom>();
+
+        private readonly HashSet<GameWebSocketConnection> wsConnections
             = new HashSet<GameWebSocketConnection>();
-        readonly ReaderWriterLockSlim lockWsConnections
+        private readonly ReaderWriterLockSlim lockWsConnections
             = new ReaderWriterLockSlim();
 
         public int CreateGame(UserInfo leader)
@@ -59,8 +60,8 @@ namespace Werewolf.Game
             ReadOnlySpan<byte> b1 = BitConverter.GetBytes(game.Id); // 4 B
             ReadOnlySpan<byte> b2 = user.Id.Id.ToByteArray(); // 12 B
             Span<byte> rb = stackalloc byte[16];
-            b1.CopyTo(rb[0 .. 4]);
-            b2.CopyTo(rb[4 .. 16]);
+            b1.CopyTo(rb[0..4]);
+            b2.CopyTo(rb[4..16]);
             return Convert.ToBase64String(rb).Replace('/', '-').Replace('+', '_').TrimEnd('=');
         }
 
@@ -71,17 +72,15 @@ namespace Werewolf.Game
             if (!Convert.TryFromBase64String(token, bytes, out int bytesWritten) || bytesWritten != 16)
                 return null;
 
-            int gameId = BitConverter.ToInt32(bytes[0 .. 4]);
+            int gameId = BitConverter.ToInt32(bytes[0..4]);
             UserId userId = new UserId
             {
                 Id = Google.Protobuf.ByteString.CopyFrom(bytes[4..16]),
             };
             var game = GetGame(gameId);
-            if (game == null)
-                return null;
-            if (!game.UserCache.TryGetValue(userId, out UserInfo? user))
-                return null;
-            return (game, user);
+            return game == null || !game.UserCache.TryGetValue(userId, out UserInfo? user)
+                ? null
+                : ((GameRoom game, UserInfo user)?)(game, user);
         }
 
         private void OnGameEvent(object? sender, GameEvent @event)
@@ -98,14 +97,14 @@ namespace Werewolf.Game
         public void AddWsConnection(GameWebSocketConnection connection)
         {
             lockWsConnections.EnterWriteLock();
-            wsConnections.Add(connection);
+            _ = wsConnections.Add(connection);
             lockWsConnections.ExitWriteLock();
         }
 
         public void RemoveWsConnection(GameWebSocketConnection connection)
         {
             lockWsConnections.EnterWriteLock();
-            wsConnections.Remove(connection);
+            _ = wsConnections.Remove(connection);
             lockWsConnections.ExitWriteLock();
         }
 

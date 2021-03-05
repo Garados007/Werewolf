@@ -152,7 +152,7 @@ namespace Werewolf.Theme.Default
             return winner.Value.Length > 0;
         }
 
-        static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+        private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
             foreach (var player in game.NotKilledRoles)
                 if (player is BaseRole baseRole && !baseRole.IsLoved)
@@ -164,7 +164,7 @@ namespace Werewolf.Theme.Default
             return true;
         }
 
-        static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+        private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
             foreach (var player in game.NotKilledRoles)
                 if (player is BaseRole baseRole && !(baseRole.IsEnchantedByFlutist || player is Roles.Flutist))
@@ -185,11 +185,9 @@ namespace Werewolf.Theme.Default
                     count = 0;
                 else if (count > 2)
                     count = 2;
-                else if (count > 0 && count < 2)
+                else if (count is > 0 and < 2)
                 {
-                    if (oldCount < count)
-                        count = 2;
-                    else count = 0;
+                    count = oldCount < count ? 2 : 0;
                 }
                 error = null;
                 return true;
@@ -200,11 +198,9 @@ namespace Werewolf.Theme.Default
                     count = 0;
                 else if (count > 3)
                     count = 3;
-                else if (count > 0 && count < 3)
+                else if (count is > 0 and < 3)
                 {
-                    if (oldCount < count)
-                        count = 3;
-                    else count = 0;
+                    count = oldCount < count ? 3 : 0;
                 }
                 error = null;
                 return true;

@@ -4,7 +4,7 @@ namespace Werewolf.Theme.Default
 {
     public abstract class WerwolfBase : BaseRole
     {
-        private readonly List<Roles.Girl> seenByGirl 
+        private readonly List<Roles.Girl> seenByGirl
             = new List<Roles.Girl>();
         private readonly object lockSeenByGirl = new object();
 
@@ -25,18 +25,18 @@ namespace Werewolf.Theme.Default
         {
         }
 
-        public override bool? IsSameFaction(Role other)      
+        public override bool? IsSameFaction(Role other)
         {
-            if (other is WerwolfBase)
-                return true;
-            return null;
+            return other is WerwolfBase
+                ? true
+                : (bool?)null;
         }
 
         public override Role ViewRole(Role viewer)
         {
-            if (viewer is WerwolfBase || (viewer is Roles.Girl girl && IsSeenByGirl(girl)))
-                return new Roles.Werwolf(Theme);
-            return base.ViewRole(viewer);
+            return viewer is WerwolfBase || (viewer is Roles.Girl girl && IsSeenByGirl(girl))
+                ? new Roles.Werwolf(Theme)
+                : base.ViewRole(viewer);
         }
     }
 }

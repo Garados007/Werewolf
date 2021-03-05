@@ -23,10 +23,13 @@ namespace Werewolf.Theme.Events
             return Voting.CanViewVoting(game, user, game.TryGetRole(user.Id), Voting);
         }
 
+        private static readonly System.Globalization.NumberFormatInfo format =
+            System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
+
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
-            writer.WriteString("voting", Voting.Id.ToString());
-            writer.WriteString("option", Option.ToString());
+            writer.WriteString("voting", Voting.Id.ToString(format));
+            writer.WriteString("option", Option.ToString(format));
             writer.WriteString("voter", Voter.ToString());
         }
     }

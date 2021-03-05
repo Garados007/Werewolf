@@ -23,7 +23,7 @@ namespace Werewolf.Theme
         public Theme(GameRoom? game, UserFactory users)
             => (Game, Users) = (game, users ?? throw new ArgumentNullException(nameof(users)));
 
-        public virtual bool CheckRoleUsage(Role role, ref int count, int oldCount, 
+        public virtual bool CheckRoleUsage(Role role, ref int count, int oldCount,
             [NotNullWhen(false)] out string? error
         )
         {

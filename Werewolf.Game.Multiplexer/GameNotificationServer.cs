@@ -25,7 +25,7 @@ namespace Werewolf.Game.Multiplexer
             if (connector == null)
                 return Task.CompletedTask;
             _ = Task.Run(async () => await Task.WhenAll(connector.NotificationClients.Select(
-                async x => 
+                async x =>
                 {
                     using var source = new CancellationTokenSource(timeout);
                     var combined = CancellationTokenSource.CreateLinkedTokenSource(
@@ -48,10 +48,10 @@ namespace Werewolf.Game.Multiplexer
         {
             if (connector == null || endPoint == null)
                 return Task.CompletedTask;
-            connector.ServerStates.AddOrUpdate(endPoint, request, (_, _) => request);
+            _ = connector.ServerStates.AddOrUpdate(endPoint, request, (_, _) => request);
             var state = connector.MultiplexServerState;
             _ = Task.Run(async () => await Task.WhenAll(connector.NotificationClients.Select(
-                async x => 
+                async x =>
                 {
                     using var source = new CancellationTokenSource(timeout);
                     var combined = CancellationTokenSource.CreateLinkedTokenSource(

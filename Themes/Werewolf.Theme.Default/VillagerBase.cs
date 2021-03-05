@@ -8,9 +8,9 @@
 
         public override bool? IsSameFaction(Role other)
         {
-            if (other is VillagerBase)
-                return true;
-            return null;
+            return other is VillagerBase
+                ? true
+                : (bool?)null;
         }
     }
 }

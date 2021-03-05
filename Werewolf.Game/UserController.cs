@@ -18,7 +18,7 @@ namespace Werewolf.Game
             }
         }
 
-        readonly TcpApiClient<UserApiClient, UserApiNotification> api;
+        private readonly TcpApiClient<UserApiClient, UserApiNotification> api;
         private bool disposedValue;
 
         public UserController(IPEndPoint userDbEndpoint)
@@ -36,7 +36,7 @@ namespace Werewolf.Game
         {
             await api.WaitConnect;
             await api.RequestApi.UpdateStats(id, stats);
-            await ReloadUser(id);
+            _ = await ReloadUser(id);
         }
 
         public async Task UpdateUserConfig(UserId id, UserConfig config)

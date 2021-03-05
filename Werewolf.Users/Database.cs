@@ -16,8 +16,8 @@ namespace Werewolf.Users
             if (database.UserVersion == 0)
             {
                 var user = database.GetCollection("user");
-                user.DropIndex("DiscordId");
-                user.UpdateMany(
+                _ = user.DropIndex("DiscordId");
+                _ = user.UpdateMany(
                     BsonExpression.Create("{UserId:{Source:\"Discord\",_id:$.DiscordId}}"),
                     BsonExpression.Create("1=1")
                 );

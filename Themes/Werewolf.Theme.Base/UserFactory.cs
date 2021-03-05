@@ -6,7 +6,8 @@ namespace Werewolf.Theme
 {
     public abstract class UserFactory
     {
-        readonly ConcurrentDictionary<UserId, UserInfo> users = new ConcurrentDictionary<UserId, UserInfo>();
+        private readonly ConcurrentDictionary<UserId, UserInfo> users
+            = new ConcurrentDictionary<UserId, UserInfo>();
 
         public async Task<UserInfo?> GetUser(UserId id, bool allowCache = true)
         {
@@ -28,7 +29,7 @@ namespace Werewolf.Theme
 
         protected void UpdateCache(UserInfo user)
         {
-            users.AddOrUpdate(user.Id, user, (_, _) => user);
+            _ = users.AddOrUpdate(user.Id, user, (_, _) => user);
         }
 
         public abstract Task UpdateUserStats(UserId id, UserStats stats);

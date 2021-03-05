@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Werewolf.Game.Api;
@@ -14,7 +11,7 @@ namespace Werewolf.Game.Multiplexer
 
         public void SetConnector(ClientConnector connector)
             => this.connector = connector;
-        
+
         public override async Task<GameRoom?> CreateGroup(UserId request, CancellationToken cancellationToken)
         {
             if (connector == null)

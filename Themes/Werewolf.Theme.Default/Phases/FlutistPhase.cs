@@ -12,7 +12,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public GameRoom Game { get; }
 
-            public FlutistPick(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public FlutistPick(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
                 Game = game;
@@ -49,7 +49,7 @@ namespace Werewolf.Theme.Default.Phases
             {
                 base.RemoveOption(user);
 
-                if (options.IsEmpty)
+                if (OptionsDict.IsEmpty)
                     CheckVotingFinished(Game);
             }
         }
@@ -59,7 +59,7 @@ namespace Werewolf.Theme.Default.Phases
             return game.AliveRoles.Any(x => x is Roles.Flutist);
         }
 
-        readonly List<FlutistPick> picks = new List<FlutistPick>();
+        private readonly List<FlutistPick> picks = new List<FlutistPick>();
 
         protected override void Init(GameRoom game)
         {

@@ -25,12 +25,12 @@ namespace Werewolf.Theme
             return false;
         }
 
-        IEnumerable<WinConditionCheck> GetConditions()
+        private IEnumerable<WinConditionCheck> GetConditions()
         {
             yield return OnlyOneFaction;
         }
 
-        bool OnlyOneFaction(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+        private bool OnlyOneFaction(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
             static bool IsSameFaction(Role role1, Role role2)
             {
@@ -64,9 +64,9 @@ namespace Werewolf.Theme
                         if (!IsSameFaction(role, player[i]))
                             // skip current loop and check next one. this goto is faster than the
                             // boolean checks
-                            goto continue_next; 
+                            goto continue_next;
                     list.Add(role);
-                    continue_next: ;
+                    continue_next:;
                 }
             winner = list.ToArray();
             return true;

@@ -12,7 +12,7 @@ namespace Werewolf.Theme.Default.Phases
     {
         public class WerwolfVote : PlayerVotingBase
         {
-            public WerwolfVote(GameRoom game, IEnumerable<UserId>? participants = null) 
+            public WerwolfVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
             }
@@ -66,7 +66,7 @@ namespace Werewolf.Theme.Default.Phases
 
         public class GirlVote : Voting
         {
-            readonly List<VoteOption> options = new List<VoteOption>();
+            private readonly List<VoteOption> options = new List<VoteOption>();
             public override IEnumerable<(int id, VoteOption option)> Options
                 => options.Select((opt, id) => (id, opt));
 

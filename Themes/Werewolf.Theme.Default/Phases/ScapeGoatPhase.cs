@@ -13,7 +13,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public ScapeGoat ScapeGoat { get; }
 
-            public ScapeGoatSelect(ScapeGoat scapeGoat, GameRoom game, IEnumerable<UserId>? participants = null) 
+            public ScapeGoatSelect(ScapeGoat scapeGoat, GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
             {
                 ScapeGoat = scapeGoat;
@@ -23,7 +23,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override string DoNothingOptionTextId => "stop-voting";
 
-            private bool CanFinishVoting = false;
+            private bool CanFinishVoting;
 
             public override bool CanView(Role viewer)
             {

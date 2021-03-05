@@ -65,13 +65,12 @@ namespace Werewolf.Game
                         value.Participants.Keys.Select(x =>
                         {
                             var user = Api?.userController.GetCachedUser(x);
-                            if (user == null || Api is null)
-                                return null;
-                            return Convert(Api, value, user);
-                        })
+                            return user == null || Api is null
+                                ? null
+                                : Convert(Api, value, user); })
                         .Where(x => x != null)
                     },
-                    UserCount = (uint)value.Participants.Count,                    
+                    UserCount = (uint)value.Participants.Count,
                 };
 
             public override async Task<GameRoom?> CreateGroup(UserId request, CancellationToken cancellationToken)
@@ -103,7 +102,7 @@ namespace Werewolf.Game
                     return null;
                 var config = Convert(request.Config);
                 var user = await Api.userController.GetOrCreateAsync(
-                    Convert(request.ConnectedId), 
+                    Convert(request.ConnectedId),
                     config
                 );
                 if (user is null || cancellationToken.IsCancellationRequested)
@@ -114,9 +113,9 @@ namespace Werewolf.Game
 
             public override Task<ServerState?> GetServerState(CancellationToken cancellationToken)
             {
-                if (Api is null)
-                    return Task.FromResult<ServerState?>(null);
-                return Task.FromResult<ServerState?>(Api.GetState());
+                return Api is null
+                    ? Task.FromResult<ServerState?>(null)
+                    : Task.FromResult<ServerState?>(Api.GetState());
             }
 
             public override async Task<ActionState?> JoinGroup(GroupUserId request, CancellationToken cancellationToken)
@@ -220,11 +219,11 @@ namespace Werewolf.Game
             }
         }
 
-        readonly TcpApiServer<GameNotificationClient, GameApiServer> api;
-        readonly int timeout;
-        readonly UserController userController;
-        readonly string servername;
-        readonly string domain;
+        private readonly TcpApiServer<GameNotificationClient, GameApiServer> api;
+        private readonly int timeout;
+        private readonly UserController userController;
+        private readonly string servername;
+        private readonly string domain;
         private bool disposedValue;
 
         private ServerState state;
@@ -237,7 +236,7 @@ namespace Werewolf.Game
         {
             await lockState.WaitAsync().ConfigureAwait(false);
             var newState = state = updater(state);
-            lockState.Release();
+            _ = lockState.Release();
             using var timeouter = new CancellationTokenSource(timeout);
             await Task.WhenAll(api.RequestApis.Select(async x =>
             {

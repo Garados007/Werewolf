@@ -2,7 +2,7 @@
 {
     public class Angel : VillagerBase
     {
-        public bool MissedFirstRound { get; set; } = false;
+        public bool MissedFirstRound { get; set; }
 
         public Angel(Theme theme) : base(theme)
         {

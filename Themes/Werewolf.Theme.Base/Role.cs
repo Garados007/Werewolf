@@ -21,22 +21,19 @@ namespace Werewolf.Theme
             }
         }
 
-        public bool IsAlive
+        public bool IsAlive => killState switch
         {
-            get => killState switch
-            {
-                KillState.Alive => true,
-                KillState.MarkedKill => true,
-                KillState.AboutToKill => false,
-                KillState.BeforeKill => false,
-                KillState.Killed => false,
-                _ => true,
-            };
-        }
+            KillState.Alive => true,
+            KillState.MarkedKill => true,
+            KillState.AboutToKill => false,
+            KillState.BeforeKill => false,
+            KillState.Killed => false,
+            _ => true,
+        };
 
         public KillInfo? KillInfo { get; private set; }
 
-        private bool isMajor = false;
+        private bool isMajor;
         public bool IsMajor
         {
             get => isMajor;

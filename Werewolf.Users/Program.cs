@@ -8,9 +8,9 @@ using Serilog.Events;
 
 namespace Werewolf.Users
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var config = new IniParser().Parse("config.ini");
             var group = config.GetGroup("user-db") ?? new IniGroup("user-db");
@@ -29,7 +29,7 @@ namespace Werewolf.Users
                     IPAddress.Any,
                     group.GetInt32("api-port", 30600)
                 ),
-                _ => {},
+                _ => { },
                 server => server.Set(db, api!)
             );
             try

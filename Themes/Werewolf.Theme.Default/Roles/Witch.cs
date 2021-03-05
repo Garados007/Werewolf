@@ -20,9 +20,9 @@
 
         public override Role ViewRole(Role viewer)
         {
-            if (viewer is Witch)
-                return this;
-            return base.ViewRole(viewer);
+            return viewer is Witch
+                ? this
+                : base.ViewRole(viewer);
         }
     }
 }
