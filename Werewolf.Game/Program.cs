@@ -7,12 +7,14 @@ using System;
 using System.Net;
 using MaxLib.WebServer;
 using MaxLib.WebServer.Services;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Werewolf.Game
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var config = new IniParser().Parse("config.ini");
             var group = GetGroup(config, args) ?? new IniGroup("multiplexer");
@@ -23,6 +25,15 @@ namespace Werewolf.Game
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
             WebServerLog.LogPreAdded += WebServerLog_LogPreAdded;
+
+            var endPoint = await GetEndpointAsync(group.GetString("user-api", "127.0.0.1:30600"));
+            if (endPoint == null)
+            {
+                Log.Error("invalid endpoint in {key} inside the config", "user-api");
+                return;
+            }
+            using var userController = new UserController(endPoint);
+            GameController.UserFactory = userController;
 
             var server = new Server(new WebServerSettings(group.GetInt32("webserver-port", 8000), 5000));
             server.AddWebService(new HttpRequestParser());
@@ -43,6 +54,26 @@ namespace Werewolf.Game
             while (Console.ReadKey().Key != ConsoleKey.Q) ;
 
             server.Stop();
+        }
+
+        static readonly Regex urlRegex = new Regex(
+            @"^(?<domain>(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]):(?<port>\d+)$",
+            RegexOptions.Compiled
+        );
+
+        static async Task<IPEndPoint?> GetEndpointAsync(string value)
+        {
+            if (IPEndPoint.TryParse(value, out IPEndPoint? result))
+                return result;
+            var match = urlRegex.Match(value);
+            if (!match.Success)
+                return null;
+            var ips = await Dns.GetHostAddressesAsync(match.Groups["domain"].Value);
+            if (ips.Length == 0)
+                return null;
+            if (!ushort.TryParse(match.Groups["port"].Value, out ushort port))
+                return null;
+            return new IPEndPoint(ips[0], port);
         }
 
         static readonly MessageTemplate serilogMessageTemplate =

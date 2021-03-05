@@ -168,5 +168,30 @@ namespace Werewolf.Users
                         _ = client.UpdatedUser(info);
             }, cancellationToken);
         }
+
+        public override Task<UserId?> FindUser(UserConnectedIds request, CancellationToken cancellationToken)
+        {
+            if (Database == null || api == null)
+                return Task.FromResult<UserId?>(null);
+            return Task.Run(() =>
+            {
+                @lock.EnterReadLock();
+                DbUser? user = null;
+                try
+                {
+                    // check for discord id
+                    if (user == null && request.HasDiscordId)
+                        user = Database.User.Query()
+                            .Where(x => x.ConnectedIds.DiscordId == request.DiscordId)
+                            .FirstOrDefault();
+                    // no id system found
+                }
+                finally
+                {
+                    @lock.ExitReadLock();
+                }
+                return user == null ? null : ToApi(user.Id);
+            });
+        }
     }
 }

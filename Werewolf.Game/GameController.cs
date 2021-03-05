@@ -42,6 +42,11 @@ namespace Werewolf.Game
             return id;
         }
 
+        public bool RemoveGame(int id)
+        {
+            return rooms.Remove(id, out _);
+        }
+
         public GameRoom? GetGame(int id)
         {
             return rooms.TryGetValue(id, out GameRoom? room)
@@ -49,7 +54,7 @@ namespace Werewolf.Game
                 : null;
         }
 
-        public string GetUserToken(GameRoom game, UserInfo user)
+        public static string GetUserToken(GameRoom game, UserInfo user)
         {
             ReadOnlySpan<byte> b1 = BitConverter.GetBytes(game.Id); // 4 B
             ReadOnlySpan<byte> b2 = user.Id.Id.ToByteArray(); // 12 B

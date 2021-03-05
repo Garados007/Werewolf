@@ -20,6 +20,9 @@ service UserApi {
     // create a new user. The id and stats fields are ignored. It returns the new id.
     rpc CreateUser(UserInfo)
         returns (UserId);
+    // finds a user with the connected id.
+    rpc FindUser(UserConnectedIds)
+        returns (UserId);
 }
 
 // the notification api. This is implemented by the consumer of the db to receive new events.
