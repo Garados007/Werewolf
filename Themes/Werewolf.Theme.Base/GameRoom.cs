@@ -86,11 +86,14 @@ namespace Werewolf.Theme
             return true;
         }
 
-        public void RemoveParticipant(UserInfo user)
+        public bool RemoveParticipant(UserInfo user)
         {
+            if (!Participants.IsEmpty && user.Id == Leader)
+                return false;
             if (Participants!.Remove(user.Id, out _))
                 UserCache.Remove(user.Id, out _);
             SendEvent(new Events.RemoveParticipant(user.Id));
+            return true;
         }
 
         /// <summary>

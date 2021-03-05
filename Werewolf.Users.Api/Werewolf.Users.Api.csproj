@@ -10,9 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
-    <PackageReference Include="sRPC" Version="2.5.1" />
-    <PackageReference Include="sRPC.Tools" Version="2.5.1">
+    <PackageReference Include="Google.Protobuf" Version="3.15.5" />
+    <PackageReference Include="sRPC" Version="2.8.2" />
+    <PackageReference Include="sRPC.Tools" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

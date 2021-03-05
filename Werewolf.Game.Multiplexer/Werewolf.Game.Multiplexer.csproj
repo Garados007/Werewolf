@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.15.5" />
     <PackageReference Include="MaxLib.Ini" Version="1.1.1" />
     <PackageReference Include="MaxLib.WebServer" Version="2.6.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="sRPC" Version="2.6.0" />
+    <PackageReference Include="sRPC" Version="2.8.2" />
   </ItemGroup>
 
   <ItemGroup>

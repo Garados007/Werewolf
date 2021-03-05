@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.15.5" />
     <PackageReference Include="OneOf" Version="3.0.178" />
-    <PackageReference Include="sRPC" Version="2.6.0" />
+    <PackageReference Include="sRPC" Version="2.8.2" />
     <PackageReference Include="System.Text.Json" Version="5.0.1" />
   </ItemGroup>
 
