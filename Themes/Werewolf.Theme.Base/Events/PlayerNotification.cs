@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Events
             writer.WriteString("text-id", NotificationId);
             writer.WriteStartArray("player");
             foreach (var id in Player.Span)
-                writer.WriteStringValue(id.ToString());
+                writer.WriteStringValue(id.ToId());
             writer.WriteEndArray();
         }
     }

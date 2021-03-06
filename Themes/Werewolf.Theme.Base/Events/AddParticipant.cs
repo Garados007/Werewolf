@@ -16,7 +16,7 @@ namespace Werewolf.Theme.Events
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
             var entry = User;
-            writer.WriteString("id", User.Id.ToString());
+            writer.WriteString("id", User.Id.ToId());
             writer.WriteString("name", entry.Config.Username);
             writer.WriteString("img", entry.Config.Image);
             writer.WriteStartObject("stats");

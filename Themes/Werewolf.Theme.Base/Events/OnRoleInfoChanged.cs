@@ -23,7 +23,7 @@ namespace Werewolf.Theme.Events
             var ownRole = game.TryGetRole(user.Id);
             var seenRole = id is not null ?
                 Role.GetSeenRole(game, ExecutionRound, user, id, Role) : null;
-            writer.WriteString("id", id?.ToString());
+            writer.WriteString("id", id?.ToId());
             writer.WriteStartArray("tags");
             foreach (var tag in Role.GetSeenTags(game, user, ownRole, Role))
                 writer.WriteStringValue(tag);

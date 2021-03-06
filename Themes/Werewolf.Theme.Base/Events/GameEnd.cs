@@ -16,7 +16,7 @@ namespace Werewolf.Theme.Events
             {
                 writer.WriteStartArray("winner");
                 foreach (var id in game.Winner.Value.winner.Span)
-                    writer.WriteStringValue(id.ToString());
+                    writer.WriteStringValue(id.ToId());
                 writer.WriteEndArray();
             }
         }

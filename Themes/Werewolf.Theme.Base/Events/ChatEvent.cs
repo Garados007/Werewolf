@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Events
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
-            writer.WriteString("sender", Sender.ToString());
+            writer.WriteString("sender", Sender.ToId());
             writer.WriteString("phase", Phase);
             writer.WriteString("message", Message);
             writer.WriteBoolean("can-send", CanSend);

@@ -208,7 +208,7 @@ namespace Werewolf.Theme
                 writer.WriteEndObject();
                 writer.WriteStartArray("user");
                 foreach (var vuser in option.Users)
-                    writer.WriteStringValue(vuser.ToString());
+                    writer.WriteStringValue(vuser.ToId());
                 writer.WriteEndArray();
                 writer.WriteEndObject(); // id
             }

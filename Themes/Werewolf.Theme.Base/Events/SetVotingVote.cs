@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Events
         {
             writer.WriteString("voting", Voting.Id.ToString(format));
             writer.WriteString("option", Option.ToString(format));
-            writer.WriteString("voter", Voter.ToString());
+            writer.WriteString("voter", Voter.ToId());
         }
     }
 }

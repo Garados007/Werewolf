@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Events
             {
                 writer.WriteStartArray(key);
                 foreach (var player in players)
-                    writer.WriteStringValue(player.ToString());
+                    writer.WriteStringValue(player.ToId());
                 writer.WriteEndArray();
             }
             writer.WriteEndObject();
