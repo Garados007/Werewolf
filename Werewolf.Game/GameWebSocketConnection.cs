@@ -7,14 +7,14 @@ using Werewolf.Users.Api;
 
 namespace Werewolf.Game
 {
-    public class GameWebSocketConnection : WebSocketConnection
+    public class GameWebSocketConnection : EventConnection
     {
         public GameRoom Game { get; }
 
         public UserInfo User { get; }
 
-        public GameWebSocketConnection(Stream networkStream, GameRoom game, UserInfo user)
-            : base(networkStream)
+        public GameWebSocketConnection(Stream networkStream, EventFactory factory, GameRoom game, UserInfo user)
+            : base(networkStream, factory)
         {
             Game = game;
             User = user;
@@ -30,24 +30,14 @@ namespace Werewolf.Game
             return Task.CompletedTask;
         }
 
-        protected override Task ReceivedFrame(Frame frame)
-        {
-            return Task.CompletedTask;
-        }
-
         public async Task SendEvent(GameEvent @event)
         {
-            var m = new MemoryStream();
-            var writer = new Utf8JsonWriter(m);
-            @event.Write(writer, Game, User);
-            await writer.FlushAsync();
+            await SendFrame(new Events.SubmitGameEvents(@event, Game, User));
+        }
 
-            var frame = new Frame
-            {
-                OpCode = OpCode.Text,
-                Payload = m.ToArray()
-            };
-            await SendFrame(frame);
+        protected override Task ReceivedFrame(EventBase @event)
+        {
+            return Task.CompletedTask;
         }
     }
 }

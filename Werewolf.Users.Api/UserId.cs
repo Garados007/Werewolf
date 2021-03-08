@@ -17,5 +17,8 @@ namespace Werewolf.Users.Api
         {
             Id = Google.Protobuf.ByteString.FromBase64(id);
         }
+
+        public UserId(string id)
+            => FromId(id);
     }
 }

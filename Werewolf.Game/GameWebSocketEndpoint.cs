@@ -8,6 +8,15 @@ namespace Werewolf.Game
     {
         public override string? Protocol => null;
 
+        private readonly EventFactory factory = new EventFactory();
+
+        public GameWebSocketEndpoint()
+        {
+            // fill the factory with the types
+            factory.Add<Events.FetchRoles>();
+            factory.Add<Events.SubmitRoles>();
+        }
+
         protected override GameWebSocketConnection? CreateConnection(Stream stream, HttpRequestHeader header)
         {
             if (header.Location.DocumentPathTiles.Length != 2)
@@ -19,7 +28,7 @@ namespace Werewolf.Game
             );
             return result == null
                 ? null
-                : new GameWebSocketConnection(stream, result.Value.game, result.Value.user);
+                : new GameWebSocketConnection(stream, factory, result.Value.game, result.Value.user);
         }
     }
 }
