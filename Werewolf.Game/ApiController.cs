@@ -62,7 +62,7 @@ namespace Werewolf.Game
                     ServerName = Api?.servername ?? "",
                     User =
                     {
-                        value.Participants.Keys.Select(x =>
+                        value.Users.Keys.Select(x =>
                         {
                             var user = Api?.userController.GetCachedUser(x);
                             return user == null || Api is null
@@ -70,7 +70,7 @@ namespace Werewolf.Game
                                 : Convert(Api, value, user); })
                         .Where(x => x != null)
                     },
-                    UserCount = (uint)value.Participants.Count,
+                    UserCount = (uint)value.Users.Count,
                 };
 
             public override async Task<GameRoom?> CreateGroup(UserId request, CancellationToken cancellationToken)
@@ -198,7 +198,7 @@ namespace Werewolf.Game
                     };
 
                 bool gameRemoved = false;
-                if (room.Participants.IsEmpty && room.Leader == userId)
+                if (room.Users.IsEmpty && room.Leader == userId)
                 {
                     gameRemoved = GameController.Current.RemoveGame(room.Id);
                 }
@@ -256,10 +256,10 @@ namespace Werewolf.Game
                 MaxUserCount = 500,
                 RoomId = unchecked((uint)room.Id),
                 ServerName = servername,
-                UserCount = (uint)room.UserCache.Count,
+                UserCount = (uint)room.Users.Count,
                 User =
                 {
-                    room.UserCache.Values.Select(x => GameApiServer.Convert(this, room, x))
+                    room.Users.Values.Select(x => GameApiServer.Convert(this, room, x.User))
                 }
             };
             using var timeouter = new CancellationTokenSource(timeout);

@@ -23,8 +23,9 @@ namespace Werewolf.Theme.Phases
                 var ids = tvoting.GetResultUserIds().ToArray();
                 if (ids.Length > 2)
                     AddVoting(Create(game, ids));
-                else if (ids.Length == 1 && game.Participants.TryGetValue(ids[0], out Role? role) && role != null)
-                    tvoting.Execute(game, ids[0], role);
+                else if (ids.Length == 1 && game.Users.TryGetValue(ids[0], out GameUserEntry? entry)
+                    && entry.Role != null)
+                    tvoting.Execute(game, ids[0], entry.Role);
                 RemoveVoting(tvoting);
             }
         }

@@ -16,13 +16,15 @@ namespace Werewolf.Theme.Default.Phases
                 : base(game, participants)
             {
                 // check if scape goat phase
-                var isScapeGoatRevenge = game.Participants.Values
+                var isScapeGoatRevenge = game.Users
+                    .Select(x => x.Value.Role)
                     .Where(x => x is Roles.ScapeGoat)
                     .Cast<Roles.ScapeGoat>()
                     .Where(x => x.HasDecided && !x.HasRevenge)
                     .Any();
                 if (isScapeGoatRevenge)
-                    allowedVoter = new HashSet<Role>(game.Participants.Values
+                    allowedVoter = new HashSet<Role>(game.Users
+                        .Select(x => x.Value.Role)
                         .Where(x => x != null && x.IsAlive)
                         .Where(x => x is BaseRole baseRole && baseRole.HasVotePermitFromScapeGoat)
                         .Cast<Role>()
@@ -50,7 +52,8 @@ namespace Werewolf.Theme.Default.Phases
                     idiot.IsRevealed = true;
                     idiot.WasMajor = idiot.IsMajor;
                     idiot.IsMajor = false;
-                    var oldManKilled = game.Participants.Values
+                    var oldManKilled = game.Users
+                        .Select(x => x.Value.Role)
                         .Where(x => x is Roles.OldMan oldMan && !oldMan.IsAlive)
                         .Any();
                     if (oldManKilled)

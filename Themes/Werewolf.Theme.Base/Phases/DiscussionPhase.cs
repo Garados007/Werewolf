@@ -36,7 +36,7 @@ namespace Werewolf.Theme.Phases
 
         public override bool CanExecute(GameRoom game)
         {
-            return game.Participants.Values.Any(x => x != null && CanVote(x));
+            return game.Users.Values.Any(x => x.Role is not null && CanVote(x.Role));
         }
 
         protected override void Init(GameRoom game)

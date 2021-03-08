@@ -78,9 +78,9 @@ namespace Werewolf.Game
                 Id = Google.Protobuf.ByteString.CopyFrom(bytes[4..16]),
             };
             var game = GetGame(gameId);
-            return game == null || !game.UserCache.TryGetValue(userId, out UserInfo? user)
+            return game == null || !game.Users.TryGetValue(userId, out GameUserEntry? entry)
                 ? null
-                : ((GameRoom game, UserInfo user)?)(game, user);
+                : ((GameRoom game, UserInfo user)?)(game, entry.User);
         }
 
         private void OnGameEvent(object? sender, GameEvent @event)

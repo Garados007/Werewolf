@@ -34,8 +34,7 @@ namespace Werewolf.Game.Events
             writer.WriteString("leader", GameRoom.Leader.ToString());
 
             WritePhaseInfo(writer, ownRole);
-            WriteParticipants(writer, ownRole, winner);
-            WriteUser(writer);
+            WriteGameUserEntries(writer, ownRole, winner);
             WriteWinner(writer, winner);
             WriteRoleConfig(writer);
 
@@ -84,50 +83,46 @@ namespace Werewolf.Game.Events
             }
         }
 
-        private void WriteParticipants(Utf8JsonWriter writer, Role? ownRole,
+        private void WriteGameUserEntries(Utf8JsonWriter writer, Role? ownRole,
             (uint round, ReadOnlyMemory<UserId> winner)? winner
         )
         {
-            writer.WriteStartObject("participants");
-            foreach (var participant in GameRoom.Participants.ToArray())
+            writer.WriteStartObject("users");
+            foreach (var (id, entry) in GameRoom.Users.ToArray())
             {
-                if (participant.Value == null)
-                    writer.WriteNull(participant.Key.ToString());
+                writer.WriteStartObject(id.ToId());
+                if (entry.Role is null)
+                    writer.WriteNull("role");
                 else
                 {
-                    var seenRole = Role.GetSeenRole(GameRoom, winner?.round, User, 
-                        participant.Key, participant.Value);
-
-                    writer.WriteStartObject(participant.Key.ToString());
+                    var seenRole = Role.GetSeenRole(GameRoom, winner?.round, User, id, entry.Role);
+                    
+                    writer.WriteStartObject("role");
                     writer.WriteStartArray("tags");
-                    foreach (var tag in Role.GetSeenTags(GameRoom, User, ownRole, participant.Value))
+                    foreach (var tag in Role.GetSeenTags(GameRoom, User, ownRole, entry.Role))
                         writer.WriteStringValue(tag);
                     writer.WriteEndArray();
                     writer.WriteString("role", seenRole?.GetType().Name);
+                    
                     writer.WriteEndObject();
                 }
-            }
-            writer.WriteEndObject();
-        }
 
-        private void WriteUser(Utf8JsonWriter writer)
-        {
-            writer.WriteStartObject("User");
-            foreach (var (id, entry) in GameRoom.UserCache.ToArray())
-            {
-                writer.WriteStartObject($"{id}");
-                writer.WriteString("name", entry.Config.Username);
-                writer.WriteString("img", entry.Config.Image);
+                writer.WriteStartObject("user");
+                writer.WriteString("name", entry.User.Config.Username);
+                writer.WriteString("img", entry.User.Config.Image);
                 writer.WriteStartObject("stats");
-                writer.WriteNumber("win-GameRooms", entry.Stats.WinGames);
-                writer.WriteNumber("killed", entry.Stats.Killed);
-                writer.WriteNumber("loose-GameRooms", entry.Stats.LooseGames);
-                writer.WriteNumber("leader", entry.Stats.Leader);
-                writer.WriteNumber("level", entry.Stats.Level);
-                writer.WriteNumber("current-xp", entry.Stats.CurrentXp);
-                writer.WriteNumber("max-xp", entry.Stats.LevelMaxXP);
-                writer.WriteEndObject();
-                writer.WriteEndObject();
+                writer.WriteNumber("win-GameRooms", entry.User.Stats.WinGames);
+                writer.WriteNumber("killed", entry.User.Stats.Killed);
+                writer.WriteNumber("loose-GameRooms", entry.User.Stats.LooseGames);
+                writer.WriteNumber("leader", entry.User.Stats.Leader);
+                writer.WriteNumber("level", entry.User.Stats.Level);
+                writer.WriteNumber("current-xp", entry.User.Stats.CurrentXp);
+                writer.WriteNumber("max-xp", entry.User.Stats.LevelMaxXP);
+                writer.WriteEndObject(); // end of stats
+                writer.WriteEndObject(); // end of user
+
+                writer.WriteBoolean("is-online", entry.IsOnline);
+                writer.WriteString("last-online-change", entry.LastConnectionUpdate);
             }
             writer.WriteEndObject();
         }

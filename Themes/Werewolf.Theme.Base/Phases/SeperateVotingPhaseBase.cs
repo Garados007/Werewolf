@@ -14,7 +14,8 @@ namespace Werewolf.Theme.Phases
 
         public override bool CanExecute(GameRoom game)
         {
-            return game.Participants.Values
+            return game.Users
+                .Select(x => x.Value.Role)
                 .Where(x => x is TRole role && FilterVoter(role))
                 .Any();
         }
@@ -22,7 +23,7 @@ namespace Werewolf.Theme.Phases
         protected override void Init(GameRoom game)
         {
             base.Init(game);
-            foreach (var role in game.Participants.Values)
+            foreach (var role in game.Users.Select(x => x.Value.Role))
                 if (role is TRole trole && FilterVoter(trole))
                     AddVoting(Create(trole, game));
         }

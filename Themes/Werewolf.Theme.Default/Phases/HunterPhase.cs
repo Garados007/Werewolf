@@ -39,7 +39,10 @@ namespace Werewolf.Theme.Default.Phases
         public override bool CanExecute(GameRoom game)
         {
             return base.CanExecute(game) &&
-                !game.Participants.Values.Where(x => x is OldMan oldMan && oldMan.WasKilledByVillager).Any();
+                !game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x is OldMan oldMan && oldMan.WasKilledByVillager)
+                    .Any();
         }
 
         protected override HunterKill Create(Hunter role, GameRoom game, IEnumerable<UserId>? ids = null)

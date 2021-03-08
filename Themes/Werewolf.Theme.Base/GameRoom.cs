@@ -23,9 +23,7 @@ namespace Werewolf.Theme
 
         public PhaseFlow? Phase { get; private set; }
 
-        public ConcurrentDictionary<UserId, Role?> Participants { get; }
-
-        public ConcurrentDictionary<UserId, UserInfo> UserCache { get; }
+        public ConcurrentDictionary<UserId, GameUserEntry> Users { get; }
 
         public ConcurrentDictionary<Role, int> RoleConfiguration { get; }
 
@@ -37,9 +35,8 @@ namespace Werewolf.Theme
             {
                 if (leaderIsPlayer == value)
                     return;
-                _ = value
-                    ? Participants.TryAdd(Leader, null)
-                    : Participants.TryRemove(Leader, out _);
+                if (!value &&  Users.TryGetValue(Leader, out GameUserEntry? leader))
+                    leader.Role = null;
                 leaderIsPlayer = value;
             }
         }
@@ -64,31 +61,28 @@ namespace Werewolf.Theme
         {
             Id = id;
             Leader = leader.Id;
-            Participants = new ConcurrentDictionary<UserId, Role?>();
-            UserCache = new ConcurrentDictionary<UserId, UserInfo>()
+            Users = new ConcurrentDictionary<UserId, GameUserEntry>()
             {
-                [leader.Id] = leader
+                [leader.Id] = new GameUserEntry(leader),
             };
             RoleConfiguration = new ConcurrentDictionary<Role, int>();
         }
 
         public bool AddParticipant(UserInfo user)
         {
-            if (Leader == user.Id || Participants.ContainsKey(user.Id))
+            if (Leader == user.Id || Users.ContainsKey(user.Id))
                 return false;
 
-            _ = Participants.TryAdd(user.Id, null);
-            UserCache[user.Id] = user;
+            _ = Users.TryAdd(user.Id, new GameUserEntry(user));
             SendEvent(new Events.AddParticipant(user));
             return true;
         }
 
         public bool RemoveParticipant(UserInfo user)
         {
-            if (!Participants.IsEmpty && user.Id == Leader)
+            if (!Users.IsEmpty && user.Id == Leader)
                 return false;
-            if (Participants!.Remove(user.Id, out _))
-                _ = UserCache.Remove(user.Id, out _);
+            _ = Users.Remove(user.Id, out _);
             SendEvent(new Events.RemoveParticipant(user.Id));
             return true;
         }
@@ -97,29 +91,38 @@ namespace Werewolf.Theme
         /// Any existing roles that are consideres as alive. All close to death roles are excluded.
         /// </summary>
         public IEnumerable<Role> AliveRoles
-            => Participants.Values.Where(x => x != null).Cast<Role>().Where(x => x.IsAlive);
+            => Users.Values
+                .Select(x => x.Role)
+                .Where(x => x != null)
+                .Cast<Role>()
+                .Where(x => x.IsAlive);
 
         /// <summary>
         /// Any existing roles that are not finally dead. Only roles that have the
         /// <see cref="KillState.Killed"/> are excluded.
         /// </summary>
         public IEnumerable<Role> NotKilledRoles
-            => Participants.Values.Where(x => x != null).Cast<Role>().Where(x => x.KillState != KillState.Killed);
+            => Users.Values
+                .Select(x => x.Role)
+                .Where(x => x != null)
+                .Cast<Role>()
+                .Where(x => x.KillState != KillState.Killed);
 
         public Role? TryGetRole(UserId id)
         {
-            return Participants.TryGetValue(id, out Role? role) ? role : null;
+            return Users.TryGetValue(id, out GameUserEntry? entry) ? entry.Role : null;
         }
 
         public UserId? TryGetId(Role role)
         {
-            foreach (var (id, prole) in Participants)
-                if (prole == role)
+            foreach (var (id, entry) in Users)
+                if (entry.Role == role)
                     return id;
             return null;
         }
 
-        public bool FullConfiguration => RoleConfiguration.Values.Sum() == Participants.Count;
+        public bool FullConfiguration => RoleConfiguration.Values.Sum() == 
+            Users.Count + (LeaderIsPlayer ? 0 : -1);
 
         private int lockNextPhase;
         public async Task NextPhaseAsync()
@@ -141,10 +144,9 @@ namespace Werewolf.Theme
             if (Phase != null && (!Phase.Current.IsGamePhase || !Phase.Current.CanExecute(this)))
                 await NextPhaseAsync();
             // update user cache
-            var users = UserCache.Keys.ToArray();
-            foreach (var user in users)
-                UserCache[user] =
-                    await Theme!.Users.GetUser(user, false)
+            foreach (var (id, entry) in Users)
+                entry.User =
+                    await Theme!.Users.GetUser(id, false)
                     ?? throw new InvalidCastException();
             // post init
             Theme?.PostInit(this);
@@ -158,23 +160,20 @@ namespace Werewolf.Theme
             {
                 var winnerSpan = winner.Value;
                 var winIds = new List<UserId>(winner.Value.Length);
-                // -0.15 is for the leader
-                var xpMultiplier = Participants.Values.Where(x => x != null).Count() * 0.15;
-                if (leaderIsPlayer) // we have one more player
-                    xpMultiplier -= 0.15;
-                await Task.WhenAll(UserCache.Select(
+                var xpMultiplier = Users.Values.Where(x => x.Role is not null).Count() * 0.15 - 0.15;
+                await Task.WhenAll(Users.Select(
                     arg =>
                     {
-                        var (id, user) = arg;
+                        var (id, entry) = arg;
                         var change = new UserStats();
                         if (id == Leader && !LeaderIsPlayer)
                         {
                             change.Leader++;
                             change.CurrentXp += (ulong)Math.Round(xpMultiplier * 100);
                         }
-                        if (Participants.TryGetValue(id, out Role? role) && role != null)
+                        if (entry.Role != null)
                         {
-                            if (role.IsAlive)
+                            if (entry.Role.IsAlive)
                             {
                                 change.CurrentXp += (ulong)Math.Round(xpMultiplier * 160);
                             }
@@ -185,7 +184,7 @@ namespace Werewolf.Theme
 
                             bool won = false;
                             foreach (var other in winnerSpan.Span)
-                                if (other == role)
+                                if (other == entry.Role)
                                 {
                                     won = true;
                                     break;
@@ -208,9 +207,9 @@ namespace Werewolf.Theme
             }
             Phase = null;
             SendEvent(new Events.GameEnd());
-            foreach (var role in Participants.Values)
-                if (role != null)
-                    SendEvent(new Events.OnRoleInfoChanged(role, ExecutionRound));
+            foreach (var entry in Users.Values)
+                if (entry.Role != null)
+                    SendEvent(new Events.OnRoleInfoChanged(entry.Role, ExecutionRound));
         }
 
         public event EventHandler<GameEvent>? OnEvent;

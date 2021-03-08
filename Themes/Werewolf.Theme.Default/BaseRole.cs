@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Werewolf.Theme.Default
 {
@@ -73,7 +74,7 @@ namespace Werewolf.Theme.Default
         {
             base.ChangeToAboutToKill(game);
             if (IsLoved)
-                foreach (var role in game.Participants.Values)
+                foreach (var role in game.Users.Select(x => x.Value.Role))
                     if (role is BaseRole baseRole && role != this && baseRole.IsLoved)
                         role.SetKill(game, new KillInfos.KilledByLove());
         }

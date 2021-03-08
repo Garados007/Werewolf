@@ -43,8 +43,8 @@ namespace Werewolf.Theme
 
         protected virtual int GetMissingVotes(GameRoom game)
         {
-            return game.Participants
-                .Where(x => x.Value != null && CanVote(x.Value))
+            return game.Users
+                .Where(x => x.Value.Role is not null && CanVote(x.Value.Role))
                 .Where(x => !Options.Any(y => y.option.Users.Contains(x.Key)))
                 .Count();
         }
@@ -112,7 +112,7 @@ namespace Werewolf.Theme
 
         public IEnumerable<Role> GetVoter(GameRoom game)
         {
-            foreach (var role in game.Participants.Values)
+            foreach (var role in game.Users.Select(x => x.Value.Role))
                 if (role != null && CanVote(role))
                     yield return role;
         }

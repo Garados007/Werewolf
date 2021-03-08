@@ -32,7 +32,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                foreach (var entry in game.Participants.Values)
+                foreach (var entry in game.Users.Select(x => x.Value.Role))
                     if (entry != null)
                         entry.IsMajor = false;
                 role.IsMajor = true;
@@ -45,7 +45,8 @@ namespace Werewolf.Theme.Default.Phases
 
         public override bool CanExecute(GameRoom game)
         {
-            return game.Participants.Values
+            return game.Users
+                .Select(x => x.Value.Role)
                 .Where(x => x != null && x.IsMajor && !x.IsAlive)
                 .Any();
         }

@@ -56,7 +56,7 @@ namespace Werewolf.Theme
                 winner = list.ToArray();
                 return true;
             }
-            foreach (var role in game.Participants.Values)
+            foreach (var role in game.Users.Select(x => x.Value.Role))
                 if (role != null && !role.IsAlive)
                 {
                     // check if has same faction with all players

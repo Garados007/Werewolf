@@ -1,4 +1,5 @@
-﻿using Werewolf.Theme.Phases;
+﻿using System.Linq;
+using Werewolf.Theme.Phases;
 
 namespace Werewolf.Theme.Default.Phases
 {
@@ -6,7 +7,7 @@ namespace Werewolf.Theme.Default.Phases
     {
         public override void Execute(GameRoom game)
         {
-            foreach (var role in game.Participants.Values)
+            foreach (var role in game.Users.Select(x => x.Value.Role))
             {
                 if (role is not BaseRole baseRole)
                     continue;

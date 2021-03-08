@@ -65,7 +65,11 @@ namespace Werewolf.Theme.Default.Phases
         {
             base.Init(game);
             picks.Clear();
-            int maxEnchants = game.Participants.Count < 8 ? 1 : 2;
+            int maxEnchants = game.Users
+                .Select(x => x.Value.Role)
+                .Where(x => x is not null)
+                .Count() 
+                < 8 ? 1 : 2;
             for (int i = 0; i < maxEnchants; ++i)
             {
                 var pick = new FlutistPick(game);

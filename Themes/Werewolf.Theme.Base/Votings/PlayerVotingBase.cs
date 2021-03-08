@@ -32,15 +32,20 @@ namespace Werewolf.Theme.Votings
             }
             else NoOptionId = null;
 
-            participants ??= game.Participants
-                .Where(x => x.Value != null && DefaultParticipantSelector(x.Value))
+            participants ??= game.Users
+                .Where(x => x.Value.Role is not null && DefaultParticipantSelector(x.Value.Role))
                 .Select(x => x.Key);
 
             foreach (var id in participants)
             {
-                if (!game.UserCache.TryGetValue(id, out UserInfo? user))
-                    user = null;
-                _ = OptionsDict.TryAdd(index++, (id, new VoteOption(PlayerTextId, ("player", user?.Config.Username ?? $"User {id}"))));
+                if (!game.Users.TryGetValue(id, out GameUserEntry? entry))
+                    entry = null;
+                _ = OptionsDict.TryAdd(index++, 
+                    ( id
+                    , new VoteOption(PlayerTextId, 
+                        ("player", entry?.User.Config.Username ?? $"User {id}"))
+                    )
+                );
             }
         }
 
@@ -61,8 +66,9 @@ namespace Werewolf.Theme.Votings
         {
             if (id != NoOptionId && OptionsDict.TryGetValue(id, out (UserId user, VoteOption opt) result))
             {
-                if (game.Participants.TryGetValue(result.user, out Role? role) && role != null)
-                    Execute(game, result.user, role);
+                if (game.Users.TryGetValue(result.user, out GameUserEntry? entry) && 
+                    entry.Role is not null)
+                    Execute(game, result.user, entry.Role);
             }
         }
 

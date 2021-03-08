@@ -35,7 +35,8 @@ namespace Werewolf.Theme.Default.Phases
 
         public override bool CanExecute(GameRoom game)
         {
-            var isMajorRemoved = game.Participants.Values
+            var isMajorRemoved = game.Users
+                .Select(x => x.Value.Role)
                 .Where(x => x is Roles.Idiot)
                 .Cast<Roles.Idiot>()
                 .Where(x => x.WasMajor)

@@ -26,7 +26,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                foreach (var other in game.Participants.Values)
+                foreach (var other in game.Users.Select(x => x.Value.Role))
                     if (other is BaseRole otherBase)
                         otherBase.IsSelectedByHealer = false;
                 if (role is BaseRole baseRole)
@@ -37,7 +37,10 @@ namespace Werewolf.Theme.Default.Phases
         public override bool CanExecute(GameRoom game)
         {
             return game.AliveRoles.Where(x => x is Roles.Healer).Any() &&
-                !game.Participants.Values.Where(x => x is Roles.OldMan oldMan && oldMan.WasKilledByVillager).Any();
+                !game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x is Roles.OldMan oldMan && oldMan.WasKilledByVillager)
+                    .Any();
         }
 
         protected override HealerVote Create(GameRoom game, IEnumerable<UserId>? ids = null)

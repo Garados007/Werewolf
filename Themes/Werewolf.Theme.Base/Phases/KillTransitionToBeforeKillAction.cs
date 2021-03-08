@@ -13,11 +13,11 @@ namespace Werewolf.Theme.Phases
             while (doExecute)
             {
                 doExecute = false;
-                foreach (var (id, role) in game.Participants)
-                    if (role != null && role.KillState == KillState.AboutToKill)
+                foreach (var (id, entry) in game.Users)
+                    if (entry.Role != null && entry.Role.KillState == KillState.AboutToKill)
                     {
-                        role.ChangeToBeforeKill(game);
-                        var lid = role.KillInfo?.NotificationId ?? "";
+                        entry.Role.ChangeToBeforeKill(game);
+                        var lid = entry.Role.KillInfo?.NotificationId ?? "";
                         if (!dict.TryGetValue(lid, out HashSet<UserId>? set))
                             dict.Add(lid, set = new HashSet<UserId>());
                         _ = set.Add(id);
@@ -25,7 +25,7 @@ namespace Werewolf.Theme.Phases
                     }
                 if (doExecute)
                 {
-                    foreach (var role in game.Participants.Values)
+                    foreach (var role in game.Users.Select(x => x.Value.Role))
                         if (role != null && role.KillState == KillState.MarkedKill)
                         {
                             role.ChangeToAboutToKill(game);

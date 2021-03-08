@@ -87,7 +87,10 @@ namespace Werewolf.Theme.Default.Phases
         public override bool CanExecute(GameRoom game)
         {
             return base.CanExecute(game) &&
-                !game.Participants.Values.Where(x => x is OldMan oldMan && oldMan.WasKilledByVillager).Any();
+                !game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x is OldMan oldMan && oldMan.WasKilledByVillager)
+                    .Any();
         }
 
         protected override ScapeGoatSelect Create(ScapeGoat role, GameRoom game, IEnumerable<UserId>? ids = null)
@@ -104,8 +107,8 @@ namespace Werewolf.Theme.Default.Phases
             if (voting is ScapeGoatSelect select)
             {
                 foreach (var id in select.GetResultUserIds())
-                    if (game.Participants.TryGetValue(id, out Role? role) && role != null)
-                        select.Execute(game, id, role);
+                    if (game.Users.TryGetValue(id, out GameUserEntry? entry) && entry.Role is not null)
+                        select.Execute(game, id, entry.Role);
                 RemoveVoting(voting);
             }
         }

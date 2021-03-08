@@ -145,7 +145,8 @@ namespace Werewolf.Theme.Default
 
         public static bool AngelDied(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            winner = game.Participants.Values
+            winner = game.Users
+                .Select(x => x.Value.Role)
                 .Where(x => x is Roles.Angel angel && angel.KillState == KillState.Killed && !angel.MissedFirstRound)
                 .Cast<Role>()
                 .ToArray();
@@ -172,7 +173,8 @@ namespace Werewolf.Theme.Default
                     winner = null;
                     return false;
                 }
-            winner = game.Participants.Values
+            winner = game.Users
+                .Select(x => x.Value.Role)
                 .Where(x => x is Roles.Flutist).Cast<Role>().ToArray();
             return true;
         }

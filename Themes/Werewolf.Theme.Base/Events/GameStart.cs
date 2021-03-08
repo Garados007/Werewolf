@@ -12,18 +12,18 @@ namespace Werewolf.Theme.Events
         {
             var ownRole = game.TryGetRole(user.Id);
             writer.WriteStartObject("participants");
-            foreach (var participant in game.Participants.ToArray())
+            foreach (var (id, participant) in game.Users.ToArray())
             {
-                if (participant.Value == null)
-                    writer.WriteNull(participant.Key.ToId());
+                if (participant.Role == null)
+                    writer.WriteNull(id.ToId());
                 else
                 {
                     var seenRole = Role.GetSeenRole(game, null, user,
-                        participant.Key, participant.Value);
+                        id, participant.Role);
 
-                    writer.WriteStartObject(participant.Key.ToId());
+                    writer.WriteStartObject(id.ToId());
                     writer.WriteStartArray("tags");
-                    foreach (var tag in Role.GetSeenTags(game, user, ownRole, participant.Value))
+                    foreach (var tag in Role.GetSeenTags(game, user, ownRole, participant.Role))
                         writer.WriteStringValue(tag);
                     writer.WriteEndArray();
                     writer.WriteString("role", seenRole?.GetType().Name);

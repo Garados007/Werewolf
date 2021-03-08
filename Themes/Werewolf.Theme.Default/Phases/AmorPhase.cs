@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Default.Phases
                 if (role is not BaseRole baseRole)
                     return;
                 baseRole.IsLoved = true;
-                foreach (var other in game.Participants.Values)
+                foreach (var other in game.Users.Select(x => x.Value.Role))
                     if (role != other && other is BaseRole otherBase && otherBase.IsLoved)
                         game.SendEvent(new Events.OnRoleInfoChanged(other, target: id));
                 if (game.Phase?.Current is AmorPhase pick)
@@ -43,7 +43,10 @@ namespace Werewolf.Theme.Default.Phases
         public override bool CanExecute(GameRoom game)
         {
             return game.AliveRoles.Any(x => x is Roles.Amor) &&
-                !game.Participants.Values.Where(x => x is BaseRole role && role.IsLoved).Any();
+                !game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x is BaseRole role && role.IsLoved)
+                    .Any();
         }
 
         private AmorPick? pick1, pick2;
