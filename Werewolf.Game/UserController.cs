@@ -56,12 +56,12 @@ namespace Werewolf.Game
         /// <param name="ids">the ids of the connected system. One of them is required to find the user</param>
         /// <param name="config">this config will be set if the user needs to be created.</param>
         /// <returns>the found or created user</returns>
-        public virtual async Task<UserInfo?> GetOrCreateAsync(UserConnectedIds ids, UserConfig config)
+        public virtual async Task<UserInfo?> GetOrCreateAsync(OAuthId oid, UserConfig config)
         {
             await api.WaitConnect;
-            var id = await api.RequestApi.FindUser(ids);
+            var id = await api.RequestApi.FindUser(oid);
             if (id is null)
-                id = await api.RequestApi.CreateUser(connectedId: ids, config: config);
+                id = await api.RequestApi.CreateUser(oauthId: oid, config: config);
             return id is null ? null : await GetUser(id);
         }
 

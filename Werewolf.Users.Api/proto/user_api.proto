@@ -20,8 +20,8 @@ service UserApi {
     // create a new user. The id and stats fields are ignored. It returns the new id.
     rpc CreateUser(UserInfo)
         returns (UserId);
-    // finds a user with the connected id.
-    rpc FindUser(UserConnectedIds)
+    // finds a user with the OAuthId
+    rpc FindUser(OAuthId)
         returns (UserId);
 }
 
@@ -32,12 +32,19 @@ service UserNotification {
         returns (google.protobuf.Empty);
 }
 
+// the OAuthId of the user.
+message OAuthId {
+    string id = 1;
+}
+
 // The full information about any user.
 message UserInfo {
     // the internal id of the user
     UserId id = 1;
-    // the connected Ids of the user
-    UserConnectedIds connected_Id = 2;
+    // the OAuth2 id of this user. If this field is empty or has a zero length you can expect
+    // that this is user is a guest user.
+    // Guest users are not stored in the user database and will stay in the game server only!
+    OAuthId oauth_id = 2;
     // the user configuration
     UserConfig config = 3;
     // the user stats
@@ -48,14 +55,6 @@ message UserInfo {
 message UserId {
     // the 12 byte id
     bytes id = 1;
-}
-
-// For every login system the user could have its own id. Here is the collection of them
-message UserConnectedIds {
-    // is true if the user has a linked Discord account
-    bool has_discord_id = 1;
-    // the user id for the linked Discord account
-    uint64 discord_id = 2;
 }
 
 // the user configuration

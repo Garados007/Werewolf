@@ -42,9 +42,8 @@ namespace Werewolf.Users
                     @lock.EnterUpgradeableReadLock();
                     try
                     {
-                        // search for Discord ID
                         var otherUser = Database.User.Query()
-                            .Where(x => x.ConnectedIds.DiscordId == dbUser.ConnectedIds.DiscordId)
+                            .Where(x => x.OAuthId == dbUser.OAuthId)
                             .FirstOrDefault();
                         if (otherUser != null)
                             return ToApi(otherUser.Id);
@@ -153,7 +152,7 @@ namespace Werewolf.Users
                             return;
 
                         user.Config = new DbUserConfig(request.Config);
-                        user.ConnectedIds = new DbUserConnected(request.ConnectedId);
+                        user.OAuthId = request.OauthId.Id;
 
                         _ = Database.User.Update(user);
                         info = user.ToApi();
@@ -169,7 +168,7 @@ namespace Werewolf.Users
                 }, cancellationToken);
         }
 
-        public override Task<UserId?> FindUser(UserConnectedIds request, CancellationToken cancellationToken)
+        public override Task<UserId?> FindUser(OAuthId request, CancellationToken cancellationToken)
         {
             return Database == null || api == null
                 ? Task.FromResult<UserId?>(null)
@@ -179,12 +178,9 @@ namespace Werewolf.Users
                     DbUser? user = null;
                     try
                     {
-                        // check for discord id
-                        if (user == null && request.HasDiscordId)
-                            user = Database.User.Query()
-                                .Where(x => x.ConnectedIds.DiscordId == request.DiscordId)
-                                .FirstOrDefault();
-                        // no id system found
+                        user = Database.User.Query()
+                            .Where(x => x.OAuthId == request.Id)
+                            .FirstOrDefault();
                     }
                     finally
                     {

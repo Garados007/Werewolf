@@ -6,8 +6,7 @@ namespace Werewolf.Users
     {
         public ObjectId Id { get; set; } = new ObjectId();
 
-        public DbUserConnected ConnectedIds { get; set; }
-            = new DbUserConnected();
+        public string OAuthId { get; set; } = "";
 
         public DbUserConfig Config { get; set; }
             = new DbUserConfig();
@@ -20,7 +19,7 @@ namespace Werewolf.Users
         public DbUser(Api.UserInfo api)
         {
             Id = new ObjectId(api.Id.Id.ToByteArray());
-            ConnectedIds = new DbUserConnected(api.ConnectedId);
+            OAuthId = api.OauthId.Id;
             Config = new DbUserConfig(api.Config);
             Stats = new DbUserStats(api.Stats);
         }
@@ -33,7 +32,10 @@ namespace Werewolf.Users
                 {
                     Id = Google.Protobuf.ByteString.CopyFrom(Id.ToByteArray()),
                 },
-                ConnectedId = ConnectedIds.ToApi(),
+                OauthId = new Api.OAuthId
+                {
+                    Id = OAuthId,
+                },
                 Config = Config.ToApi(),
                 Stats = Stats.ToApi(),
             };
