@@ -247,7 +247,7 @@ namespace Werewolf.Game
             config.BackgroundImage = userConfig.BackgroundImage ?? config.BackgroundImage;
             config.Language = userConfig.Language ?? config.Language;
 
-            UserFactory
+            //todo: UserFactory
 
             return null;
         }

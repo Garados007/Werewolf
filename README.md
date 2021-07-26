@@ -4,6 +4,12 @@ as a backend and elm as frontend.
 
 ## Design
 
+
+The backend is split into several distinct services with their own purpose. The servers can be on
+different computes and the game server can be startet multiple times to scale this setup.
+
+Some of these services have their implementation here.
+
 The backend is split into several distinct server which is specialised for their own purpose. The
 server can be on different computer and some servers can be added to scale this setup.
 
@@ -22,7 +28,6 @@ It is recommended to have only one instance of a user server. The purpose of thi
 ### Game Server
 
 > Implementation is in `Werewolf.Game`.
-> Internal Api is in `Werewolf.Game.Api`.
 
 You can create as much game server you want. Each game server has to be accessible from the
 internet. You can put a proxy such as NginX in front and give each one its own subdomain.
@@ -32,33 +37,12 @@ Apis provided.
 
 The game server communicates with the user db for the user data.
 
-The game server doesn't create and manage game sessons on its own. It provides an Api 
-`Werewolf.Game.Api` for it.
-
 ### Game Server Multiplexer
 
-> Implementation is in `Werewolf.Game.Multiplex`.
-> Internal Api is in `Werewolf.Game.Api`.
+> This use the [Pronto](https://github.com/Garados007/pronto/) project.
 
-This multiplexer wraps all instances of game servers (and possibly other multiplexer) to create
-a load balancer.
-
-If this multiplexer needs to create a room it searches for a available game server first and
-directs to them.
-
-You can also use this multiplexer (this is also availble in the game server) to provide static
-content. If you have a proxy like NginX in front it is recommended to let them handle the static
-content. All static content is provided on `/content/` on every server.
-
-### Game Link
-
-> This is just a concept.
-
-The game server and multiplexer provides an Api to create an manage game rooms. This Api can be
-used from other systems to manage new rooms. In future is planed to add this feature directly in
-the core.
-
-Right now is planed to have a discord bot which do this.
+This server lists all the active instances and allows the ui to select automaticly which game
+server to use.
 
 ### User UI
 
@@ -67,3 +51,18 @@ Right now is planed to have a discord bot which do this.
 
 The UI is written in Elm which is later compiled into JavaScript. This UI is provided from the
 game server, the multiplexer and/or the proxy server.
+
+It is recommended that you provide the build on a static web server or you just use a single Game
+Server for it.
+
+### OAuth Authentification
+
+> Any OAuth2 Provider
+
+This project will be developeded and testet to run with [Keycloak](https://www.keycloak.org/).
+
+If the user intents to have an permanent account to get high scores and levels, (s)he needs to
+create an account on an OAuth2 Provider and login.
+
+The player can use this app in guest mode but this will not create any rankings and the user
+informationen will be deleted after usage.

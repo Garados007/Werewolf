@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
     <ProjectReference Include="..\Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj" />
-    <ProjectReference Include="..\Werewolf.Game.Api\Werewolf.Game.Api.csproj" />
     <ProjectReference Include="..\Werewolf.Users.Api\Werewolf.Users.Api.csproj" />
   </ItemGroup>
 
