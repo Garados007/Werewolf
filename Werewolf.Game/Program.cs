@@ -42,6 +42,10 @@ namespace Werewolf.Game
             server.AddWebService(new HttpSender());
             server.AddWebService(new GameService());
 
+            var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
+            ws.Add(new GameWebSocketEndpoint(userController));
+            server.AddWebService(ws);
+
             var searcher = new LocalIOMapper();
             if (System.Diagnostics.Debugger.IsAttached)
                 searcher.AddFileMapping("content", "../../../../content/");

@@ -35,18 +35,18 @@ namespace Werewolf.Game
         public override async Task UpdateUserStats(UserId id, UserStats stats)
         {
             await api.WaitConnect;
-            await api.RequestApi.UpdateStats(id, stats);
-            _ = await ReloadUser(id);
+            await api.RequestApi.UpdateStats(id, stats).CAF();
+            _ = await ReloadUser(id).CAF();
         }
 
-        public async Task UpdateUserConfig(UserId id, UserConfig config)
+        public override async Task UpdateUserConfig(UserId id, UserConfig config)
         {
             await api.WaitConnect;
-            var user = await GetUser(id, false);
+            var user = await GetUser(id, false).CAF();
             if (user is null)
                 return;
             user.Config = config;
-            await api.RequestApi.UpdateUser(user);
+            await api.RequestApi.UpdateUser(user).CAF();
             UpdateCache(user);
         }
 

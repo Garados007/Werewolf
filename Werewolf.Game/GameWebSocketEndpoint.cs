@@ -10,8 +10,11 @@ namespace Werewolf.Game
 
         private readonly EventFactory factory = new EventFactory();
 
-        public GameWebSocketEndpoint()
+        private readonly Werewolf.Theme.UserFactory userFactory;
+
+        public GameWebSocketEndpoint(Werewolf.Theme.UserFactory userFactory)
         {
+            this.userFactory = userFactory;
             // fill the factory with the types
             factory.Add<Events.FetchRoles>();
             factory.Add<Events.SubmitRoles>();
@@ -28,7 +31,9 @@ namespace Werewolf.Game
             );
             return result == null
                 ? null
-                : new GameWebSocketConnection(stream, factory, result.Value.game, result.Value.user);
+                : new GameWebSocketConnection(stream, factory, userFactory, 
+                    result.Value.game, result.Value.entry
+                );
         }
     }
 }

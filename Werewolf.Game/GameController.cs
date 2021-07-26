@@ -55,6 +55,9 @@ namespace Werewolf.Game
                 : null;
         }
 
+        public static string GetUserToken(GameRoom game, GameUserEntry entry)
+            => GetUserToken(game, entry.User);
+
         public static string GetUserToken(GameRoom game, UserInfo user)
         {
             ReadOnlySpan<byte> b1 = BitConverter.GetBytes(game.Id); // 4 B
@@ -65,7 +68,7 @@ namespace Werewolf.Game
             return Convert.ToBase64String(rb).Replace('/', '-').Replace('+', '_').TrimEnd('=');
         }
 
-        public (GameRoom game, UserInfo user)? GetFromToken(string token)
+        public (GameRoom game, GameUserEntry entry)? GetFromToken(string token)
         {
             token = token.Replace('-', '/').Replace('_', '+') + "==";
             Span<byte> bytes = stackalloc byte[16];
@@ -80,14 +83,17 @@ namespace Werewolf.Game
             var game = GetGame(gameId);
             return game == null || !game.Users.TryGetValue(userId, out GameUserEntry? entry)
                 ? null
-                : ((GameRoom game, UserInfo user)?)(game, entry.User);
+                : ((GameRoom game, GameUserEntry entry)?)(game, entry);
         }
 
         private void OnGameEvent(object? sender, GameEvent @event)
         {
             lockWsConnections.EnterReadLock();
             foreach (var connection in wsConnections)
-                if (connection.Game == sender && @event.CanSendTo(connection.Game, connection.User))
+                if (connection.Game == sender && @event.CanSendTo(
+                    connection.Game, 
+                    connection.UserEntry.User
+                ))
                 {
                     _ = Task.Run(async () => await connection.SendEvent(@event));
                 }

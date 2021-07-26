@@ -6,6 +6,7 @@ dotnet_diagnostic.IDE0001.severity = suggestion
 # Default severity for analyzer diagnostics with category 'Performance'
 dotnet_analyzer_diagnostic.category-Performance.severity = warning
 dotnet_analyzer_diagnostic.severity = suggestion
+dotnet_code_quality.CA2007.severity = warning
 
 dotnet_diagnostic.severity = suggestion
 

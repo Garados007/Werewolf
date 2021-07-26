@@ -33,5 +33,7 @@ namespace Werewolf.Theme
         }
 
         public abstract Task UpdateUserStats(UserId id, UserStats stats);
+
+        public abstract Task UpdateUserConfig(UserId id, UserConfig config);
     }
 }
