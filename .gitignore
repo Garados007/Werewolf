@@ -8,3 +8,5 @@ obj
 *.g.cs
 *.service.cs
 elm-stuff
+# runtime stuff
+.litedb

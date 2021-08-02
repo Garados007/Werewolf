@@ -25,6 +25,15 @@ namespace Werewolf.Game
         private readonly ReaderWriterLockSlim lockWsConnections
             = new ReaderWriterLockSlim();
 
+        public void UpdatePronto(Pronto.ProntoServer server, Pronto.ProntoGame game)
+        {
+            game.Rooms = rooms.Count;
+            game.Clients = wsConnections.Count;
+            server.Full = 
+                (server.MaxClients is not null && game.Clients >= server.MaxClients.Value) ||
+                (game.MaxRooms is not null && game.Rooms >= game.MaxRooms.Value);
+        }
+
         public int CreateGame(UserInfo leader)
         {
             if (UserFactory == null)

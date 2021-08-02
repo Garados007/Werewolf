@@ -16,7 +16,7 @@ namespace Werewolf.Game
         private static async Task Main(string[] args)
         {
             var config = new IniParser().Parse("config.ini");
-            var group = GetGroup(config, args) ?? new IniGroup("multiplexer");
+            var group = GetGroup(config, args) ?? new IniGroup("game-server");
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -25,13 +25,38 @@ namespace Werewolf.Game
                 .CreateLogger();
             WebServerLog.LogPreAdded += WebServerLog_LogPreAdded;
 
+            using var pronto = new Pronto.Pronto(new Pronto.ProntoConfig(
+                config.GetGroup("pronto") ?? new IniGroup("pronto")
+            ));
+            pronto.BeginEdit();
+            var prontoServer = pronto.GetServer();
+            prontoServer.Name = group.GetString("name", "default");
+            prontoServer.Uri = group.GetString("domain", "http://localhost:8000/");
+            var prontoGame = pronto.GetGame("werewolf");
+            prontoGame.Uri = prontoServer.Uri;
+            pronto.OnBeforeSendUpdate += _ =>
+            {
+                GameController.Current.UpdatePronto(prontoServer, prontoGame);
+            };
+            pronto.EndEdit();
+
             var endPoint = await GetEndpointAsync(group.GetString("user-api", "127.0.0.1:30600"));
             if (endPoint == null)
             {
                 Log.Error("invalid endpoint in {key} inside the config", "user-api");
                 return;
             }
-            using var userController = new UserController(endPoint);
+            var oAuthUserInfo = config.GetGroup("oauth")?
+                .GetString("userinfo", null);
+            if (oAuthUserInfo is null)
+            {
+                Log.Error("missing OAuth userinfo endpoint");
+                return;
+            }
+            using var userController = new UserController(
+                endPoint,
+                oAuthUserInfo
+            );
             GameController.UserFactory = userController;
 
             var server = new Server(new WebServerSettings(group.GetInt32("webserver-port", 8000), 5000));
@@ -41,20 +66,34 @@ namespace Werewolf.Game
             server.AddWebService(new HttpResponseCreator());
             server.AddWebService(new HttpSender());
             server.AddWebService(new GameService());
+            server.AddWebService(new GameRestApi().BuildService());
 
             var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
             ws.Add(new GameWebSocketEndpoint(userController));
             server.AddWebService(ws);
 
             var searcher = new LocalIOMapper();
-            if (System.Diagnostics.Debugger.IsAttached)
-                searcher.AddFileMapping("content", "../../../../content/");
-            else searcher.AddFileMapping("content", "content");
+            var target = System.Diagnostics.Debugger.IsAttached 
+                ? "../../../../content/"
+                : "content";
+            if (!System.IO.Directory.Exists(target))
+                System.IO.Directory.CreateDirectory(target);
+            searcher.AddFileMapping("content", target);
             server.AddWebService(searcher);
 
             server.Start();
 
-            while (Console.ReadKey().Key != ConsoleKey.Q) ;
+            if (Console.IsInputRedirected)
+            {
+                Console.WriteLine("Enter to quit");
+                Console.ReadLine();
+            }
+            else 
+            {
+                Console.WriteLine("Press Q Key to quit");
+                while (Console.ReadKey().Key != ConsoleKey.Q) ;
+                Console.Write('\b');
+            }
 
             server.Stop();
         }

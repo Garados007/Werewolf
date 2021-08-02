@@ -15,14 +15,20 @@ namespace Werewolf.Game
         {
             public string Target { get; }
 
-            public PostRule(string target)
-                => Target = target;
+            public string Source { get; }
+
+            public PostRule(string name)
+                => Source = Target = name;
+
+            public PostRule(string source, string target)
+                => (Source, Target) = (source, target);
 
             public override bool Check(RestQueryArgs args)
             {
-                if (args.Post.Data is UrlEncodedData data)
+                if (args.Post.Data is UrlEncodedData data && 
+                    data.Parameter.TryGetValue(Source, out string? value))
                 {
-                    args.ParsedArguments[Target] = data;
+                    args.ParsedArguments[Target] = value;
                     return true;
                 }
                 else return false;
@@ -33,7 +39,22 @@ namespace Werewolf.Game
         {
             var api = new RestApiService("api");
             var fact = new ApiRuleFactory();
-
+            api.RestEndpoints.AddRange(new[]
+            {
+                RestActionEndpoint.Create<string>(User, "token")
+                    .Add(fact.Location(
+                        fact.UrlConstant("user"),
+                        fact.MaxLength()
+                    ))
+                    .Add(new PostRule("token")),
+                RestActionEndpoint.Create(LobbyCreate)
+                    .Add(fact.Location(
+                        fact.UrlConstant("lobby"),
+                        fact.UrlConstant("create"),
+                        fact.MaxLength()
+                    )
+                )
+            });
 
             return api;
         }
@@ -103,6 +124,69 @@ namespace Werewolf.Game
                 {
                     MimeType = MimeType.ApplicationJson,
                 };
+            };
+        }
+    
+        private static Stream UserToJson(Werewolf.Users.Api.UserInfo? user)
+        {
+            var s = new MemoryStream();
+            var w = new Utf8JsonWriter(s);
+            try
+            {
+                if (user is null)
+                {
+                    w.WriteNullValue();
+                    return s;
+                }
+                w.WriteStartObject();
+                w.WriteString("id", user.Id.Id.ToBase64());
+                w.WriteBoolean("is_guest", user.IsGuest);
+
+                w.WriteStartObject("config");
+                w.WriteString("username", user.Config.Username);
+                w.WriteString("image", user.Config.Image);
+                w.WriteString("theme_color", user.Config.ThemeColor);
+                w.WriteString("background_image", user.Config.BackgroundImage);
+                w.WriteString("language", user.Config.Language);
+                w.WriteEndObject();
+
+                w.WriteStartObject("stats");
+                w.WriteNumber("win_games", user.Stats.WinGames);
+                w.WriteNumber("killed", user.Stats.Killed);
+                w.WriteNumber("loose_games", user.Stats.LooseGames);
+                w.WriteNumber("leader", user.Stats.Leader);
+                w.WriteNumber("level", user.Stats.Level);
+                w.WriteNumber("current_xp", user.Stats.CurrentXp);
+                w.WriteNumber("level_max_xp", user.Stats.LevelMaxXP);
+                w.WriteEndObject();
+                
+                w.WriteEndObject();
+
+                return s;
+            }
+            finally
+            {
+                w.Flush();
+            }
+        }
+
+        private async Task<HttpDataSource> User(string token)
+        {
+            var user = GameController.UserFactory is UserController controller ?
+                await controller.GetUserFromToken(token).CAF() : null;
+            
+            return new HttpStreamDataSource(UserToJson(user))
+            {
+                MimeType = MimeType.ApplicationJson,
+            };
+        }
+
+        private async Task<HttpDataSource> LobbyCreate()
+        {
+            await Task.CompletedTask;
+            return new HttpStringDataSource("null")
+            {
+                MimeType = MimeType.ApplicationJson,
             };
         }
     }

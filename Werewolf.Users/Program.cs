@@ -34,8 +34,15 @@ namespace Werewolf.Users
             );
             try
             {
-                while (Console.ReadKey().Key != ConsoleKey.Q) ;
-                Console.Write('\b');
+                if (System.Diagnostics.Debugger.IsAttached)
+                {
+                    Console.ReadLine();
+                }
+                else 
+                {
+                    while (Console.ReadKey().Key != ConsoleKey.Q) ;
+                    Console.Write('\b');
+                }
             }
             finally
             {
