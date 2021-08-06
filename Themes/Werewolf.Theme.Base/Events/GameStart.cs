@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Werewolf.Users.Api;
+using Werewolf.User;
 
 namespace Werewolf.Theme.Events
 {
@@ -15,13 +15,13 @@ namespace Werewolf.Theme.Events
             foreach (var (id, participant) in game.Users.ToArray())
             {
                 if (participant.Role == null)
-                    writer.WriteNull(id.ToId());
+                    writer.WriteNull(id);
                 else
                 {
                     var seenRole = Role.GetSeenRole(game, null, user,
                         id, participant.Role);
 
-                    writer.WriteStartObject(id.ToId());
+                    writer.WriteStartObject(id);
                     writer.WriteStartArray("tags");
                     foreach (var tag in Role.GetSeenTags(game, user, ownRole, participant.Role))
                         writer.WriteStringValue(tag);

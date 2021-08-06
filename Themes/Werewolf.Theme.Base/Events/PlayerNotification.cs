@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using System;
 using System.Text.Json;
 
@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Events
             writer.WriteString("text-id", NotificationId);
             writer.WriteStartArray("player");
             foreach (var id in Player.Span)
-                writer.WriteStringValue(id.ToId());
+                writer.WriteStringValue(id);
             writer.WriteEndArray();
         }
     }

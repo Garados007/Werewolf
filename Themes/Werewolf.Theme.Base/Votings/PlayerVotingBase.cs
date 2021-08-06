@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,9 +57,9 @@ namespace Werewolf.Theme.Votings
         public IEnumerable<UserId> GetResultUserIds()
         {
             return GetResults()
-                .Select(x => OptionsDict.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
+                .Select<int, UserId?>(x => OptionsDict.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
                 .Where(x => x is not null)
-                .Cast<UserId>();
+                .Select(x => x!.Value);
         }
 
         public sealed override void Execute(GameRoom game, int id)

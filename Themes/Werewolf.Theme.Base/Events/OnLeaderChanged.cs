@@ -1,4 +1,4 @@
-using Werewolf.Users.Api;
+using Werewolf.User;
 using System.Text.Json;
 
 namespace Werewolf.Theme.Events
@@ -15,7 +15,7 @@ namespace Werewolf.Theme.Events
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
-            writer.WriteString("leader", Leader.ToId());
+            writer.WriteString("leader", Leader);
         }
     }
 }

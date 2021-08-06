@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using System.Text.Json;
 
 namespace Werewolf.Theme.Events
@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Events
         {
             writer.WriteString("voting", Voting.Id.ToString(format));
             writer.WriteString("option", Option.ToString(format));
-            writer.WriteString("voter", Voter.ToId());
+            writer.WriteString("voter", Voter);
         }
     }
 }

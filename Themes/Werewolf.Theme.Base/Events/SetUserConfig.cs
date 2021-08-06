@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Werewolf.Users.Api;
+using Werewolf.User;
 
 namespace Werewolf.Theme.Events
 {

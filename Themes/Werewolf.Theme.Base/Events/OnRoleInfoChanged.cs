@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using System.Text.Json;
 
 namespace Werewolf.Theme.Events
@@ -22,8 +22,8 @@ namespace Werewolf.Theme.Events
             var id = game.TryGetId(Role);
             var ownRole = game.TryGetRole(user.Id);
             var seenRole = id is not null ?
-                Role.GetSeenRole(game, ExecutionRound, user, id, Role) : null;
-            writer.WriteString("id", id?.ToId());
+                Role.GetSeenRole(game, ExecutionRound, user, id.Value, Role) : null;
+            writer.WriteString("id", id);
             writer.WriteStartArray("tags");
             foreach (var tag in Role.GetSeenTags(game, user, ownRole, Role))
                 writer.WriteStringValue(tag);

@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Events
             {
                 writer.WriteStartArray(key);
                 foreach (var player in players)
-                    writer.WriteStringValue(player.ToId());
+                    writer.WriteStringValue(player);
                 writer.WriteEndArray();
             }
             writer.WriteEndObject();

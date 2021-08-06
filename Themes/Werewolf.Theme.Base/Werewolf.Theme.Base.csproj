@@ -8,13 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.15.5" />
+    <PackageReference Include="MongoDB.Driver.Core" Version="2.13.1" />
     <PackageReference Include="OneOf" Version="3.0.178" />
     <PackageReference Include="sRPC" Version="2.8.2" />
     <PackageReference Include="System.Text.Json" Version="5.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Werewolf.Users.Api\Werewolf.Users.Api.csproj" />
   </ItemGroup>
 
 </Project>

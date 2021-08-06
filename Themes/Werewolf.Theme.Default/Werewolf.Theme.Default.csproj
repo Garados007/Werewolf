@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Werewolf.Users.Api\Werewolf.Users.Api.csproj" />
     <ProjectReference Include="..\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
   </ItemGroup>
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Werewolf.Users.Api;
+using Werewolf.User;
 
 namespace Werewolf.Theme
 {
@@ -165,21 +165,25 @@ namespace Werewolf.Theme
                     arg =>
                     {
                         var (id, entry) = arg;
-                        var change = new UserStats();
+                        uint dLeader = 0,
+                            dKilled = 0,
+                            dWinGames = 0,
+                            dLooseGames = 0;
+                        ulong dXP = 0;
                         if (id == Leader && !LeaderIsPlayer)
                         {
-                            change.Leader++;
-                            change.CurrentXp += (ulong)Math.Round(xpMultiplier * 100);
+                            dLeader++;
+                            dXP += (ulong)Math.Round(xpMultiplier * 100);
                         }
                         if (entry.Role != null)
                         {
                             if (entry.Role.IsAlive)
                             {
-                                change.CurrentXp += (ulong)Math.Round(xpMultiplier * 160);
+                                dXP += (ulong)Math.Round(xpMultiplier * 160);
                             }
                             else
                             {
-                                change.Killed++;
+                                dKilled++;
                             }
 
                             bool won = false;
@@ -191,16 +195,16 @@ namespace Werewolf.Theme
                                 }
                             if (won)
                             {
-                                change.WinGames++;
-                                change.CurrentXp += (ulong)Math.Round(xpMultiplier * 120);
+                                dWinGames++;
+                                dXP += (ulong)Math.Round(xpMultiplier * 120);
                                 winIds.Add(id);
                             }
                             else
                             {
-                                change.LooseGames++;
+                                dLooseGames++;
                             }
                         }
-                        return Theme!.Users.UpdateUserStats(id, change);
+                        return entry.User.Stats.IncAsync(dWinGames, dKilled, dLooseGames, dLeader, dXP);
                     }
                 ));
                 Winner = (ExecutionRound, winIds.ToArray());

@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Users.Api", "Werewolf.Users.Api\Werewolf.Users.Api.csproj", "{E325279E-79D2-4C51-B0D6-81B9E5770820}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Users", "Werewolf.Users\Werewolf.Users.csproj", "{475CF7E2-07A4-427C-990A-D387F410ACBB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Themes", "Themes", "{187B9586-D3F9-4D88-8217-02FEB52B4BA8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Theme.Base", "Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj", "{05032AFB-5848-46C4-A571-4CFFD203A88E}"
@@ -18,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werewolf.Theme.Default", "Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj", "{0FE56DA4-86C7-40DC-90BC-D66A9AAEBDE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf.Game", "Werewolf.Game\Werewolf.Game.csproj", "{88A85118-6292-45F5-8C07-DF51571002F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werewolf", "Werewolf\Werewolf.csproj", "{88A85118-6292-45F5-8C07-DF51571002F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,30 +26,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|x64.Build.0 = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Debug|x86.Build.0 = Debug|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|x64.ActiveCfg = Release|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|x64.Build.0 = Release|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|x86.ActiveCfg = Release|Any CPU
-		{E325279E-79D2-4C51-B0D6-81B9E5770820}.Release|x86.Build.0 = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|x64.Build.0 = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Debug|x86.Build.0 = Debug|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|x64.ActiveCfg = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|x64.Build.0 = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|x86.ActiveCfg = Release|Any CPU
-		{475CF7E2-07A4-427C-990A-D387F410ACBB}.Release|x86.Build.0 = Release|Any CPU
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05032AFB-5848-46C4-A571-4CFFD203A88E}.Debug|x64.ActiveCfg = Debug|Any CPU

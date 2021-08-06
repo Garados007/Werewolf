@@ -1,7 +1,7 @@
 ﻿using Werewolf.Theme.Votings;
 using System.Collections.Generic;
 using System.Linq;
-using Werewolf.Users.Api;
+using Werewolf.User;
 
 namespace Werewolf.Theme.Phases
 {

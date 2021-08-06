@@ -1,4 +1,4 @@
-﻿using Werewolf.Users.Api;
+﻿using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Votings;

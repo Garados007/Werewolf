@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using Werewolf.Users.Api;
+using Werewolf.User;
 
 namespace Werewolf.Theme.Events
 {
@@ -16,7 +16,7 @@ namespace Werewolf.Theme.Events
             {
                 writer.WriteStartArray("winner");
                 foreach (var id in game.Winner.Value.winner.Span)
-                    writer.WriteStringValue(id.ToId());
+                    writer.WriteStringValue(id);
                 writer.WriteEndArray();
             }
         }

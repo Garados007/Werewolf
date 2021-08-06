@@ -1,4 +1,4 @@
-using Werewolf.Users.Api;
+using Werewolf.User;
 using System;
 
 namespace Werewolf.Theme
@@ -11,7 +11,7 @@ namespace Werewolf.Theme
 
         public bool IsOnline => connections > 0;
 
-        private int connections = 0;
+        private int connections;
         private readonly object connectionLock = new object();
         
         public DateTime LastConnectionUpdate { get; private set; }
