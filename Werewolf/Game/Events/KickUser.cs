@@ -6,7 +6,7 @@ namespace Werewolf.Game.Events
 {
     public class KickUser : TaggedEvent
     {
-        public UserId User { get; set; } = new UserId();
+        public UserId User { get; set; }
 
         protected override void Read(JsonElement json)
         {

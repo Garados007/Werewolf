@@ -28,7 +28,7 @@ namespace Werewolf
 
             using var db = new Database();
 
-            using var pronto = new Pronto.Pronto(new Pronto.ProntoConfig(
+            using var pronto = GameController.Pronto = new Pronto.Pronto(new Pronto.ProntoConfig(
                 config.GetGroup("pronto") ?? new IniGroup("pronto")
             ));
             pronto.BeginEdit();

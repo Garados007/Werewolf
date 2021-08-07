@@ -170,6 +170,47 @@ namespace Werewolf.Pronto
                 Serilog.Log.Information("Pronto: Server Id is {id}", Id);
         }
 
+        public async Task<ProntoJoinToken?> CreateToken(string game, string lobby)
+        {
+            using var wc = new System.Net.WebClient();
+            wc.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/json");
+            wc.Headers.Add("token", Config.Token);
+
+            using var s = new MemoryStream();
+            using var w = new Utf8JsonWriter(s);
+            w.WriteStartObject();
+            w.WriteString("game", game);
+            w.WriteString("lobby", lobby);
+            w.WriteEndObject();
+            w.Flush();
+
+            JsonDocument json;
+            try
+            {
+                using var result = new MemoryStream(await wc.UploadDataTaskAsync(
+                    $"{Config.Url}/v1/token",
+                    s.ToArray()
+                ).CAF());
+                json = await JsonDocument.ParseAsync(result).CAF();
+            }
+            catch (System.Net.WebException e)
+            {
+                Serilog.Log.Error(e, "Cannot fetch token");
+                return null;
+            }
+
+            var token = json.RootElement.TryGetProperty("token", out JsonElement node)
+                ? node.GetString() : null;
+            if (token is null)
+                return null;
+            // In the pronto specification are 15 minutes as live span stated.
+            // The pronto server itself will discard tokens after 20 minutes.
+            return new ProntoJoinToken(
+                token,
+                DateTime.UtcNow + TimeSpan.FromMinutes(15)
+            );
+        }
+
         public void Dispose()
         {
             timer.Dispose();

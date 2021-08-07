@@ -41,19 +41,39 @@ namespace Werewolf.Game
             var fact = new ApiRuleFactory();
             api.RestEndpoints.AddRange(new[]
             {
-                RestActionEndpoint.Create<string>(User, "token")
+                RestActionEndpoint.Create<string, bool>(User, "token", "guest")
                     .Add(fact.Location(
                         fact.UrlConstant("user"),
                         fact.MaxLength()
                     ))
-                    .Add(new PostRule("token")),
-                RestActionEndpoint.Create(LobbyCreate)
+                    .Add(new PostRule("token"))
+                    .Add(fact.Optional(fact.GetArgument<bool>("guest", bool.TryParse))),
+                RestActionEndpoint.Create<string, bool>(LobbyCreate, "token", "guest")
                     .Add(fact.Location(
                         fact.UrlConstant("lobby"),
                         fact.UrlConstant("create"),
                         fact.MaxLength()
-                    )
-                )
+                    ))
+                    .Add(new PostRule("token"))
+                    .Add(fact.Optional(fact.GetArgument<bool>("guest", bool.TryParse))),
+                RestActionEndpoint.Create<string, string, bool>(LobbyJoin, "lobby", "token", "guest")
+                    .Add(fact.Location(
+                        fact.UrlConstant("lobby"),
+                        fact.UrlConstant("join"),
+                        fact.MaxLength()
+                    ))
+                    .Add(new PostRule("lobby"))
+                    .Add(new PostRule("token"))
+                    .Add(fact.Optional(fact.GetArgument<bool>("guest", bool.TryParse))),
+                RestActionEndpoint.Create<string, string, string>(GuestCreate, "name", "image", "language")
+                    .Add(fact.Location(
+                        fact.UrlConstant("guest"),
+                        fact.UrlConstant("create"),
+                        fact.MaxLength()
+                    ))
+                    .Add(new PostRule("name"))
+                    .Add(new PostRule("image"))
+                    .Add(new PostRule("language"))
             });
 
             return api;
@@ -176,10 +196,20 @@ namespace Werewolf.Game
             }
         }
 
-        private async Task<HttpDataSource> User(string token)
+        private async Task<HttpDataSource> User(string token, bool guest)
         {
-            var user = GameController.UserFactory is UserController controller ?
-                await controller.GetUserFromToken(token).CAF() : null;
+            UserId? guestId;
+            var user = GameController.UserFactory is UserController controller 
+                ? (guest
+                    ? ( (guestId = GameController.Current.GetGuestIdFromToken(token)) != null
+                        ? controller.GetCachedUser(guestId.Value)
+                        : null
+                    )
+                    : await controller.GetUserFromToken(token).CAF() 
+                )
+                : null;
+            if (guest && user is not null && !user.IsGuest)
+                user = null;
             
             return new HttpStreamDataSource(UserToJson(user))
             {
@@ -187,12 +217,124 @@ namespace Werewolf.Game
             };
         }
 
-        private async Task<HttpDataSource> LobbyCreate()
+        private async Task<HttpDataSource> LobbyCreate(string token, bool guest)
         {
-            await Task.CompletedTask;
-            return new HttpStringDataSource("null")
+            UserId? guestId;
+            var user = GameController.UserFactory is UserController controller 
+                ? (guest
+                    ? ( (guestId = GameController.Current.GetGuestIdFromToken(token)) != null
+                        ? controller.GetCachedUser(guestId.Value)
+                        : null
+                    )
+                    : await controller.GetUserFromToken(token).CAF() 
+                )
+                : null;
+            if (guest && user is not null && !user.IsGuest)
+                user = null;
+            if (user is null)
             {
-                MimeType = MimeType.ApplicationJson,
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+            var gid = GameController.Current.CreateGame(user);
+            var room = GameController.Current.GetGame(gid)!;
+            var userToken = GameController.Current.GetUserToken(room, user);
+
+            var joinToken = await GameController.Current.GetJoinTokenAsync(gid).CAF();
+
+            var s = new MemoryStream();
+            var w = new Utf8JsonWriter(s);
+            w.WriteStartObject();
+            w.WriteString("id", userToken);
+            w.WriteString("join-id", GameController.Current.GetLobbyToken(room));
+            if (joinToken is null)
+                w.WriteNull("join-token");
+            else
+            {
+                w.WriteStartObject("join-token");
+                w.WriteString("token", joinToken.Token);
+                w.WriteString("alive-until", joinToken.AliveUntil);
+                w.WriteEndObject();
+            }
+            w.WriteEndObject();
+            w.Flush();
+
+            return new HttpStreamDataSource(s)
+            {
+                MimeType = MimeType.ApplicationJson
+            };
+        }
+
+        private async Task<HttpDataSource> LobbyJoin(string lobby, string token, bool guest)
+        {
+            UserId? guestId;
+            var user = GameController.UserFactory is UserController controller 
+                ? (guest
+                    ? ( (guestId = GameController.Current.GetGuestIdFromToken(token)) != null
+                        ? controller.GetCachedUser(guestId.Value)
+                        : null
+                    )
+                    : await controller.GetUserFromToken(token).CAF() 
+                )
+                : null;
+            if (guest && user is not null && !user.IsGuest)
+                user = null;
+            if (user is null)
+            {
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+
+            var room = GameController.Current.GetLobbyFromToken(lobby);
+            if (room is null)
+            {
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+
+            var userToken = GameController.Current.GetUserToken(room, user);
+            return new HttpStringDataSource($"\"{userToken.Replace("\"", "\\\"")}\"")
+            {
+                MimeType = MimeType.ApplicationJson
+            };
+        }
+    
+        private async Task<HttpDataSource> GuestCreate(string name, string image, string language)
+        {
+            if (!(GameController.UserFactory is UserController controller))
+            {
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+
+            var user = await controller.CreateAsync(null, new Werewolf.User.DB.UserConfig
+            {
+                Username = name,
+                Image = image,
+                Language = language,
+            }).CAF();
+
+            if (user is null)
+            {
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+
+            var id = GameController.Current.GetGuestIdToken(user.Id);
+
+            return new HttpStringDataSource($"\"{id.Replace("\"", "\\\"")}\"")
+            {
+                MimeType = MimeType.ApplicationJson
             };
         }
     }

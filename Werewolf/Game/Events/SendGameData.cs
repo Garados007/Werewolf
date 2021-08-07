@@ -110,6 +110,7 @@ namespace Werewolf.Game.Events
                 writer.WriteStartObject("user");
                 writer.WriteString("name", entry.User.Config.Username);
                 writer.WriteString("img", entry.User.Config.Image);
+                writer.WriteBoolean("is-guest", entry.User.IsGuest);
                 writer.WriteStartObject("stats");
                 writer.WriteNumber("win-GameRooms", entry.User.Stats.WinGames);
                 writer.WriteNumber("killed", entry.User.Stats.Killed);
@@ -127,7 +128,7 @@ namespace Werewolf.Game.Events
             writer.WriteEndObject();
         }
 
-        private void WriteWinner(Utf8JsonWriter writer, 
+        private static void WriteWinner(Utf8JsonWriter writer, 
             (uint round, ReadOnlyMemory<UserId> winner)? winner
         )
         {

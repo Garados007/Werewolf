@@ -3,6 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using Werewolf.Theme;
 using Werewolf.User;
 
@@ -10,20 +11,71 @@ namespace Werewolf.Game
 {
     public class GameController : IDisposable
     {
+        private struct GameRoomEntry
+        {
+            public GameRoom Room { get; }
+
+            public Pronto.ProntoJoinToken? JoinToken { get; set; }
+
+            public GameRoomEntry(GameRoom room)
+            {
+                Room = room;
+                JoinToken = null;
+            }
+        }
+
         public static GameController Current { get; }
             = new GameController();
 
         public static UserFactory? UserFactory { get; set; }
 
-        private GameController() { }
+        public static Pronto.Pronto? Pronto { get; set; }
 
-        private readonly ConcurrentDictionary<int, GameRoom> rooms
-            = new ConcurrentDictionary<int, GameRoom>();
+        private RSA rsa;
+
+        private GameController() 
+        {
+            var rsa = this.rsa = RSA.Create();
+            if (System.IO.File.Exists("keys/game-controller.xml"))
+            {
+                rsa.FromXmlString(System.IO.File.ReadAllText("keys/game-controller.xml"));
+            }
+            else
+            {
+                if (!System.IO.Directory.Exists("keys"))
+                    System.IO.Directory.CreateDirectory("keys");
+                System.IO.File.WriteAllText("keys/game-controller.xml", rsa.ToXmlString(true));
+            }
+        }
+
+        private readonly ConcurrentDictionary<int, GameRoomEntry> rooms
+            = new ConcurrentDictionary<int, GameRoomEntry>();
 
         private readonly HashSet<GameWebSocketConnection> wsConnections
             = new HashSet<GameWebSocketConnection>();
         private readonly ReaderWriterLockSlim lockWsConnections
             = new ReaderWriterLockSlim();
+
+        public Pronto.ProntoJoinToken? GetJoinToken(int groupId)
+        {
+            var token = rooms.TryGetValue(groupId, out GameRoomEntry room) ?
+                room.JoinToken : null;
+            if (token is not null && token.Invalid)
+                return null;
+            return token;
+        }
+
+        public async Task<Pronto.ProntoJoinToken?> GetJoinTokenAsync(int groupId)
+        {
+            if (!rooms.TryGetValue(groupId, out GameRoomEntry room))
+                return null;
+            if (room.JoinToken is not null && !room.JoinToken.Invalid)
+                return room.JoinToken;
+            if (Pronto is null)
+                return null;
+            room.JoinToken = await Pronto.CreateToken("werewolf", GetLobbyToken(room.Room)).CAF();
+            return room.JoinToken;
+        }
 
         public void UpdatePronto(Pronto.ProntoServer server, Pronto.ProntoGame game)
         {
@@ -47,7 +99,7 @@ namespace Werewolf.Game
 #endif
             var room = new GameRoom(id, leader);
             room.Theme = new Theme.Default.DefaultTheme(room, UserFactory);
-            rooms.TryAdd(id, room);
+            rooms.TryAdd(id, new GameRoomEntry(room));
             room.OnEvent += OnGameEvent;
             return id;
         }
@@ -59,29 +111,54 @@ namespace Werewolf.Game
 
         public GameRoom? GetGame(int id)
         {
-            return rooms.TryGetValue(id, out GameRoom? room)
-                ? room
+            return rooms.TryGetValue(id, out GameRoomEntry room)
+                ? room.Room
                 : null;
         }
 
-        public static string GetUserToken(GameRoom game, GameUserEntry entry)
+        public string GetGuestIdToken(UserId id)
+        {
+            ReadOnlySpan<byte> b = id.Id.ToByteArray(); // 12 B
+
+            return Base64UrlEncode(Sign(b).Span);
+        }
+
+        public UserId? GetGuestIdFromToken(string token)
+        {
+            var decodedBytes = Base64UrlDecode(token);
+            if (decodedBytes == null)
+                return null;
+            var bytes = decodedBytes.Value.Span;
+
+            if (!Verify(bytes, 12))
+                return null;
+            
+            return new UserId(bytes[..12]);
+        }
+
+        public string GetUserToken(GameRoom game, GameUserEntry entry)
             => GetUserToken(game, entry.User);
 
-        public static string GetUserToken(GameRoom game, UserInfo user)
+        public string GetUserToken(GameRoom game, UserInfo user)
         {
             ReadOnlySpan<byte> b1 = BitConverter.GetBytes(game.Id); // 4 B
             ReadOnlySpan<byte> b2 = user.Id.Id.ToByteArray(); // 12 B
             Span<byte> rb = stackalloc byte[16];
             b1.CopyTo(rb[0..4]);
             b2.CopyTo(rb[4..16]);
-            return Convert.ToBase64String(rb).Replace('/', '-').Replace('+', '_').TrimEnd('=');
+
+            return Base64UrlEncode(Sign(rb).Span);
         }
 
         public (GameRoom game, GameUserEntry entry)? GetFromToken(string token)
         {
-            token = token.Replace('-', '/').Replace('_', '+') + "==";
-            Span<byte> bytes = stackalloc byte[16];
-            if (!Convert.TryFromBase64String(token, bytes, out int bytesWritten) || bytesWritten != 16)
+            var decodedBytes = Base64UrlDecode(token);
+            if (decodedBytes == null)
+                return null;
+            var bytes = decodedBytes.Value.Span;
+
+            // verify origin
+            if (!Verify(bytes, 16))
                 return null;
 
             int gameId = BitConverter.ToInt32(bytes[0..4]);
@@ -90,6 +167,87 @@ namespace Werewolf.Game
             return game == null || !game.Users.TryGetValue(userId, out GameUserEntry? entry)
                 ? null
                 : ((GameRoom game, GameUserEntry entry)?)(game, entry);
+        }
+
+        public string GetLobbyToken(GameRoom game)
+        {
+            ReadOnlySpan<byte> b1 = BitConverter.GetBytes(game.Id); // 4 B
+
+            return Base64UrlEncode(Sign(b1).Span);
+        }
+
+        public GameRoom? GetLobbyFromToken(string token)
+        {
+            var decodedBytes = Base64UrlDecode(token);
+            if (decodedBytes == null)
+                return null;
+            var bytes = decodedBytes.Value.Span;
+
+            //verify origin
+            if (!Verify(bytes, 4))
+                return null;
+
+            int gameId = BitConverter.ToInt32(bytes[0..4]);
+            return GetGame(gameId);
+        }
+
+        /// <summary>
+        /// Sign the data to verify the origin. The signature will be appended to the data. This
+        /// will add 300-400 bytes to it.
+        /// </summary>
+        protected ReadOnlyMemory<byte> Sign(ReadOnlySpan<byte> data)
+        {
+            Span<byte> signature = rsa.SignData(
+                data.ToArray(), 
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1
+            );
+            Memory<byte> full = new byte[data.Length + signature.Length];
+            data.CopyTo(full.Span[..data.Length]);
+            signature.CopyTo(full.Span[data.Length..]);
+            return full;
+        }
+
+        /// <summary>
+        /// Verify if this instance was the author of the data and no manipulation was done. The
+        /// original data length is required to extract the signature from it.
+        /// </summary>
+        protected bool Verify(ReadOnlySpan<byte> data, int dataLength)
+        {
+            return rsa.VerifyData(
+                data[..dataLength],
+                data[dataLength..],
+                HashAlgorithmName.SHA256,
+                RSASignaturePadding.Pkcs1
+            );
+        }
+
+        protected static string Base64UrlEncode(ReadOnlySpan<byte> buffer)
+        {
+            var sb = new System.Text.StringBuilder(Convert.ToBase64String(buffer));
+            sb.Replace('+', '-');
+            sb.Replace('/', '_');
+            var right = sb.Length;
+            for (; right > 0; right--)
+                if (sb[right - 1] != '=')
+                    break;
+            if (right < sb.Length)
+                sb.Remove(right, sb.Length - right);
+            return sb.ToString();
+        }
+
+        protected static ReadOnlyMemory<byte>? Base64UrlDecode(string source)
+        {
+            var sb = new System.Text.StringBuilder(source);
+            sb.Replace('-', '+');
+            sb.Replace('_', '/');
+            var pad = 4 - (sb.Length & 0x03);
+            if (pad < 4)
+                sb.Append('=', pad);
+            Memory<byte> buffer = new byte[(sb.Length >> 2) * 3];
+            if (!Convert.TryFromBase64String(sb.ToString(), buffer.Span, out int bytesWritten))
+                return null;
+            return buffer[..bytesWritten];
         }
 
         private void OnGameEvent(object? sender, GameEvent @event)
