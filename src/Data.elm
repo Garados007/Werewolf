@@ -1,5 +1,6 @@
 module Data exposing
     ( Error
+    , UserInfo
     , Game
     , GameParticipant
     , GamePhase
@@ -8,6 +9,7 @@ module Data exposing
     , GameUserStats
     , GameVoting
     , GameVotingOption
+    , LobbyJoinToken
     , RoleTemplates
     , UserConfig
     , decodeError
@@ -18,10 +20,19 @@ module Data exposing
 import Dict exposing (Dict)
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Pipeline exposing (required)
-import Json.Decode
 import Time exposing (Posix)
 import Iso8601
 import Level exposing (LevelData)
+
+type alias UserInfo =
+    { username: String
+    , picture: String
+    }
+
+type alias LobbyJoinToken =
+    { token: String
+    , aliveUntil: Posix
+    }
 
 type alias RoleTemplates = Dict String (List String)
 

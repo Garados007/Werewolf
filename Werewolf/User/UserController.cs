@@ -70,15 +70,16 @@ namespace Werewolf.User
         public virtual async Task<UserInfo?> CreateAsync(string? oAuthId, DB.UserConfig config)
         {
             var id = ObjectId.GenerateNewId();
-            await Database.UserInfo.InsertOneAsync(
-                new DB.UserInfo
-                {
-                    Id = id,
-                    Config = config,
-                    OAuthId = oAuthId,
-                    Stats = new DB.UserStats(),
-                }
-            ).CAF();
+            var user = new DB.UserInfo
+            {
+                Id = id,
+                Config = config,
+                OAuthId = oAuthId,
+                Stats = new DB.UserStats(),
+            };
+            if (oAuthId is not null)
+                await Database.UserInfo.InsertOneAsync(user).CAF();
+            else base.UpdateCache(new UserInfoImpl(Database, user));
             return await GetUser(new UserId(id)).CAF();
         }
 

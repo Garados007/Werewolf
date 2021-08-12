@@ -9,7 +9,6 @@ module Model exposing
 import Data
 import Dict exposing (Dict)
 import Network exposing (NetworkResponse(..))
-import Browser.Navigation exposing (Key)
 import Time exposing (Posix)
 import Level exposing (Level)
 import Language exposing (Language, LanguageInfo)
@@ -21,7 +20,6 @@ type alias Model =
     , roles: Maybe Data.RoleTemplates
     , errors: List String
     , token: String
-    , key: Key
     , now: Posix
     , modal: Modal
     -- local editor
@@ -40,13 +38,12 @@ type Modal
     | SettingsModal Views.ViewThemeEditor.Model
     | WinnerModal Data.Game (List String)
 
-init : String -> Key -> Model
-init token key =
+init : String -> Model
+init token =
     { game = Nothing
     , roles = Nothing
     , errors = []
     , token = token
-    , key = key
     , now = Time.millisToPosix 0
     , modal = NoModal
     , editor = Dict.empty

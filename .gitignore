@@ -4,6 +4,7 @@
 # builds
 bin
 obj
+/index.html
 # generated stuff
 *.g.cs
 *.service.cs

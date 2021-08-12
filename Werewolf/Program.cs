@@ -70,6 +70,7 @@ namespace Werewolf
             server.AddWebService(new HttpSender());
             server.AddWebService(new GameService());
             server.AddWebService(new GameRestApi().BuildService());
+            server.AddWebService(new CorsService());
 
             var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
             ws.Add(new GameWebSocketEndpoint(userController));
