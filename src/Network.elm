@@ -30,6 +30,7 @@ type NetworkRequest
     | GetGameNext String
     | GetGameStop String
     | GetUserKick String String
+    | PostChat String (Maybe String) String
 
 type NetworkResponse
     = RespRoles Data.RoleTemplates
@@ -97,6 +98,8 @@ executeRequest request =
             |> mapRespError
         GetUserKick token user -> getUserKick token user
             |> mapRespError
+        PostChat token phase message -> postChat token phase message
+            |> mapRespError
 
 type alias Response a = Result Http.Error a
 
@@ -120,10 +123,12 @@ editGameConfig =
     , newConfig = Nothing
     , leaderIsPlayer = Nothing
     , newDeadCanSeeAllRoles = Nothing
+    , newAllCanSeeRoleOfDead = Nothing
     , autostartVotings = Nothing
     , autofinishVotings = Nothing
     , votingTimeout = Nothing
     , autofinishRound = Nothing
+    , theme = Nothing
     }
 
 type alias EditGameConfig =
@@ -131,10 +136,12 @@ type alias EditGameConfig =
     , newConfig: Maybe (Dict String Int)
     , leaderIsPlayer: Maybe Bool
     , newDeadCanSeeAllRoles: Maybe Bool
+    , newAllCanSeeRoleOfDead: Maybe Bool
     , autostartVotings: Maybe Bool
     , autofinishVotings: Maybe Bool
     , votingTimeout: Maybe Bool
     , autofinishRound: Maybe Bool
+    , theme: Maybe (String, String)
     }
 
 convertEditGameConfig : EditGameConfig -> String
@@ -166,6 +173,11 @@ convertEditGameConfig config =
         )
         config.newDeadCanSeeAllRoles
     , Maybe.map
+        (\new -> "all-can-see-role-of-dead=" ++
+            if new then "true" else "false"        
+        )
+        config.newAllCanSeeRoleOfDead
+    , Maybe.map
         (\new -> "autostart-votings=" ++
             if new then "true" else "false"        
         )
@@ -185,6 +197,12 @@ convertEditGameConfig config =
             if new then "true" else "false"
         )
         config.autofinishRound
+    , Maybe.map
+        (\(new, _) -> "theme-impl=" ++ Url.percentEncode new)
+        config.theme
+    , Maybe.map
+        (\(_, new) -> "theme-lang=" ++ Url.percentEncode new)
+        config.theme
     ]
     |> List.filterMap identity
     |> List.intersperse "&"
@@ -203,11 +221,13 @@ editUserConfig : EditUserConfig
 editUserConfig =
     { newTheme = Nothing
     , newBackground = Nothing
+    , newLanguage = Nothing
     }
 
 type alias EditUserConfig =
     { newTheme: Maybe String
     , newBackground: Maybe String
+    , newLanguage: Maybe String
     }
 
 convertEditUserConfig : EditUserConfig -> String
@@ -218,6 +238,9 @@ convertEditUserConfig config =
     , Maybe.map
         (\background -> "background=" ++ Url.percentEncode background)
         config.newBackground
+    , Maybe.map
+        (\language -> "language=" ++ language)
+        config.newLanguage
     ]
     |> List.filterMap identity
     |> List.intersperse "&"
@@ -299,4 +322,16 @@ getLang (k1, k2, k3) =
         { url = "/content/games/werwolf/lang/" ++ k1 ++ "/" ++ k2 ++
             "/" ++ k3 ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
+        }
+
+postChat : String -> Maybe String -> String -> Cmd (Response Data.Error)
+postChat token phase message =
+    Http.post
+        { url = (++) ("/api/game/" ++ token ++ "/" ++ "/chat")
+            <| Maybe.withDefault ""
+            <| Maybe.map ((++) "?phase=" << Url.percentEncode) phase
+        , body = Http.stringBody "application/x-www-form-urlencoded"
+            <| (++) "message="
+            <| Url.percentEncode message
+        , expect = Http.expectJson identity Data.decodeError
         }

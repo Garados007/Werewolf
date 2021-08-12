@@ -83,9 +83,17 @@ decodeLanguage =
         ]
 
 type alias ThemeKey = (String, String, String)
+type alias ThemeRawKey = (String, String)
+
+toThemeKey : ThemeRawKey -> String -> ThemeKey
+toThemeKey (k1, k2) k3 = (k1, k2, k3)
+
+toThemeRawKey : ThemeKey -> ThemeRawKey
+toThemeRawKey (k1, k2, _) = (k1, k2)
 
 type alias LanguageInfo =
     { languages: Dict String String
+    , icons: Dict String String
     , themes: Dict String (Dict String (Dict String String))
     }
 
@@ -126,6 +134,7 @@ decodeLanguageInfo : Decoder LanguageInfo
 decodeLanguageInfo =
     JD.succeed LanguageInfo
         |> required "languages" (JD.dict JD.string)
+        |> required "icons" (JD.dict JD.string)
         |> required "themes" 
             (JD.dict 
                 <| JD.dict 

@@ -72,7 +72,8 @@ view lang now levels token game myId  =
                     , Tuple.pair "dead"
                         <| not
                         <| case Dict.get id game.participants of
-                            Just (Just player) -> player.alive
+                            Just (Just player) -> 
+                                not <| List.member "not-alive" player.tags
                             _ -> True
                     ]
                 ]
@@ -174,9 +175,9 @@ view lang now levels token game myId  =
             (\(id, _) ->
                 ( case Dict.get id game.participants of
                     Just (Just player) ->
-                        if player.alive
-                        then 0
-                        else 1
+                        if List.member "not-alive" player.tags
+                        then 1
+                        else 0
                     _ -> 2
                 , id
                 )

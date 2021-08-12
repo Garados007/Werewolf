@@ -126,7 +126,19 @@ view lang now token game phase isLeader myId =
                                         ++ "%"
                                     ]
                                     []
-                                , Html.span [] [ text option.name ]
+                                , Html.span []
+                                    <| List.singleton
+                                    <| text
+                                    <| Maybe.withDefault option.langId
+                                    <| Maybe.Extra.orElseLazy
+                                        (\() ->
+                                            Just <| Language.getTextFormatOrPath lang
+                                                [ "theme", "voting-options", "default", option.langId ]
+                                                option.vars
+                                        )
+                                    <| Language.getTextFormat lang
+                                        [ "theme", "voting-options", voting.langId, option.langId ]
+                                        option.vars
                                 ]
                         )
                     <| Dict.toList voting.options

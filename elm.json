@@ -9,6 +9,7 @@
             "NoRedInk/elm-json-decode-pipeline": "1.0.0",
             "andrewMacmurray/elm-delay": "4.0.0",
             "avh4/elm-color": "1.0.0",
+            "bburdette/websocket": "1.0.3",
             "chelovek0v/bbase64": "1.0.1",
             "elm/browser": "1.0.2",
             "elm/bytes": "1.0.8",

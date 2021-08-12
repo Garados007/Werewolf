@@ -1,5 +1,6 @@
 module Data exposing
-    ( Error
+    ( ChatMessage
+    , Error
     , UserInfo
     , Game
     , GameParticipant
@@ -7,11 +8,13 @@ module Data exposing
     , GameUser
     , GameUserResult
     , GameUserStats
+    , GameStage
     , GameVoting
     , GameVotingOption
     , LobbyJoinToken
     , RoleTemplates
     , UserConfig
+    , decodeChatMessage
     , decodeError
     , decodeGameUserResult
     , decodeRoleTemplates
@@ -48,7 +51,6 @@ type alias GameUserResult =
 
 type alias Game =
     { leader: String
-    , running: Bool
     , phase: Maybe GamePhase
     , participants: Dict String (Maybe GameParticipant)
     , user: Dict String GameUser
@@ -56,15 +58,24 @@ type alias Game =
     , config: Dict String Int
     , leaderIsPlayer: Bool
     , deadCanSeeAllRoles: Bool
+    , allCanSeeRoleOfDead: Bool
     , autostartVotings: Bool
     , autofinishVotings: Bool
     , votingTimeout: Bool
     , autofinishRound: Bool
+    , theme: (String, String)
     }
 
 type alias GamePhase =
     { langId: String
+    , stage: GameStage
     , voting: List GameVoting
+    }
+
+type alias GameStage =
+    { langId: String
+    , backgroundId: String
+    , theme: String
     }
 
 type alias GameVoting =
@@ -78,14 +89,13 @@ type alias GameVoting =
     }
 
 type alias GameVotingOption =
-    { name: String
+    { langId: String
+    , vars: Dict String String
     , user: List String
     }
 
 type alias GameParticipant =
-    { alive: Bool
-    , major: Bool
-    , tags: List String
+    { tags: List String
     , role: Maybe String
     }
 
@@ -106,6 +116,7 @@ type alias GameUserStats =
 type alias UserConfig =
     { theme: String
     , background: String
+    , language: String
     }
 
 decodeGameUserResult : Decoder GameUserResult
@@ -114,10 +125,15 @@ decodeGameUserResult =
         |> required "game"
             (JD.succeed Game
                 |> required "leader" JD.string
-                |> required "running" JD.bool
                 |> required "phase"
                     (JD.succeed GamePhase
                         |> required "lang-id" JD.string
+                        |> required "stage"
+                            ( JD.succeed GameStage
+                                |> required "lang-id" JD.string
+                                |> required "background-id" JD.string
+                                |> required "theme" JD.string
+                            )
                         |> required "voting"
                             (JD.succeed GameVoting
                                 |> required "id" JD.string
@@ -129,7 +145,8 @@ decodeGameUserResult =
                                     (JD.nullable Iso8601.decoder)
                                 |> required "options"
                                     (JD.succeed GameVotingOption
-                                        |> required "name" JD.string
+                                        |> required "lang-id" JD.string
+                                        |> required "vars" (JD.dict JD.string)
                                         |> required "user" (JD.list JD.string)
                                         |> JD.dict
                                     )
@@ -139,8 +156,6 @@ decodeGameUserResult =
                     )
                 |> required "participants"
                     (JD.succeed GameParticipant
-                        |> required "alive" JD.bool
-                        |> required "major" JD.bool
                         |> required "tags" (JD.list JD.string)
                         |> required "role" (JD.nullable JD.string)
                         |> JD.nullable
@@ -171,10 +186,16 @@ decodeGameUserResult =
                 |> required "config" (JD.dict JD.int)
                 |> required "leader-is-player" JD.bool
                 |> required "dead-can-see-all-roles" JD.bool
+                |> required "all-can-see-role-of-dead" JD.bool
                 |> required "autostart-votings" JD.bool
                 |> required "autofinish-votings" JD.bool
                 |> required "voting-timeout" JD.bool
                 |> required "autofinish-rounds" JD.bool
+                |> required "theme"
+                    (JD.map2 Tuple.pair
+                        (JD.index 0 JD.string)
+                        (JD.index 1 JD.string)
+                    )
                 |> JD.nullable
             )
         |> required "user" (JD.nullable JD.string)
@@ -182,6 +203,7 @@ decodeGameUserResult =
             ( JD.succeed UserConfig
                 |> required "theme" JD.string
                 |> required "background" JD.string
+                |> required "language" JD.string
                 |> JD.nullable
             )
 
@@ -192,3 +214,22 @@ decodeError =
     JD.field "error"
         <| JD.nullable
         <| JD.string
+
+type alias ChatMessage =
+    { time: Posix
+    , sender: String
+    , phase: Maybe String
+    , message: String
+    , canSend: Bool
+    , shown: Bool
+    }
+
+decodeChatMessage : Decoder ChatMessage
+decodeChatMessage =
+    JD.succeed ChatMessage
+        |> Json.Decode.Pipeline.hardcoded (Time.millisToPosix 0)
+        |> required "sender" JD.string
+        |> required "phase" (JD.nullable JD.string)
+        |> required "message" JD.string
+        |> required "can-send" JD.bool
+        |> Json.Decode.Pipeline.hardcoded False
