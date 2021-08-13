@@ -17,6 +17,7 @@ import Http
 import Url
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Pipeline exposing (required, optional)
+import Json.Encode as JE
 import Html exposing (b)
 import Iso8601
 
@@ -35,7 +36,18 @@ decodeServerState : Decoder ServerState
 decodeServerState =
     JD.succeed ServerState
         |> required "id" JD.string
-        |> required "last-seen" Iso8601.decoder
+        |> required "last-seen" 
+            (JD.andThen
+                (\str -> 
+                    case JD.decodeValue Iso8601.decoder 
+                        <| JE.string 
+                        <| String.replace " " "T" str 
+                    of
+                        Ok date -> JD.succeed date
+                        Err e -> JD.fail <| JD.errorToString e
+                )
+                JD.string
+            )
         |> required "last-seen-sec" JD.float
         |> required "info" decodeServerInfo
 

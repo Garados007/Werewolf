@@ -21,6 +21,7 @@ import Data exposing (UserInfo)
 import GuestInput
 import LobbyInput
 import Iso8601
+import Pronto
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -118,10 +119,13 @@ type alias SelectLobbyData =
 type alias GameData =
     { token: LobbyJoinInfo
     , server: LobbyInput.ConnectInfo
-    , user: UserInfo
+    , user: Maybe UserInfo
     }
 
-type alias InitGameData = {}
+type alias InitGameData =
+    { serverId: String
+    , lobbyId: String
+    }
 
 type Model
     = SelectUser SelectUserData
@@ -220,8 +224,37 @@ init () url key =
             , Url.Parser.s "game" </> Url.Parser.string </> Url.Parser.string
                 |> Url.Parser.map
                 (\serverId lobbyId ->
-                    ( InitGame {}
-                    , Cmd.none
+                    ( InitGame
+                        { serverId = serverId
+                        , lobbyId = lobbyId
+                        }
+                    , Cmd.map
+                        (Maybe.withDefault Noop)
+                        <| Cmd.map
+                            ( Maybe.map
+                                <| \info ->
+                                    ReceiveLobbyToken
+                                        { server = info.id
+                                        , api = info.info.games
+                                            |> List.filterMap
+                                                (\game ->
+                                                    if game.name == "werewolf"
+                                                    then Just game.uri
+                                                    else Nothing 
+                                                )
+                                            |> List.head
+                                            |> Maybe.withDefault info.info.uri
+                                        , lobby = Nothing
+                                        }
+                                    <| Ok
+                                        { userToken = lobbyId
+                                        , joinToken = Nothing
+                                        }
+
+                            )
+                        <| Pronto.getServerInfo
+                            { host = Config.prontoHost }
+                            serverId
                     )
                 )
             ]
@@ -455,10 +488,18 @@ update msg model =
             ( Game
                 { token = token
                 , server = info
-                , user = data.user
+                , user = Just data.user
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/game/" ++ info.server ++ "/" ++ token.userToken
+            )
+        (ReceiveLobbyToken info (Ok token), InitGame data) ->
+            ( Game
+                { token = token
+                , server = info
+                , user = Nothing
+                }
+            , Cmd.none
             )
         (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
 
