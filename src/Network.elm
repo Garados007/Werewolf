@@ -149,7 +149,8 @@ wsSend request =
                             phase
                         , Just ("message", JE.string content)
                         ]
-                    
+                    RefetchJoinToken ->
+                        [ ("$type", JE.string "RefetchJoinToken") ]
             }
 
 execute : (NetworkResponse -> msg) -> Request -> Cmd msg
@@ -176,6 +177,7 @@ type SocketRequest
     | VotingFinish String
     | KickUser String
     | Message (Maybe String) String
+    | RefetchJoinToken
 
 type NetworkRequest
     = GetRootLang String

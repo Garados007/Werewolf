@@ -62,6 +62,13 @@
         "level": "Level",
         "player-kick": "Spieler kicken"
     },
+    "join-token": {
+        "title": "Spieler hinzufügen",
+        "description": "Gib den Code deinen Mitspielern weiter:",
+        "hint": "Zeigen",
+        "refetch": "Neu anfordern",
+        "time": "Der Code ist noch {minute}:{second-leading}{second} gültig."
+    },
     "chat": {
         "not-allowed": "Die Nachricht durfte nicht gesendet werden."
     }

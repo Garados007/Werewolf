@@ -16,9 +16,9 @@ import Time exposing (Posix)
 type Msg
     = Send Request
 
-view : Language -> Posix -> Dict String Level -> String -> Data.Game -> String
+view : Language -> Posix -> Dict String Level -> Data.Game -> String -> Maybe Data.LobbyJoinToken
     -> Html Msg
-view lang now levels token game myId  =
+view lang now levels game myId joinToken =
     let
         getLeaderSpecText : String -> (() -> String) -> String
         getLeaderSpecText id func =
@@ -168,7 +168,77 @@ view lang now levels token game myId  =
                     else text ""
                 ]
 
+        joinTokenValidTime : Maybe Int
+        joinTokenValidTime =
+            Maybe.andThen
+                (\x -> if x < 0 then Nothing else Just x)
+            <| Maybe.map
+                (\{ aliveUntil } -> 
+                    Time.posixToMillis aliveUntil
+                    - Time.posixToMillis now
+                )
+                joinToken
 
+        viewJoinToken : () -> Html Msg
+        viewJoinToken () =
+            div [ class "join-token" 
+                ]
+                [ div [ class "title" ]
+                    <| List.singleton
+                    <| text
+                    <| Language.getTextOrPath lang
+                        [ "join-token", "title" ]
+                , div [ class "description" ]
+                    <| List.singleton
+                    <| text
+                    <| Language.getTextOrPath lang
+                        [ "join-token", "description" ]
+                , case (joinToken, joinTokenValidTime) of
+                    (Just code, Just _) ->
+                        div [ class "box" ]
+                            [ div [ class "code" ]
+                                [ text code.token ]
+                            , div [ class "hint" ]
+                                <| List.singleton
+                                <| text
+                                <| Language.getTextOrPath lang
+                                    [ "join-token", "hint" ]
+                            ]
+                    _ ->
+                        div [ class "box" 
+                            , HE.onClick
+                                <| Send
+                                <| SockReq
+                                <| RefetchJoinToken
+                            ]
+                            [ div [ class "refetch" ]
+                                <| List.singleton
+                                <| text
+                                <| Language.getTextOrPath lang
+                                    [ "join-token", "refetch" ]
+                            ]
+                , case joinTokenValidTime of
+                    Nothing -> text ""
+                    Just time ->
+                        div [ class "time" ]
+                        <| List.singleton
+                        <| text
+                        <| Language.getTextFormatOrPath lang
+                            [ "join-token", "time" ]
+                        <| Dict.fromList
+                            [ Tuple.pair "minute"
+                                <| String.fromInt
+                                <| time // 60000
+                            , Tuple.pair "second-leading"
+                                <|  if (modBy 60 <| time // 1000) < 10
+                                    then "0"
+                                    else ""
+                            , Tuple.pair "second"
+                                <| String.fromInt
+                                <| modBy 60 
+                                <| time // 1000
+                            ]
+                ]
 
     in Dict.toList game.user
         |> List.sortBy
@@ -184,6 +254,11 @@ view lang now levels token game myId  =
             )
         |> List.map
             (\(id, user) -> viewGameUser id user)
+        |>  (\list ->
+                if game.leader == myId
+                then list ++ [ viewJoinToken () ]
+                else list
+            )
         |> div [ class "user-container" ]
 
 svgWinner : Html msg

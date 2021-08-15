@@ -7,6 +7,7 @@
 @import url("winner-box.css");
 @import url("player-notification.css");
 @import url("chat-box.css");
+@import url("join-token.css");
 
 :root {
   /* the default base color of the page */

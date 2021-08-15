@@ -59,9 +59,10 @@ type Msg
     | CloseModal
     | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
 
-init : String -> String -> String -> LanguageInfo -> Dict String Language -> (Model, Cmd Msg)
-init token api selLang langInfo rootLang =
-    ( Model.init token selLang langInfo rootLang
+init : String -> String -> String -> LanguageInfo -> Dict String Language 
+    -> Maybe Data.LobbyJoinToken -> (Model, Cmd Msg)
+init token api selLang langInfo rootLang joinToken =
+    ( Model.init token selLang langInfo rootLang joinToken
     , Cmd.batch
         [ Task.perform identity
             <| Task.succeed Init
@@ -192,7 +193,8 @@ viewGameFrame model lang roles gameResult game user =
                 <| Views.ViewUserList.view
                     lang
                     model.now model.levels
-                    model.token game user
+                    game user
+                    model.joinToken
             ]
         , div [ class "frame-game-body" ]
             [ Html.map WrapSelectModal
@@ -241,7 +243,8 @@ viewGamePhase model lang game user phase =
                 <| Views.ViewUserList.view
                     lang
                     model.now model.levels
-                    model.token game user
+                    game user
+                    model.joinToken
             ]
         , div [ class "frame-game-body", class "top" ]
             [ Html.map WrapSelectModal

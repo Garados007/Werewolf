@@ -7,6 +7,7 @@ import Json.Decode.Pipeline exposing (required)
 import Iso8601
 import Dict exposing (Dict)
 import Time exposing (Posix)
+import Pronto exposing (JoinTokenInfo)
 
 type EventData
     = SendGameData GameUserResult
@@ -29,6 +30,7 @@ type EventData
     | SetVotingVote String String String -- voting option voter
     | SubmitRoles RoleTemplates
     | Success
+    | GetJoinToken LobbyJoinToken
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -179,6 +181,11 @@ decodeEventData =
                     |> required "voting" JD.string
                     |> required "option" JD.string 
                     |> required "voter" JD.string
+                "GetJoinToken" ->
+                    JD.succeed LobbyJoinToken
+                    |> required "token" JD.string
+                    |> required "alive-until" Iso8601.decoder
+                    |> JD.map GetJoinToken
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

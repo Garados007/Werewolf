@@ -1,0 +1,36 @@
+.join-token {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto auto;
+  margin: 0.5em 1em;
+  border: 0.3em solid var(--color-dark);
+  padding: 0.5em 0.8em;
+  border-radius: 0.8em;
+  position: relative;
+}
+.join-token .title {
+  font-size: 1.2em;
+  margin: 0 0 0.25em;
+}
+.join-token .description {
+  font-size: 0.9em;
+}
+.join-token .box {
+  margin: 0.5em 0 0.25em;
+  text-align: center;
+  background-color: var(--color-light-transparent);
+  padding: 0.25em 0;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+.join-token .box:not(:hover) .code,
+.join-token .box:hover .hint {
+  display: none;
+}
+.join-token .box .code {
+  letter-spacing: 0.25em;
+}
+.join-token .time {
+  font-size: 0.75em;
+  text-align: right;
+}

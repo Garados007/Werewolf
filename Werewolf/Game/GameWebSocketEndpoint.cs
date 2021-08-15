@@ -29,6 +29,7 @@ namespace Werewolf.Game
             factory.Add<Events.VotingFinish>();
             factory.Add<Events.KickUser>();
             factory.Add<Events.Message>();
+            factory.Add<Events.RefetchJoinToken>();
         }
 
         protected override GameWebSocketConnection? CreateConnection(Stream stream, HttpRequestHeader header)

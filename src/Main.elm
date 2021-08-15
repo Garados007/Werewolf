@@ -133,8 +133,7 @@ type alias SelectLobbyData =
     }
 
 type alias GameData =
-    { token: LobbyJoinInfo
-    , server: LobbyInput.ConnectInfo
+    { server: LobbyInput.ConnectInfo
     , user: Maybe UserInfo
     , game: Model.Model
     }
@@ -607,10 +606,10 @@ update msg model =
                 data.lang.lang
                 data.lang.info
                 data.lang.root
+                token.joinToken
             |> \(new, cmd) ->
                 ( Game
-                    { token = token
-                    , server = info
+                    { server = info
                     , user = Just data.user
                     , game = new
                     }
@@ -625,8 +624,7 @@ update msg model =
             Tuple.mapBoth
                 (\new ->
                     Game
-                        { token = token
-                        , server = info
+                        { server = info
                         , user = Nothing
                         , game = new
                         }
@@ -638,6 +636,7 @@ update msg model =
                 data.lang.lang
                 data.lang.info
                 data.lang.root
+                token.joinToken
         (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
         (WrapGame sub, Game data) ->
             Tuple.mapBoth

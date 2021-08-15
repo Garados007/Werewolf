@@ -142,6 +142,13 @@ namespace Werewolf.Game
                             false
                         ).CAF();
                         break;
+                    case Events.RefetchJoinToken refetchJoinToken:
+                        await SendResult(
+                            refetchJoinToken,
+                            await Handle(refetchJoinToken).CAF(),
+                            false
+                        ).CAF();
+                        break;
                 }
             });
             return Task.CompletedTask;
@@ -517,6 +524,25 @@ namespace Werewolf.Game
                 message.Content, 
                 allowed
             ));
+
+            return null;
+        }
+
+        private async Task<string?> Handle(Events.RefetchJoinToken refetchJoinToken)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            var joinToken = await GameController.Current.GetJoinTokenAsync(Game.Id).CAF();
+
+            if (joinToken is null)
+                return "no join token available";
+
+            _ = this.SendFrame(new Events.GetJoinToken()
+            {
+                AliveUntil = joinToken.AliveUntil,
+                Token = joinToken.Token,
+            }).CAF();
 
             return null;
         }

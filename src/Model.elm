@@ -40,6 +40,7 @@ type alias Model =
     , styles: Styles
     , chats: List Data.ChatMessage
     , chatView: Maybe String
+    , joinToken: Maybe Data.LobbyJoinToken
     }
 
 type Modal
@@ -49,8 +50,8 @@ type Modal
     | PlayerNotification (Dict String (List String))
     | RoleInfo String
 
-init : String -> String -> LanguageInfo -> Dict String Language -> Model
-init token selLang langInfo rootLang =
+init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken -> Model
+init token selLang langInfo rootLang joinToken =
     { game = Nothing
     , roles = Nothing
     , errors = []
@@ -78,6 +79,7 @@ init token selLang langInfo rootLang =
     , styles = Styles.init
     , chats = []
     , chatView = Nothing
+    , joinToken = joinToken
     }
 
 getSelectedLanguage : Data.GameUserResult -> String
@@ -507,5 +509,10 @@ applyEventData event model =
                             phase.voting
                         }
                 }
+            }
+            []
+        EventData.GetJoinToken token -> Tuple.pair
+            { model 
+            | joinToken = Just token
             }
             []
