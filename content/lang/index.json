@@ -7,7 +7,7 @@
         "en": "gb"
     },
     "themes": {
-        "Mabron.DiscordBots.Games.Werwolf.Themes.Default.DefaultTheme": {
+        "Werewolf.Theme.Default.DefaultTheme": {
             "default": {
                 "de": "Standard-Theme"
             },

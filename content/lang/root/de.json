@@ -1,4 +1,11 @@
 {
+    "init": {
+        "user-mode": {
+            "select": "Wähle bitte aus:",
+            "guest": "Gast",
+            "login": "Login"
+        }
+    },
     "settings": {
         "game-room": {
             "leader-is-player": "Spielleiter ist auch ein Mitspieler",
