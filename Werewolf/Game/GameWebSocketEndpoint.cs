@@ -18,6 +18,17 @@ namespace Werewolf.Game
             // fill the factory with the types
             factory.Add<Events.FetchRoles>();
             factory.Add<Events.SubmitRoles>();
+            factory.Add<Events.SetGameConfig>();
+            factory.Add<Events.SetUserConfig>();
+            factory.Add<Events.GameStart>();
+            factory.Add<Events.GameNext>();
+            factory.Add<Events.GameStop>();
+            factory.Add<Events.VotingStart>();
+            factory.Add<Events.Vote>();
+            factory.Add<Events.VotingWait>();
+            factory.Add<Events.VotingFinish>();
+            factory.Add<Events.KickUser>();
+            factory.Add<Events.Message>();
         }
 
         protected override GameWebSocketConnection? CreateConnection(Stream stream, HttpRequestHeader header)

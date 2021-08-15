@@ -12,7 +12,6 @@ import Data
 import EventData exposing (EventData)
 import Dict exposing (Dict)
 import Network exposing (NetworkResponse(..))
-import Browser.Navigation exposing (Key)
 import Time exposing (Posix)
 import Level exposing (Level)
 import Language exposing (Language, LanguageInfo)
@@ -25,7 +24,6 @@ type alias Model =
     , roles: Maybe Data.RoleTemplates
     , errors: List String
     , token: String
-    , key: Key
     , now: Posix
     , modal: Modal
     -- local editor
@@ -34,6 +32,7 @@ type alias Model =
     , oldBufferedConfig: (Posix, Data.UserConfig)
     , bufferedConfig: Data.UserConfig
     , levels: Dict String Level
+    , selLang: String
     , langInfo: LanguageInfo
     , rootLang: Dict String Language
     , themeLangs: Dict Language.ThemeKey Language
@@ -50,13 +49,12 @@ type Modal
     | PlayerNotification (Dict String (List String))
     | RoleInfo String
 
-init : String -> Key -> Model
-init token key =
+init : String -> String -> LanguageInfo -> Dict String Language -> Model
+init token selLang langInfo rootLang =
     { game = Nothing
     , roles = Nothing
     , errors = []
     , token = token
-    , key = key
     , now = Time.millisToPosix 0
     , modal = NoModal
     , editor = Dict.empty
@@ -72,12 +70,9 @@ init token key =
         , language = ""
         }
     , levels = Dict.empty
-    , langInfo =
-        { languages = Dict.empty
-        , icons = Dict.empty
-        , themes = Dict.empty
-        }
-    , rootLang = Dict.empty
+    , selLang = selLang
+    , langInfo = langInfo
+    , rootLang = rootLang
     , themeLangs = Dict.empty
     , events = []
     , styles = Styles.init
@@ -122,78 +117,6 @@ getLanguage model =
 applyResponse : NetworkResponse -> Model -> (Model, List Network.NetworkRequest)
 applyResponse response model =
     case response of
-        RespRoles roles ->
-            Tuple.pair
-                { model
-                | roles = Just roles
-                }
-                []
-        RespGame game ->
-            Tuple.pair
-                { model
-                | game = Just game
-                , oldBufferedConfig = Tuple.pair model.now <|
-                    if model.bufferedConfig.theme == ""
-                    then Maybe.withDefault model.bufferedConfig game.userConfig
-                    else model.bufferedConfig
-                , bufferedConfig = game.userConfig
-                    |> Maybe.withDefault model.bufferedConfig
-                , modal =
-                    let
-                        get : Maybe Data.GameUserResult -> Maybe (Data.Game, List String)
-                        get =
-                            Maybe.andThen .game
-                            >> Maybe.andThen
-                                (\game_ ->
-                                    Maybe.map 
-                                        (Tuple.pair game_)
-                                        game_.winner
-                                )
-                    in case (get model.game, get <| Just game) of
-                        (Nothing, Just (game_, list)) -> WinnerModal game_ list
-                        _ -> model.modal
-                , levels = 
-                    case game.game of
-                        Just game_ ->
-                            Dict.merge
-                            (\_ _ dict -> dict)
-                            (\key a b dict ->
-                                Dict.insert 
-                                    key
-                                    (Level.updateData model.now b a)
-                                    dict
-                            )
-                            (\key b dict ->
-                                Dict.insert
-                                    key
-                                    (Level.init model.now b)
-                                    dict
-                            )
-                            model.levels
-                            ( game_.user
-                                |> Dict.map (\_ -> .level)
-                            )
-                            Dict.empty
-                        Nothing -> Dict.empty
-                }
-            <| case Maybe.map .language game.userConfig of
-                Nothing -> []
-                Just l ->
-                    List.filterMap identity
-                        [ if Dict.member l model.rootLang
-                            then Nothing
-                            else Just <| Network.GetRootLang l
-                        , Maybe.andThen
-                            (\key ->
-                                if Dict.member key model.themeLangs
-                                then Nothing
-                                else Just <| Network.GetLang key
-                            )
-                            <| Maybe.map
-                                (\x -> Language.toThemeKey x l)
-                            <| Maybe.map .theme
-                            <| game.game
-                        ]
         RespError error ->
             Tuple.pair
                 { model
@@ -203,22 +126,6 @@ applyResponse response model =
                     else error :: model.errors
                 }
                 []
-        RespNoError -> (model, [])
-        RespLangInfo info ->
-            Tuple.pair
-                { model
-                | langInfo = info
-                -- , theme = 
-                --     Maybe.map
-                --         (\(v1, v2, _) -> (v1, v2))
-                --     <| Language.firstTheme info
-                }
-            <|  ( case Maybe.map Network.GetLang <| Language.firstTheme info of
-                    Just x -> (::) x
-                    Nothing -> identity
-                )
-            <| List.map Network.GetRootLang
-            <| Dict.keys info.languages
         RespRootLang lang info ->
             Tuple.pair
                 { model
@@ -242,9 +149,30 @@ editGame model editFunc =
         )
         model.game
 
-applyEventData : EventData -> Model -> (Model, List Network.NetworkRequest)
+applyEventData : EventData -> Model -> (Model, List Network.Request)
 applyEventData event model =
     case event of
+        EventData.SubmitRoles roles -> Tuple.pair
+            { model
+            | roles = Just roles
+            }
+            []
+        EventData.Success -> (model, [])
+        EventData.SendGameData game -> Tuple.pair
+            { model
+            | game = Just game
+            }
+            <| List.filterMap identity
+            [ Maybe.map
+                (\g -> Network.NetReq
+                    <| Network.GetLang
+                    <| Language.toThemeKey
+                        g.theme
+                        model.selLang
+                )
+                game.game
+
+            ]
         EventData.AddParticipant id user -> Tuple.pair 
             { model
             | game = editGame model <| \game ->
@@ -470,6 +398,7 @@ applyEventData event model =
                 , theme = newConfig.theme
                 }
             }
+            <| List.map Network.NetReq
             <| Maybe.withDefault []
             <| Maybe.map
                 (\game ->
@@ -507,6 +436,7 @@ applyEventData event model =
                 else model.bufferedConfig
             , bufferedConfig = newConfig
             }
+            <| List.map Network.NetReq
             <| 
                 if Dict.member newConfig.language model.rootLang
                 then []

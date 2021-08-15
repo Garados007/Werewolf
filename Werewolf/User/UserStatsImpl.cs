@@ -24,8 +24,10 @@ namespace Werewolf.User
 
         public override async Task IncAsync(uint dWinGames, uint dKilled, uint dLooseGames, uint dLeader, ulong dXp)
         {
+            var this_ = this;
             var idFilter = Builders<DB.UserInfo>.Filter.Eq("_id", Info.DB.Id);
             if (!Info.IsGuest) // guests are not stored in db
+                try {
                 await Info.Database.UserInfo.UpdateOneAsync(
                     idFilter,
                     Builders<DB.UserInfo>.Update
@@ -35,6 +37,11 @@ namespace Werewolf.User
                         .Inc("Stats.Leader", dLeader)
                         .Inc("Stats.CurrentXp", dXp)
                 );
+                }
+                catch (System.Exception e)
+                {
+
+                }
             Info.DB.Stats.WinGames += dWinGames;
             Info.DB.Stats.Killed += dKilled;
             Info.DB.Stats.LooseGames += dLooseGames;
@@ -58,12 +65,20 @@ namespace Werewolf.User
                 )).FirstAsync();
                 if (LevelMaxXP <= CurrentXp)
                 {
+                    try {
                     await Info.Database.UserInfo.UpdateOneAsync(
-                        idFilter & Builders<DB.UserInfo>.Filter.Eq("Stats.Level", Level),
+                        idFilter 
+                            & Builders<DB.UserInfo>.Filter.Eq("Stats.Level", Level)
+                            & Builders<DB.UserInfo>.Filter.Eq("Stats.CurrentXp", CurrentXp),
                         Builders<DB.UserInfo>.Update
                             .Inc("Stats.Level", 1)
-                            .Inc("Stats.CurrentXp", -(long)LevelMaxXP)
+                            .Set("Stats.CurrentXp", CurrentXp - LevelMaxXP)
                     );
+                    }
+                    catch (System.Exception e)
+                    {
+
+                    }
                 }
                 else break;
             }

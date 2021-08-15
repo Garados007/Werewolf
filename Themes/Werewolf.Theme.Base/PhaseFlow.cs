@@ -209,7 +209,7 @@ namespace Werewolf.Theme
                     game.SendEvent(new Events.NextPhase(Current));
                     CurrentStep.SetExecute();
                 }
-
+                
                 await Current.InitAsync(game);
 
                 if (game.Phase == null)

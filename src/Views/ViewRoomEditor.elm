@@ -48,7 +48,7 @@ view lang langInfo roles gameResult theme game editable buffer =
                     [ text "i" ]
                 , Html.img 
                     [ class "editor-role-image"
-                    , HA.src "/content/games/werwolf/img/assasin.svg"
+                    , HA.src "/content/img/assasin.svg"
                     ] []
                 , div [ class "editor-role-name" ]
                     <| List.singleton

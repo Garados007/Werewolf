@@ -1,7 +1,7 @@
 module Views.ViewUserList exposing (Msg (..), view)
 
 import Data
-import Network exposing (NetworkRequest(..))
+import Network exposing (Request(..), SocketRequest(..), NetworkRequest(..))
 import Language exposing (Language)
 
 import Html exposing (Html, div, text)
@@ -14,7 +14,7 @@ import Level exposing (Level, LevelData)
 import Time exposing (Posix)
 
 type Msg
-    = Send NetworkRequest
+    = Send Request
 
 view : Language -> Posix -> Dict String Level -> String -> Data.Game -> String
     -> Html Msg
@@ -162,7 +162,7 @@ view lang now levels token game myId  =
                         , HA.title
                             <| Language.getTextOrPath lang
                                 [ "user-stats", "player-kick" ]
-                        , HE.onClick <| Send <| GetUserKick token id
+                        , HE.onClick <| Send <| SockReq <| KickUser id
                         ]
                         [ text "X" ]
                     else text ""

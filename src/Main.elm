@@ -6,7 +6,7 @@ import Url exposing (Url)
 import Url.Parser exposing ((</>), (<?>))
 import Url.Parser.Query
 import Maybe.Extra
-import Dict
+import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Events as HE
 import Debug.Extra
@@ -22,6 +22,12 @@ import GuestInput
 import LobbyInput
 import Iso8601
 import Pronto
+import Language
+import Network
+
+import Model
+import GameMain
+import Html.Attributes exposing (lang)
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -86,8 +92,15 @@ main =
         , onUrlRequest = always Noop
         }
 
+type alias LangContainer =
+    { lang: String
+    , root: Dict String Language.Language
+    , info: Language.LanguageInfo
+    }
+
 type alias SelectUserData = 
     { dev: Bool
+    , lang: LangContainer
     , fail: Bool
     , key: Key
     , url: Url
@@ -95,6 +108,7 @@ type alias SelectUserData =
 
 type alias GuestInputData =
     { dev: Bool
+    , lang: LangContainer
     , key: Key
     , url: Url
     , model: GuestInput.Model
@@ -102,6 +116,7 @@ type alias GuestInputData =
 
 type alias OAuthLoginData =
     { dev: Bool
+    , lang: LangContainer
     , key: Key
     , url: Url
     , token: Maybe Auth.AuthenticationSuccess
@@ -109,6 +124,7 @@ type alias OAuthLoginData =
 
 type alias SelectLobbyData =
     { dev: Bool
+    , lang: LangContainer
     , key: Key
     , url: Url
     , user: UserInfo
@@ -120,10 +136,12 @@ type alias GameData =
     { token: LobbyJoinInfo
     , server: LobbyInput.ConnectInfo
     , user: Maybe UserInfo
+    , game: Model.Model
     }
 
 type alias InitGameData =
-    { serverId: String
+    { lang: LangContainer
+    , serverId: String
     , lobbyId: String
     }
 
@@ -143,123 +161,204 @@ type Msg
     | GotUserInfo (Result Http.Error UserInfo)
     | ReceiveGuestToken LobbyInput.ConnectInfo (Result Http.Error String)
     | ReceiveLobbyToken LobbyInput.ConnectInfo (Result Http.Error LobbyJoinInfo)
+    | ReceiveLangInfo (Result Http.Error Language.LanguageInfo)
+    | ReceiveRootLang String (Result Http.Error Language.Language)
     | WrapGuestInput GuestInput.Msg
     | WrapLobbyInput LobbyInput.Msg
+    | WrapGame GameMain.Msg
+
+getLang : Model -> LangContainer
+getLang model =
+    case model of
+        SelectUser { lang } -> lang
+        GuestInput { lang } -> lang
+        OAuthLogin { lang } -> lang
+        SelectLobby { lang } -> lang
+        Game { game } ->
+            { lang = game.selLang
+            , info = game.langInfo
+            , root = game.rootLang
+            }
+        InitGame { lang } -> lang
+
+getRootLang : LangContainer -> Language.Language
+getRootLang lang =
+    Dict.get lang.lang lang.root
+    |> Maybe.withDefault Language.LanguageUnknown
+
+setLang : LangContainer -> Model -> Model
+setLang lang model =
+    case model of
+        SelectUser data -> SelectUser { data | lang = lang }
+        GuestInput data -> GuestInput { data | lang = lang }
+        OAuthLogin data -> OAuthLogin { data | lang = lang }
+        SelectLobby data -> SelectLobby { data | lang = lang }
+        Game data -> Game 
+            { data 
+            | game = data.game |> \game ->
+                { game
+                | selLang = lang.lang
+                , langInfo = lang.info
+                , rootLang = lang.root
+                }
+            }
+        InitGame data -> InitGame { data | lang = lang }
+
+redirectUri : Url -> LangContainer -> Bool -> Url
+redirectUri url lang dev =
+    { url
+    | path = "/login"
+    , query = Just
+        <| "lang=" ++ lang.lang
+        ++ (if dev then "&dev=true" else "")
+    }
 
 init : () -> Url -> Key -> (Model, Cmd Msg)
 init () url key =
-    Maybe.Extra.unpack
-        (\() ->
-            Url.Parser.Query.map2 
-                Tuple.pair
-                (queryBool "dev")
-                (queryBool "fail")
-            |> Url.Parser.query
-            |> (\ p -> Url.Parser.parse p { url | path = "/" } )
-            |> Maybe.withDefault (False, False)
-            |> \(dev, fail) -> 
-                ( SelectUser
-                    { dev = dev
-                    , fail = fail
-                    , key = key
-                    , url = url
-                    }
-                , Cmd.none
-                )
-        )
-        identity
-    <| Url.Parser.parse
-        ( Url.Parser.oneOf
-            [ Url.Parser.s "login" <?> queryBool "dev"
-                |> Url.Parser.map
-                (\dev ->
-                    case Debug.log "oauth" <| Auth.parseCode url of
-                        Auth.Empty ->
-                            ( SelectUser
-                                { dev = dev
-                                , fail = False
-                                , key = key
-                                , url = url
-                                }
-                            , Browser.Navigation.pushUrl key
-                                <| "/" ++ (if dev then "?dev=true" else "")
-                            )
-                        Auth.Error _ ->
-                            ( SelectUser
-                                { dev = dev
-                                , fail = True
-                                , key = key
-                                , url = url
-                                }
-                            , Browser.Navigation.pushUrl key
-                                <| "/?fail=true" ++ (if dev then "&dev=true" else "")
-                            )
-                        Auth.Success { code } ->
-                            ( OAuthLogin
-                                { dev = dev
-                                , key = key
-                                , url = url
-                                , token = Nothing
-                                }
-                            , Http.request <|
-                                Auth.makeTokenRequest
-                                    GotAccessToken
-                                    { credentials =
-                                        { clientId = Config.oauthClientId
-                                        , secret = Nothing
-                                        }
-                                    , code = code
-                                    , url = 
-                                        { oauthBaseServerUrl 
-                                        | path = Config.oauthTokenEndpoint 
-                                        }
-                                    , redirectUri = Debug.log "redirect"
-                                        { url
-                                        | path = "/login"
-                                        , query = if dev then Just "dev=true" else Nothing
-                                        }
-                                    }
-                            )
-                )
-            , Url.Parser.s "game" </> Url.Parser.string </> Url.Parser.string
-                |> Url.Parser.map
-                (\serverId lobbyId ->
-                    ( InitGame
-                        { serverId = serverId
-                        , lobbyId = lobbyId
-                        }
-                    , Cmd.map
-                        (Maybe.withDefault Noop)
-                        <| Cmd.map
-                            ( Maybe.map
-                                <| \info ->
-                                    ReceiveLobbyToken
-                                        { server = info.id
-                                        , api = info.info.games
-                                            |> List.filterMap
-                                                (\game ->
-                                                    if game.name == "werewolf"
-                                                    then Just game.uri
-                                                    else Nothing 
-                                                )
-                                            |> List.head
-                                            |> Maybe.withDefault info.info.uri
-                                        , lobby = Nothing
-                                        }
-                                    <| Ok
-                                        { userToken = lobbyId
-                                        , joinToken = Nothing
-                                        }
-
-                            )
-                        <| Pronto.getServerInfo
-                            { host = Config.prontoHost }
-                            serverId
+    let
+        lang : LangContainer
+        lang = 
+            { lang = Maybe.withDefault "en"
+                <| Maybe.andThen identity
+                <| Url.Parser.parse
+                    (Url.Parser.query
+                        <| Url.Parser.Query.string "lang"
                     )
-                )
-            ]
-        )
-        url
+                    { url | path = "" }
+            , info =
+                { languages = Dict.empty
+                , icons = Dict.empty
+                , themes = Dict.empty
+                }
+            , root = Dict.empty
+            }
+    in 
+        Tuple.mapSecond
+            (\cmd ->
+                Cmd.batch
+                    [ cmd
+                    , Network.getLangInfo
+                        |> Cmd.map ReceiveLangInfo
+                    , Network.getRootLang lang.lang
+                        |> Cmd.map 
+                            (ReceiveRootLang lang.lang)
+                    ]
+            )
+        <| Maybe.Extra.unpack
+            (\() ->
+                Url.Parser.Query.map2 
+                    Tuple.pair
+                    (queryBool "dev")
+                    (queryBool "fail")
+                |> Url.Parser.query
+                |> (\ p -> Url.Parser.parse p { url | path = "/" } )
+                |> Maybe.withDefault (False, False)
+                |> \(dev, fail) -> 
+                    ( SelectUser
+                        { dev = dev
+                        , lang = lang
+                        , fail = fail
+                        , key = key
+                        , url = url
+                        }
+                    , Cmd.none
+                    )
+            )
+            identity
+        <| Url.Parser.parse
+            ( Url.Parser.oneOf
+                [ Url.Parser.s "login" <?> queryBool "dev"
+                    |> Url.Parser.map
+                    (\dev ->
+                        case Debug.log "oauth" <| Auth.parseCode url of
+                            Auth.Empty ->
+                                ( SelectUser
+                                    { dev = dev
+                                    , lang = lang
+                                    , fail = False
+                                    , key = key
+                                    , url = url
+                                    }
+                                , Browser.Navigation.pushUrl key
+                                    <| "/?lang=" ++ lang.lang ++
+                                    (if dev then "&dev=true" else "")
+                                )
+                            Auth.Error _ ->
+                                ( SelectUser
+                                    { dev = dev
+                                    , lang = lang
+                                    , fail = True
+                                    , key = key
+                                    , url = url
+                                    }
+                                , Browser.Navigation.pushUrl key
+                                    <| "/?fail=true&lang=" ++ lang.lang ++
+                                    (if dev then "&dev=true" else "")
+                                )
+                            Auth.Success { code } ->
+                                ( OAuthLogin
+                                    { dev = dev
+                                    , lang = lang
+                                    , key = key
+                                    , url = url
+                                    , token = Nothing
+                                    }
+                                , Http.request <|
+                                    Auth.makeTokenRequest
+                                        GotAccessToken
+                                        { credentials =
+                                            { clientId = Config.oauthClientId
+                                            , secret = Nothing
+                                            }
+                                        , code = code
+                                        , url = 
+                                            { oauthBaseServerUrl 
+                                            | path = Config.oauthTokenEndpoint 
+                                            }
+                                        , redirectUri = redirectUri url lang dev
+                                        }
+                                )
+                    )
+                , Url.Parser.s "game" </> Url.Parser.string </> Url.Parser.string
+                    |> Url.Parser.map
+                    (\serverId lobbyId ->
+                        ( InitGame
+                            { lang = lang
+                            , serverId = serverId
+                            , lobbyId = lobbyId
+                            }
+                        , Cmd.map
+                            (Maybe.withDefault Noop)
+                            <| Cmd.map
+                                ( Maybe.map
+                                    <| \info ->
+                                        ReceiveLobbyToken
+                                            { server = info.id
+                                            , api = info.info.games
+                                                |> List.filterMap
+                                                    (\game ->
+                                                        if game.name == "werewolf"
+                                                        then Just game.uri
+                                                        else Nothing 
+                                                    )
+                                                |> List.head
+                                                |> Maybe.withDefault info.info.uri
+                                            , lobby = Nothing
+                                            }
+                                        <| Ok
+                                            { userToken = lobbyId
+                                            , joinToken = Nothing
+                                            }
+
+                                )
+                            <| Pronto.getServerInfo
+                                { host = Config.prontoHost }
+                                serverId
+                        )
+                    )
+                ]
+            )
+            url
 
 
 queryBool : String -> Url.Parser.Query.Parser Bool
@@ -277,14 +376,25 @@ queryBool name =
 view : Model -> List (Html Msg)
 view model = (\l -> l ++ [ Debug.Extra.viewModel model ])
     <| case model of
-        SelectUser _ ->
-            [ Html.text "Select User mode"
+        SelectUser data ->
+            [ Html.text
+                <| Language.getTextOrPath
+                    (getRootLang data.lang)
+                    [ "init", "user-mode", "select" ]
             , Html.button
                 [ HE.onClick SelectGuestMode ]
-                [ Html.text "Guest" ]
+                [ Html.text
+                    <| Language.getTextOrPath
+                        (getRootLang data.lang)
+                        [ "init", "user-mode", "guest" ]
+                ]
             , Html.button
                 [ HE.onClick SelectLoginMode ]
-                [ Html.text "Login" ]
+                [ Html.text
+                    <| Language.getTextOrPath
+                        (getRootLang data.lang)
+                        [ "init", "user-mode", "login" ]
+                ]
             ]
         GuestInput data ->
             [ Html.map WrapGuestInput
@@ -294,6 +404,9 @@ view model = (\l -> l ++ [ Debug.Extra.viewModel model ])
             [ Html.map WrapLobbyInput
                 <| LobbyInput.view data.model
             ]
+        Game data ->
+            List.map (Html.map WrapGame)
+            <| GameMain.view data.game
         _ -> []
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -303,13 +416,14 @@ update msg model =
         (SelectGuestMode, SelectUser data) ->
             ( GuestInput
                 { dev = data.dev
+                , lang = data.lang
                 , key = data.key
                 , url = data.url
                 , model = GuestInput.init
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/guest"
-                ++ (if data.dev then "?dev=true" else "")
+                <| "/guest?lang=" ++ data.lang.lang
+                ++ (if data.dev then "&dev=true" else "")
             )
         (SelectGuestMode, _) -> (model, Cmd.none)
         (WrapGuestInput sub, GuestInput data) ->
@@ -333,17 +447,19 @@ update msg model =
                     Just (Err ()) ->
                         ( SelectUser
                             { dev = data.dev
+                            , lang = data.lang
                             , fail = False
                             , key = data.key
                             , url = data.url
                             }
                         , Browser.Navigation.pushUrl data.key
-                            <| "/"
-                            ++ (if data.dev then "?dev=true" else "")
+                            <| "/?lang=" ++ data.lang.lang
+                            ++ (if data.dev then "&dev=true" else "")
                         )
                     Just (Ok user) ->
                         ( SelectLobby
                             { dev = data.dev
+                            , lang = data.lang
                             , key = data.key
                             , url = data.url
                             , user = user
@@ -351,8 +467,8 @@ update msg model =
                             , model = LobbyInput.init data.dev
                             }
                         , Browser.Navigation.pushUrl data.key
-                            <| "/lobby"
-                            ++ (if data.dev then "?dev=true" else "")
+                            <| "/lobby?lang=" ++ data.lang.lang
+                            ++ (if data.dev then "&dev=true" else "")
                         )
         (WrapGuestInput _, _) -> (model, Cmd.none)
         (SelectLoginMode, SelectUser data) ->
@@ -361,11 +477,8 @@ update msg model =
                 <| Url.toString
                 <| Auth.makeAuthorizationUrl
                     { clientId = Config.oauthClientId
-                    , redirectUri = data.url |> \url ->
-                        { url
-                        | path = "/login"
-                        , query = if data.dev then Just "dev=true" else Nothing
-                        }
+                    , redirectUri = 
+                        redirectUri data.url data.lang data.dev
                     , scope = [ "openid", "profile" ]
                     , state = Nothing
                     , url =
@@ -408,18 +521,20 @@ update msg model =
         (GotAccessToken (Err _), OAuthLogin data) ->
             ( SelectUser
                 { dev = data.dev
+                , lang = data.lang
                 , fail = True
                 , key = data.key
                 , url = data.url
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/?fail=true"
+                <| "/?fail=true&lang=" ++ data.lang.lang
                 ++ (if data.dev then "&dev=true" else "")
             )
         (GotAccessToken _, _) -> (model, Cmd.none)
         (GotUserInfo (Ok userinfo), OAuthLogin data) ->
             ( SelectLobby
                 { dev = data.dev
+                , lang = data.lang
                 , key = data.key
                 , url = data.url
                 , user = userinfo
@@ -427,18 +542,19 @@ update msg model =
                 , model = LobbyInput.init data.dev
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/lobby"
-                ++ (if data.dev then "?dev=true" else "")
+                <| "/lobby?lang=" ++ data.lang.lang
+                ++ (if data.dev then "&dev=true" else "")
             )
         (GotUserInfo (Err _), OAuthLogin data) ->
             ( SelectUser
                 { dev = data.dev
+                , lang = data.lang
                 , fail = True
                 , key = data.key
                 , url = data.url
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/?fail=true"
+                <| "/?fail=true&lang=" ++ data.lang.lang
                 ++ (if data.dev then "&dev=true" else "")
             )
         (GotUserInfo _, _) -> (model, Cmd.none)
@@ -464,7 +580,7 @@ update msg model =
                             info
                             data.user.username
                             data.user.picture
-                            "en"
+                            data.lang.lang
                     (Just info, Just token) ->
                         getEnterLobby
                             info
@@ -485,23 +601,77 @@ update msg model =
         (ReceiveGuestToken  _ _, _) -> (model, Cmd.none)
         -- after that transition to game, we have everything
         (ReceiveLobbyToken info (Ok token), SelectLobby data) ->
-            ( Game
-                { token = token
-                , server = info
-                , user = Just data.user
-                }
-            , Browser.Navigation.pushUrl data.key
-                <| "/game/" ++ info.server ++ "/" ++ token.userToken
-            )
+            GameMain.init
+                token.userToken
+                info.api
+                data.lang.lang
+                data.lang.info
+                data.lang.root
+            |> \(new, cmd) ->
+                ( Game
+                    { token = token
+                    , server = info
+                    , user = Just data.user
+                    , game = new
+                    }
+                , Cmd.batch
+                    [ Browser.Navigation.pushUrl data.key
+                        <| "/game/" ++ info.server ++ "/" ++ token.userToken
+                            ++ "?lang=" ++ data.lang.lang
+                    , Cmd.map WrapGame cmd
+                    ]
+                )
         (ReceiveLobbyToken info (Ok token), InitGame data) ->
-            ( Game
-                { token = token
-                , server = info
-                , user = Nothing
-                }
+            Tuple.mapBoth
+                (\new ->
+                    Game
+                        { token = token
+                        , server = info
+                        , user = Nothing
+                        , game = new
+                        }
+                )
+                (Cmd.map WrapGame)
+            <| GameMain.init
+                token.userToken
+                info.api
+                data.lang.lang
+                data.lang.info
+                data.lang.root
+        (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
+        (WrapGame sub, Game data) ->
+            Tuple.mapBoth
+                (\new ->
+                    Game
+                        { data | game = new }
+                )
+                (Cmd.map WrapGame)
+            <| GameMain.update sub data.game
+        (WrapGame _, _) -> (model, Cmd.none)
+        (ReceiveLangInfo (Ok info), _) ->
+            (setLang
+                (getLang model
+                    |> \lang ->
+                        { lang
+                        | info = info
+                        }
+                )
+                model
             , Cmd.none
             )
-        (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
+        (ReceiveLangInfo (Err _), _) -> (model, Cmd.none)
+        (ReceiveRootLang l (Ok root), _) ->
+            (setLang
+                (getLang model
+                    |> \lang ->
+                        { lang
+                        | root = Dict.insert l root lang.root
+                        }
+                )
+                model
+            , Cmd.none
+            )
+        (ReceiveRootLang _ (Err _), _) -> (model, Cmd.none)
 
 formEncodedBody : List (String, String) -> Http.Body
 formEncodedBody = 
@@ -567,4 +737,8 @@ getEnterLobby info token guest =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    case model of
+        Game data ->
+            Sub.map WrapGame
+            <| GameMain.subscriptions data.game
+        _ -> Sub.none

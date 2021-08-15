@@ -129,9 +129,15 @@ namespace Werewolf.Theme
         {
             if (Interlocked.Exchange(ref lockNextPhase, 1) != 0)
                 return;
-            if (Phase != null && !await Phase.NextAsync(this))
-                Phase = null;
-            _ = Interlocked.Exchange(ref lockNextPhase, 0);
+            try
+            {
+                if (Phase != null && !await Phase.NextAsync(this))
+                    Phase = null;
+            }
+            finally
+            {
+                _ = Interlocked.Exchange(ref lockNextPhase, 0);
+            }
         }
 
         public async Task StartGameAsync()

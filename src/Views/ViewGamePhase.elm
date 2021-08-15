@@ -1,7 +1,7 @@
 module Views.ViewGamePhase exposing (..)
 
 import Data
-import Network exposing (NetworkRequest(..))
+import Network exposing (Request(..), SocketRequest(..), NetworkRequest(..))
 
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
@@ -14,10 +14,10 @@ import Maybe.Extra
 
 type Msg
     = Noop
-    | Send NetworkRequest
+    | Send Request
 
-view : Language -> Posix -> String -> Data.Game -> Data.GamePhase -> Bool -> String -> Html Msg
-view lang now token game phase isLeader myId =
+view : Language -> Posix -> Data.Game -> Data.GamePhase -> Bool -> String -> Html Msg
+view lang now game phase isLeader myId =
     let
         viewPhaseHeader : Html Msg
         viewPhaseHeader =
@@ -112,7 +112,7 @@ view lang now token game phase isLeader myId =
                                         <| option.user
                                 , HE.onClick
                                     <| if voting.started && voting.canVote
-                                        then Send <| GetVote token voting.id oid
+                                        then Send <| SockReq <| Vote voting.id oid
                                         else Noop
                                 ]
                                 [ div 
@@ -155,7 +155,8 @@ view lang now token game phase isLeader myId =
                                 [ class "button" 
                                 , HE.onClick 
                                     <| Send
-                                    <| GetVotingFinish token voting.id
+                                    <| SockReq
+                                    <| VotingFinish voting.id
                                 ]
                                 [ text
                                     <| Language.getTextOrPath lang
@@ -165,7 +166,8 @@ view lang now token game phase isLeader myId =
                                 [ class "button" 
                                 , HE.onClick 
                                     <| Send
-                                    <| GetVotingStart token voting.id
+                                    <| SockReq
+                                    <| VotingStart voting.id
                                 ]
                                 [ text
                                     <| Language.getTextOrPath lang
@@ -192,7 +194,8 @@ view lang now token game phase isLeader myId =
                                         [ class "button"
                                         , HE.onClick
                                             <| Send
-                                            <| GetVotingWait token voting.id
+                                            <| SockReq
+                                            <| VotingWait voting.id
                                         , HA.title <| Language.getTextFormatOrPath lang
                                             [ "game", "voting", "button", "add-time-hint" ]
                                             <| Dict.fromList
@@ -222,14 +225,14 @@ view lang now token game phase isLeader myId =
             div [ class "phase-controls" ]
                 [ div 
                     [ class "button" 
-                    , HE.onClick <| Send <| GetGameStop token
+                    , HE.onClick <| Send <| SockReq <| GameStop
                     ]
                     [ text <| Language.getTextOrPath lang
                         [ "game", "phase", "end" ]
                     ]
                 , div
                     [ class "button"
-                    , HE.onClick <| Send <| GetGameNext token
+                    , HE.onClick <| Send <| SockReq <| GameNext
                     ]
                     [ text <| Language.getTextOrPath lang
                         [ "game", "phase", "next" ]

@@ -8,17 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="MaxLib.Ini" Version="1.1.1" />
-    <PackageReference Include="MaxLib.WebServer" Version="2.6.0" />
+    <PackageReference Include="MaxLib.WebServer" Version="2.7.1" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
     <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.1" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
     <ProjectReference Include="..\Themes\Werewolf.Theme.Default\Werewolf.Theme.Default.csproj" />
+    <!-- <ProjectReference Include="..\..\MaxLib.WebServer\MaxLib.WebServer\MaxLib.WebServer.csproj" /> -->
   </ItemGroup>
 
   <ItemGroup>

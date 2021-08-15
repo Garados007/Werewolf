@@ -9,7 +9,8 @@ import Dict exposing (Dict)
 import Time exposing (Posix)
 
 type EventData
-    = AddParticipant String GameUser
+    = SendGameData GameUserResult
+    | AddParticipant String GameUser
     | AddVoting GameVoting
     | ChatEvent Data.ChatMessage
     | GameEnd (Maybe (List String))
@@ -26,6 +27,8 @@ type EventData
     | SetUserConfig UserConfig
     | SetVotingTimeout String (Maybe Posix)
     | SetVotingVote String String String -- voting option voter
+    | SubmitRoles RoleTemplates
+    | Success
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -44,6 +47,17 @@ decodeEventData =
     JD.andThen
         (\key ->
             case key of
+                "submit-roles" ->
+                    JD.string
+                    |> JD.list
+                    |> JD.dict
+                    |> JD.field "roles"
+                    |> JD.map SubmitRoles
+                "Success" -> JD.succeed Success
+                "SendGameData" ->
+                    JD.map 
+                        SendGameData
+                        decodeGameUserResult
                 "AddParticipant" ->
                     JD.succeed GameUser
                     |> required "name" JD.string

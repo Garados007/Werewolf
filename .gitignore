@@ -5,6 +5,7 @@
 bin
 obj
 /index.html
+content/index.js
 # generated stuff
 *.g.cs
 *.service.cs

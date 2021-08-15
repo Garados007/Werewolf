@@ -297,6 +297,7 @@ namespace Werewolf.Game
                     MimeType = MimeType.ApplicationJson,
                 };
             }
+            room.AddParticipant(user);
 
             var userToken = GameController.Current.GetUserToken(room, user);
             return new HttpStringDataSource($"\"{userToken.Replace("\"", "\\\"")}\"")

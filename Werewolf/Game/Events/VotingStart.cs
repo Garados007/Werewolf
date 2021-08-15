@@ -8,7 +8,7 @@ namespace Werewolf.Game.Events
 
         protected override void Read(JsonElement json)
         {
-            VotingId = json.GetProperty("vid").GetUInt64();
+            VotingId = ulong.Parse(json.GetProperty("vid").GetString() ?? "");
         }
 
         protected override void Write(Utf8JsonWriter writer)

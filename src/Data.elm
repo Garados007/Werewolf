@@ -26,6 +26,7 @@ import Json.Decode.Pipeline exposing (required)
 import Time exposing (Posix)
 import Iso8601
 import Level exposing (LevelData)
+import Json.Decode.Pipeline exposing (hardcoded)
 
 type alias UserInfo =
     { username: String
@@ -154,14 +155,23 @@ decodeGameUserResult =
                             )
                         |> JD.nullable
                     )
-                |> required "participants"
+                -- |> required "participants"
+                --     (JD.succeed GameParticipant
+                --         |> required "tags" (JD.list JD.string)
+                --         |> required "role" (JD.nullable JD.string)
+                --         |> JD.nullable
+                --         |> JD.dict
+                --     )
+                -- |> hardcoded Dict.empty
+                |> required "users"
                     (JD.succeed GameParticipant
                         |> required "tags" (JD.list JD.string)
                         |> required "role" (JD.nullable JD.string)
                         |> JD.nullable
+                        |> JD.field "role"
                         |> JD.dict
                     )
-                |> required "user"
+                |> required "users"
                     (JD.succeed GameUser
                         |> required "name" JD.string
                         |> required "img" JD.string
@@ -179,6 +189,7 @@ decodeGameUserResult =
                                 |> required "current-xp" JD.int
                                 |> required "max-xp" JD.int
                             )
+                        |> JD.field "user"
                         |> JD.dict
                     )
                 |> required "winner"

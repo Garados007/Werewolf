@@ -32,10 +32,17 @@ namespace Werewolf.Game
                 GameController.Current.RemoveWsConnection(this);
                 entry.RemoveConnection();
             };
+            _ = SendFrame(new Events.SendGameData(
+                game, 
+                entry.User,
+                userFactory
+            ));
         }
 
         protected override Task ReceiveClose(CloseReason? reason, string? info)
         {
+            GameController.Current.RemoveWsConnection(this);
+            UserEntry.RemoveConnection();
             return Task.CompletedTask;
         }
 
@@ -59,10 +66,81 @@ namespace Werewolf.Game
                         ).CAF();
                         break;
                     case Events.SetGameConfig setGameConfig:
-                        await SendResult(setGameConfig, Handle(setGameConfig)).CAF();
+                        await SendResult(
+                            setGameConfig, 
+                            Handle(setGameConfig), 
+                            false
+                        ).CAF();
                         break;
                     case Events.SetUserConfig setUserConfig:
-                        await SendResult(setUserConfig, await Handle(setUserConfig).CAF()).CAF();
+                        await SendResult(
+                            setUserConfig, 
+                            await Handle(setUserConfig).CAF(),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.GameStart gameStart:
+                        await SendResult(
+                            gameStart,
+                            await Handle(gameStart).CAF(),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.GameNext gameNext:
+                        await SendResult(
+                            gameNext,
+                            await Handle(gameNext).CAF(),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.GameStop gameStop:
+                        await SendResult(
+                            gameStop,
+                            await Handle(gameStop).CAF(),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.VotingStart votingStart:
+                        await SendResult(
+                            votingStart,
+                            Handle(votingStart),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.Vote vote:
+                        await SendResult(
+                            vote,
+                            Handle(vote),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.VotingWait votingWait:
+                        await SendResult(
+                            votingWait,
+                            Handle(votingWait),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.VotingFinish votingFinish:
+                        await SendResult(
+                            votingFinish,
+                            await Handle(votingFinish).CAF(),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.KickUser kickUser:
+                        await SendResult(
+                            kickUser,
+                            Handle(kickUser),
+                            false
+                        ).CAF();
+                        break;
+                    case Events.Message message:
+                        await SendResult(
+                            message,
+                            Handle(message),
+                            false
+                        ).CAF();
                         break;
                 }
             });
@@ -251,7 +329,194 @@ namespace Werewolf.Game
                 config.SetLanguageAsync(userConfig.Language ?? config.Language),
             }.Select(x => x.AsTask())).CAF();
 
-            //todo: UserFactory
+            var task = Game.Theme?.Users.GetUser(UserEntry.User.Id, false).CAF();
+            if (task.HasValue)
+                await task.Value;
+            Game.SendEvent(new Theme.Events.SetUserConfig(UserEntry.User));
+
+            return null;
+        }
+
+        private async Task<string?> Handle(Events.GameStart gameStart)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (Game.Phase != null)
+                return "game is already running";
+
+            if (!Game.FullConfiguration)
+                return "some roles are missing or there are to much roles defined";
+
+            var random = new Random();
+            var roles = Game.RoleConfiguration
+                .SelectMany(x => Enumerable.Repeat(x.Key, x.Value))
+                .Select(x => x.CreateNew())
+                .ToList();
+            var players = Game.Users.Values
+                .Where(x => Game.LeaderIsPlayer || x.User.Id != UserEntry.User.Id)
+                .ToArray();
+
+            foreach (var player in players)
+            {
+                var index = random.Next(roles.Count);
+                player.Role = roles[index];
+                roles.RemoveAt(index);
+            }
+
+            await Game.StartGameAsync().CAF();
+            return null;
+        }
+
+        private async Task<string?> Handle(Events.GameNext gameNext)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (Game.Phase == null)
+                return "there is no current phase";
+
+            await Game.NextPhaseAsync().CAF();
+
+            return null;
+        }
+
+        private async Task<string?> Handle(Events.GameStop gameStop)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (Game.Phase == null)
+                return "the game is not running";
+
+            await Game.StopGameAsync(null).CAF();
+
+            return null;
+        }
+
+        private string? Handle(Events.VotingStart votingStart)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (Game.LeaderIsPlayer)
+                return "as a player you cannot start a voting";
+
+            var voting = Game.Phase?.Current.Votings
+                .Where(x => x.Id == votingStart.VotingId)
+                .FirstOrDefault();
+
+            if (voting == null)
+                return "no voting exists";
+
+            if (voting.Started)
+                return "voting already started";
+
+            voting.Started = true;
+            if (Game.UseVotingTimeouts)
+                voting.SetTimeout(Game, true);
+
+            return null;
+        }
+
+        private string? Handle(Events.Vote vote)
+        {
+            var voting = Game.Phase?.Current.Votings
+                .Where(x => x.Id == vote.VotingId)
+                .FirstOrDefault();
+            if (voting == null)
+                return "no voting exists";
+
+            if (!Game.Users.TryGetValue(UserEntry.User.Id, out GameUserEntry? entry))
+                entry = null;
+            var ownRole = entry?.Role;
+            if (ownRole == null || !voting.CanVote(ownRole))
+                return "you are not allowed to vote";
+
+            if (!voting.Started)
+                return "voting is not started";
+            
+            return voting.Vote(Game, UserEntry.User.Id, vote.EntryId);
+        }
+
+        private string? Handle(Events.VotingWait votingWait)
+        {
+            var voting = Game.Phase?.Current.Votings
+                .Where(x => x.Id == votingWait.VotingId)
+                .FirstOrDefault();
+            if (voting == null)
+                return "no voting exists";
+
+            if (!Game.Users.TryGetValue(UserEntry.User.Id, out GameUserEntry? entry))
+                entry = null;
+            var ownRole = entry?.Role;
+            if ((UserEntry.User.Id != Game.Leader || Game.LeaderIsPlayer) 
+                && (ownRole == null || !voting.CanVote(ownRole)))
+                return "you are not allowed to vote";
+
+            if (!voting.Started)
+                return "voting is not started";
+
+            if (!Game.UseVotingTimeouts)
+                return "there are no timeouts activated for this voting";
+
+            if (!voting.SetTimeout(Game, false))
+                return "timeout already reseted. Try later!";
+
+            return null;
+        }
+
+        private async Task<string?> Handle(Events.VotingFinish votingFinish)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (Game.LeaderIsPlayer)
+                return "as a player you cannot finish a voting";
+
+            var voting = Game.Phase?.Current.Votings
+                .Where(x => x.Id == votingFinish.VotingId)
+                .FirstOrDefault();
+            if (voting == null)
+                return "no voting exists";
+
+            if (!voting.Started)
+                return "voting is not started";
+
+            await voting.FinishVotingAsync(Game).CAF();
+
+            return null;
+        }
+
+        private string? Handle(Events.KickUser kickUser)
+        {
+            if (UserEntry.User.Id != Game.Leader)
+                return "you are not the leader of the group";
+
+            if (!Game.Users.TryGetValue(kickUser.User, out GameUserEntry? entry)
+                || entry.Role is null)
+                return "player is not a participant";
+
+            Game.RemoveParticipant(entry.User);
+            Game.SendEvent(new Theme.Events.RemoveParticipant(kickUser.User));
+
+            return null;
+        }
+
+        private string? Handle(Events.Message message)
+        {
+            var currentPhase = Game.Phase?.Current;
+            var current = currentPhase?.LanguageId;
+            var role = Game.TryGetRole(UserEntry.User.Id);
+            var allowed = (UserEntry.User.Id == Game.Leader && !Game.LeaderIsPlayer) ||
+                currentPhase == null ||
+                (current == message.Phase && role != null && currentPhase.CanMessage(Game, role));
+            Game.SendEvent(new Theme.Events.ChatEvent(
+                UserEntry.User.Id, 
+                message.Phase, 
+                message.Content, 
+                allowed
+            ));
 
             return null;
         }

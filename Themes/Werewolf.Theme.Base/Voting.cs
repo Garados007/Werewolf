@@ -197,7 +197,7 @@ namespace Werewolf.Theme
             if (Timeout != null)
                 writer.WriteString("timeout", Timeout.Value);
             else writer.WriteNull("timeout");
-            writer.WriteStartObject("optionsDict"); // optionsDict
+            writer.WriteStartObject("options"); // optionsDict
             foreach (var (id, option) in Options)
             {
                 writer.WriteStartObject(id.ToString(format)); // id

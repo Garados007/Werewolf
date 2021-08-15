@@ -5,7 +5,7 @@
         public override string LanguageId => "day";
 
         public override string BackgroundId =>
-            $"/content/games/werwolf/img/{typeof(DefaultTheme).FullName}/background-day.png";
+            $"/content/img/{typeof(DefaultTheme).FullName}/background-day.png";
 
         public override string ColorTheme => "#34a3fe";
     }

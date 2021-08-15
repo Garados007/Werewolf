@@ -1,9 +1,11 @@
 module GameMain exposing (..)
 
 import Data
+import EventData exposing (EventData)
 import Model exposing (Model)
 import Network exposing (NetworkResponse)
 import Language exposing (Language)
+import Debug.Extra
 
 import Views.ViewUserList
 import Views.ViewRoomEditor
@@ -14,118 +16,162 @@ import Views.ViewSettingsBar
 import Views.ViewThemeEditor
 import Views.ViewModal
 import Views.ViewWinners
+import Views.ViewPlayerNotification
+import Views.ViewRoleInfo
+import Views.ViewChat
 
-import Browser
-import Browser.Navigation
+import Browser.Dom
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
-import Html.Lazy as HL
-import Url exposing (Url)
-import Url.Parser exposing ((</>))
-import Url.Parser.Query
 import Task
-import Debug.Extra
 import Time exposing (Posix)
 import Maybe.Extra
 import Dict
 import Views.ViewGamePhase
 import Maybe.Extra
-import Color exposing (Color)
-import Color.Accessibility as CA
-import Color.Convert as CC
-import Color.Manipulate as CM
-import Regex
 import Level
+import Styles
+
+import Json.Decode as JD
+import Json.Encode as JE
+import WebSocket
+import Maybe
+import Level
+import Styles
+import Styles
+import Views.ViewModal
+import Model
+import Language exposing (LanguageInfo)
+import Dict exposing (Dict)
 
 type Msg
     = Response NetworkResponse
     | SetTime Posix
-    | FetchData
     | Noop
+    | Init
     | WrapUser Views.ViewUserList.Msg
     | WrapEditor Views.ViewRoomEditor.Msg
     | WrapPhase Views.ViewGamePhase.Msg
     | WrapError Int
-    | WrapSelectModal Model.Modal
+    | WrapSelectModal Views.ViewSettingsBar.Msg
     | WrapThemeEditor Views.ViewThemeEditor.Msg
+    | WrapChat Views.ViewChat.Msg
     | CloseModal
+    | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
 
-init : String -> (Model, Cmd Msg)
-init token =
-    ( Model.init token
-    , Cmd.map Response
-        <| Cmd.batch
-            [ Network.executeRequest
-                <| Network.GetGame token
-            , Network.executeRequest
-                <| Network.GetRoles
-            , Network.executeRequest
-                <| Network.GetLangInfo
-            ]
+init : String -> String -> String -> LanguageInfo -> Dict String Language -> (Model, Cmd Msg)
+init token api selLang langInfo rootLang =
+    ( Model.init token selLang langInfo rootLang
+    , Cmd.batch
+        [ Task.perform identity
+            <| Task.succeed Init
+        , Network.wsSend Network.FetchRoles
+        , Network.wsConnect api token
+        ]
     )
 
 view : Model -> List (Html Msg)
-view model =
-    let
-        lang : Language
-        lang = Model.getLanguage model
-    in
-    
-        [ Html.node "link"
-            [ HA.attribute "rel" "stylesheet"
-            , HA.attribute "property" "stylesheet"
-            , HA.attribute "href" "/content/games/werwolf/css/style.css"
-            ] []
-        , viewStyles
-            <| Maybe.withDefault model.bufferedConfig
-            <| Maybe.Extra.orElse
-                ( Maybe.andThen .userConfig model.game)
-            <| case model.modal of
-                Model.SettingsModal conf ->
-                    Just conf.config
-                _ -> Nothing
-        , tryViewGamePhase model lang
-            |> Maybe.Extra.orElseLazy
-                (\() -> tryViewGameFrame model lang)
-            |> Maybe.Extra.orElseLazy
-                (\() -> Just
-                    <| Views.ViewNoGame.view lang
-                    <| model.game == Nothing || model.roles == Nothing
+view model = view_internal model <| Model.getLanguage model
+
+view_internal : Model -> Language -> List (Html Msg)
+view_internal model lang =
+    [ Html.node "link"
+        [ HA.attribute "rel" "stylesheet"
+        , HA.attribute "property" "stylesheet"
+        , HA.attribute "href" "/content/css/style.css"
+        ] []
+    , Html.node "link"
+        [ HA.attribute "rel" "stylesheet"
+        , HA.attribute "property" "stylesheet"
+        , HA.attribute "href" "/content/vendor/flag-icon-css/css/flag-icon.min.css"
+        ] []
+    , Styles.view model.now model.styles
+    , tryViewGamePhase model lang
+        |> Maybe.Extra.orElseLazy
+            (\() -> tryViewGameFrame model lang)
+        |> Maybe.Extra.orElseLazy
+            (\() -> Just
+                <| Views.ViewNoGame.view lang
+                <| model.game == Nothing || model.roles == Nothing
+            )
+        |> Maybe.withDefault (text "")
+    , case (model.chatView, Maybe.andThen .game model.game) of
+        (Just input, Just game) -> 
+            Views.ViewChat.view lang game model.chats input
+                |> Html.map WrapChat
+        _ -> text ""
+    , case model.modal of
+        Model.NoModal -> text ""
+        Model.SettingsModal conf ->
+            Views.ViewModal.viewExtracted CloseModal WrapThemeEditor
+                ( Language.getTextOrPath lang
+                    [ "modals", "theme-editor", "title" ]
                 )
-            |> Maybe.withDefault (text "")
-        , case model.modal of
-            Model.NoModal -> text ""
-            Model.SettingsModal conf ->
-                Views.ViewModal.viewExtracted CloseModal WrapThemeEditor
+                <| List.singleton
+                <| Views.ViewThemeEditor.view
+                    lang
+                    model.langInfo.icons
+                    conf
+        Model.WinnerModal game list ->
+            Html.map (always CloseModal)
+                <| Views.ViewModal.viewOnlyClose 
                     ( Language.getTextOrPath lang
-                        [ "modals", "theme-editor", "title" ]
+                        [ "modals", "winner", "title" ]
                     )
-                    <| List.singleton
-                    <| Views.ViewThemeEditor.view
-                        lang
-                        conf
-            Model.WinnerModal game list ->
-                Html.map (always CloseModal)
-                    <| Views.ViewModal.viewOnlyClose 
-                        ( Language.getTextOrPath lang
-                            [ "modals", "winner", "title" ]
-                        )
-                    <| List.singleton
-                    <| Views.ViewWinners.view
-                        lang
-                        model.now model.levels
-                        game list
-        , Views.ViewErrors.view model.errors
-            |> Html.map WrapError
-        , Debug.Extra.viewModel model
-        ]
+                <| List.singleton
+                <| Views.ViewWinners.view
+                    lang
+                    model.now model.levels
+                    game list
+        Model.PlayerNotification notification ->
+            Html.map (always CloseModal)
+                <| Views.ViewModal.viewOnlyClose
+                    ( Language.getTextOrPath lang
+                        [ "modals", "player-notification", "title" ]
+                    )
+                <| List.map
+                    (\(nid,player) ->
+                        Views.ViewPlayerNotification.view
+                            lang
+                            (Maybe.andThen .game model.game)
+                            nid
+                            player
+                    )
+                <| Dict.toList notification
+        Model.RoleInfo roleKey ->
+            Html.map (always CloseModal)
+                <| Views.ViewModal.viewOnlyClose
+                    ( Language.getTextOrPath lang
+                        [ "theme", "roles", roleKey ]
+                    )
+                <| List.singleton
+                <| Views.ViewRoleInfo.view lang roleKey
+    , Views.ViewErrors.view model.errors
+        |> Html.map WrapError
+    -- , Debug.Extra.viewModel model
+    ]
+
+viewEvents : List (Bool, String) -> Html msg
+viewEvents events =
+    div [ class "event-list" ]
+        <| List.map
+            (\(used, content) ->
+                div [ HA.classList
+                        [ ("event-item", True)
+                        , ("used", used)
+                        ]
+                    ]
+                    [ text content ]
+            )
+            events
+    -- text ""
 
 tryViewGameFrame : Model -> Language -> Maybe (Html Msg)
 tryViewGameFrame model lang =
     Maybe.Extra.andThen2
         (\result roles ->
             Maybe.map2
-                (viewGameFrame model lang roles)
+                (viewGameFrame model lang roles result)
                 result.game
                 result.user
         )
@@ -135,10 +181,11 @@ tryViewGameFrame model lang =
 viewGameFrame : Model
     -> Language
     -> Data.RoleTemplates
+    -> Data.GameUserResult
     -> Data.Game
     -> String
     -> Html Msg
-viewGameFrame model lang roles game user =
+viewGameFrame model lang roles gameResult game user =
     div [ class "frame-game-outer" ]
         [ div [ class "frame-game-left" ]
             [ Html.map WrapUser
@@ -153,12 +200,15 @@ viewGameFrame model lang roles game user =
             , Html.map WrapEditor
                 <| Views.ViewRoomEditor.view
                     lang
+                    model.langInfo
                     roles
-                    model.theme
+                    gameResult
+                    (Just game.theme)
                     game
                     (user == game.leader)
                     model.editor
             ]
+        , viewEvents model.events
         ]
 
 tryViewGamePhase : Model -> Language -> Maybe (Html Msg)
@@ -200,97 +250,51 @@ viewGamePhase model lang game user phase =
                 <| Views.ViewGamePhase.view
                     lang
                     model.now
-                    model.token
                     game
                     phase
                     (user == game.leader)
                     user
             ]
+        , viewEvents model.events
         ]
-
-viewStyles : Data.UserConfig -> Html msg
-viewStyles = HL.lazy <| \config ->
-    let
-        colorBase : Color
-        colorBase = CC.hexToColor config.theme
-            |> Result.toMaybe
-            |> Maybe.withDefault Color.white
-        
-        isDark : Bool
-        isDark = CA.luminance colorBase <= 0.5
-
-        darken : Float -> Color -> Color
-        darken = if isDark then CM.lighten else CM.darken
-
-        colorBackground : Color
-        colorBackground = colorBase
-
-        textColor : Color
-        textColor = if isDark then Color.white else Color.black
-        
-        textColorLight : Color
-        textColorLight = CM.weightedMix
-            colorBase
-            textColor
-            0.375
-        
-        textInvColor : Color
-        textInvColor = if isDark then Color.black else Color.white
-        
-        colorLight : Color
-        colorLight = darken 0.20 colorBase
-
-        colorMedium : Color
-        colorMedium = darken 0.30 colorBase
-
-        colorDark : Color
-        colorDark = darken 0.40 colorBase
-
-        colorDarker : Color
-        colorDarker = darken 0.50 colorBase
-
-        build : String -> Regex.Regex
-        build = Regex.fromString >> Maybe.withDefault Regex.never
-
-    in div [ class "styles" ]
-        [ Html.node "style"
-            [ HA.rel "stylesheet" ]
-            <| List.singleton
-            <| text
-            <| (\style -> 
-                    ":root { " ++ style ++ "; --bg-url: url(\"" ++
-                    (config.background 
-                        |> Regex.replace (build "\\s") (always "")
-                        |> Regex.replace (build "\\\\") (always "\\\\")
-                        |> Regex.replace (build "\"") (always "\\\"")
-                    )
-                    ++ "\"); }" 
-                )
-            <| String.concat
-            <| List.intersperse "; "
-            <| List.map
-                (\(rule, color) ->
-                    "--" ++ rule ++ ": " ++ CC.colorToCssRgba color
-                )
-                [ ("color-base", colorBase)
-                , ("color-background", colorBackground)
-                , ("text-color", textColor)
-                , ("text-color-light", textColorLight)
-                , ("text-inv-color", textInvColor)
-                , ("color-light", colorLight)
-                , ("color-light-transparent", CM.fadeOut 0.4 colorLight)
-                , ("color-medium", colorMedium)
-                , ("color-dark", colorDark)
-                , ("color-dark-transparent", CM.fadeOut 0.4 colorLight)
-                , ("color-darker", colorDarker)
-                , ("color-darker-transparent", CM.fadeOut 0.4 colorLight)
-                ]
-        , div [ class "background" ] []
-        ]
-    
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
+    let
+        (newModel, cmd) = update_internal msg model
+    in Tuple.pair
+        { newModel
+        | styles = Styles.pushState
+                newModel.now
+                newModel.styles
+            <| Maybe.withDefault 
+                model.bufferedConfig
+            <| Maybe.Extra.orElse
+                ( Maybe.andThen .userConfig model.game)
+            <| Maybe.Extra.orElse
+                ( Maybe.andThen .game model.game
+                    |> Maybe.andThen .phase
+                    |> Maybe.map .stage
+                    |> Maybe.andThen
+                        (\stage ->
+                            if stage.backgroundId == ""
+                            then Nothing
+                            else Just
+                                { theme = stage.theme
+                                , background = stage.backgroundId
+                                , language = ""
+                                }   
+                        )
+                )
+            <| case model.modal of
+                Model.SettingsModal conf ->
+                    Just conf.config
+                _ -> Nothing
+        }
+        cmd
+
+update_internal : Msg -> Model -> (Model, Cmd Msg)
+update_internal msg model =
     case msg of
         Response resp ->
             Tuple.mapSecond
@@ -302,43 +306,45 @@ update msg model =
                 )
             <| Model.applyResponse resp model
         Noop -> (model, Cmd.none)
+        Init ->
+            Tuple.pair model
+                <| Cmd.map Response
+                <| Cmd.batch []
+                    -- [ Network.executeRequest
+                    --     <| Network.GetGame model.token
+                    -- , Network.executeRequest
+                    --     <| Network.GetRoles
+                    -- ]
         SetTime now ->
             Tuple.pair
                 { model | now = now }
                 Cmd.none
-        FetchData ->
-            Tuple.pair model
-                <| Cmd.map Response
-                <| Network.executeRequest
-                <| Network.GetGame model.token
         WrapUser (Views.ViewUserList.Send req) ->
             Tuple.pair model
-                <| Cmd.map Response
-                <| Network.executeRequest req
+            <| Network.execute Response req
         WrapEditor (Views.ViewRoomEditor.SetBuffer buffer req) ->
             Tuple.pair
                 { model | editor = buffer }
-                <| Cmd.map Response
-                <| Network.executeRequest
-                <| Network.PostGameConfig model.token req
+            <| Network.wsSend
+            <| Network.SetGameConfig req
         WrapEditor (Views.ViewRoomEditor.SendConf req) ->
             Tuple.pair model
-                <| Cmd.map Response
-                <| Network.executeRequest
-                <| Network.PostGameConfig model.token req
+            <| Network.wsSend
+            <| Network.SetGameConfig req
         WrapEditor Views.ViewRoomEditor.StartGame ->
             Tuple.pair model
-                <| Cmd.map Response
-                <| Network.executeRequest
-                <| Network.GetGameStart model.token
+            <| Network.wsSend Network.GameStart
+        WrapEditor (Views.ViewRoomEditor.ShowRoleInfo roleKey) ->
+            Tuple.pair
+                { model | modal = Model.RoleInfo roleKey }
+                Cmd.none
         WrapEditor Views.ViewRoomEditor.Noop ->
             Tuple.pair model Cmd.none
         WrapPhase Views.ViewGamePhase.Noop ->
             Tuple.pair model Cmd.none
         WrapPhase (Views.ViewGamePhase.Send req) ->
             Tuple.pair model
-                <| Cmd.map Response
-                <| Network.executeRequest req
+            <| Network.execute Response req
         WrapError index ->
             Tuple.pair
                 { model 
@@ -353,8 +359,17 @@ update msg model =
                     <| model.errors
                 }
                 Cmd.none
-        WrapSelectModal modal ->
+        WrapSelectModal (Views.ViewSettingsBar.ViewModal modal) ->
             Tuple.pair { model | modal = modal } Cmd.none
+        WrapSelectModal Views.ViewSettingsBar.ViewChat ->
+            Tuple.pair 
+                { model 
+                | chatView = Just ""
+                , chats = List.map
+                    (\chat -> { chat | shown = True })
+                    model.chats
+                } 
+                Cmd.none
         WrapThemeEditor sub ->
             case model.modal of
                 Model.SettingsModal editor ->
@@ -369,26 +384,121 @@ update msg model =
                     in Tuple.pair
                         { model | modal = Model.SettingsModal newEditor }
                         <| Cmd.batch
-                        <| List.map
-                            ( Cmd.map Response
-                                << Network.executeRequest
-                                << Network.PostUserConfig model.token
+                        <| List.map 
+                            (Network.wsSend 
+                                << Network.SetUserConfig
                             )
                             sendEvents
                 _ -> (model, Cmd.none)
+        WrapChat (Views.ViewChat.SetInput input) ->
+            Tuple.pair
+                { model | chatView = Just input }
+                Cmd.none
+        WrapChat (Views.ViewChat.Send input) ->
+            Tuple.pair
+                { model | chatView = Just "" }
+            <| Network.wsSend
+            <| Network.Message
+                (model.game
+                    |> Maybe.andThen .game
+                    |> Maybe.andThen .phase
+                    |> Maybe.map .langId
+                )
+                input
+        WrapChat Views.ViewChat.Close ->
+            Tuple.pair
+                { model | chatView = Nothing }
+                Cmd.none
         CloseModal ->
             ({ model | modal = Model.NoModal }, Cmd.none)
+        WsMsg (Ok (WebSocket.Data d)) ->
+            let
+                d_ = Debug.log "ws" d.data
+
+                decodedData : Result String EventData
+                decodedData = d.data
+                    |> JD.decodeString EventData.decodeEventData
+                    |> Result.mapError JD.errorToString
+
+                formatedRaw : String
+                formatedRaw = d.data
+                    |> JD.decodeString JD.value
+                    |> Result.toMaybe
+                    |> Maybe.map (JE.encode 2)
+                    |> Maybe.withDefault d.data
+
+                doScroll : String -> Cmd Msg
+                doScroll id =
+                    Browser.Dom.getViewportOf id
+                        |> Task.andThen
+                            (\info ->
+                                Browser.Dom.setViewportOf
+                                    id
+                                    0
+                                    info.scene.height
+                            )
+                        |> Task.attempt
+                            (always Noop)
+
+                doScrollIfNewChat : (Model, Cmd Msg) -> (Model, Cmd Msg)
+                doScrollIfNewChat (newModel,newMsg) =
+                    if newModel.chats /= model.chats
+                    then Tuple.pair newModel
+                        <| Cmd.batch
+                            [ newMsg
+                            , doScroll "chat-box-history"
+                            ]
+                    else (newModel, newMsg)
+                    
+            in case decodedData of
+                Ok data ->
+                    doScrollIfNewChat
+                    <| Tuple.mapSecond
+                        (List.map
+                            (Network.execute Response)
+                            >> Cmd.batch
+                        )
+                    <| Model.applyEventData data model
+                        -- { model
+                        -- | events = (True, formatedRaw) :: model.events
+                        -- }
+                Err err -> Tuple.pair 
+                    { model
+                    | events = (False, formatedRaw) :: model.events
+                    , errors = (++) model.errors
+                        <| List.singleton 
+                        <| "Socket error: " ++ err
+                    }
+                    Cmd.none
+        WsMsg (Ok (WebSocket.Error { error })) ->
+            Tuple.pair
+                { model
+                | errors = model.errors ++ [ error ]
+                }
+                Cmd.none
+        WsMsg (Err err) ->
+            Tuple.pair
+                { model
+                | errors = (++) model.errors
+                    <| List.singleton
+                    <| Debug.toString err
+                }
+                Cmd.none
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Time.every
-            (   if Dict.values model.levels
-                    |> List.any Level.isAnimating
+            (   if (Dict.values model.levels
+                        |> List.any Level.isAnimating
+                    ) 
+                    || Styles.isAnimating model.now model.styles
                 then 50
                 else 1000
             )
-            SetTime
+            SetTime  
+        -- , Time.every 1000 SetTime
+        -- [ Sub.none
         -- , if model.game 
         --         |> Maybe.map 
         --             (\result -> result.game /= Nothing &&
@@ -397,4 +507,6 @@ subscriptions model =
         --         |> Maybe.withDefault True
         --     then Time.every 3000 (always FetchData)
         --     else Time.every 20000 (always FetchData)
+        -- , Time.every 60000 (always FetchData)
+        , Network.wsReceive WsMsg
         ]
