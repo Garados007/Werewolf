@@ -12,5 +12,3 @@ content/index.js
 elm-stuff
 # runtime stuff
 .litedb
-.env
-keyfile

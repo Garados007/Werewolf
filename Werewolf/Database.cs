@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using MongoDB.Driver;
+using MaxLib.Ini;
 
 namespace Werewolf
 {
@@ -11,12 +12,13 @@ namespace Werewolf
 
         public IMongoCollection<User.DB.UserInfo> UserInfo { get; }
 
-        public Database()
+        public Database(IniGroup config)
         {
-            var settings = MongoClientSettings.FromConnectionString("mongodb://localhost");
-            settings.ApplicationName = "Werewolf";
+            var target = config.GetString("connection", "mongodb://localhost");
+            var settings = MongoClientSettings.FromConnectionString(target);
+            settings.ApplicationName = config.GetString("application", "Werewolf");
             dbClient = new MongoClient(settings);
-            database = dbClient.GetDatabase("Werewolf");
+            database = dbClient.GetDatabase(config.GetString("database", "Werewolf"));
             UserInfo = database.GetCollection<User.DB.UserInfo>("user_info");
         }
 

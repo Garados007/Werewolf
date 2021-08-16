@@ -1,0 +1,37 @@
+version: "3.9"
+services:
+    game:
+        build:
+            context: .
+            dockerfile: ./docker/game-server.Dockerfile
+        container_name: werewolf-game
+        environment:
+            # DB_CONNECTION: mongodb://root:werewolf@werewolf-db
+            DB_CONNECTION: mongodb://werewolf-db
+            GAME_SERVER_NAME: ${GAME_SERVER_NAME}
+            GAME_SERVER_DOMAIN: ${GAME_SERVER_DOMAIN}
+            PRONTO_URL: ${PRONTO_URL}
+            PRONTO_TOKEN: ${PRONTO_TOKEN}
+            OAUTH_USERINFO: ${OAUTH_USERINFO}
+        ports:
+            - 8100:8000
+        restart: unless-stopped
+    ui:
+        build:
+            context: .
+            dockerfile: ./docker/game-ui.Dockerfile
+        container_name: werewolf-ui
+        ports:
+            - 8000:80
+        restart: unless-stopped
+    db:
+        build:
+            context: .
+            dockerfile: ./docker/game-db.Dockerfile
+        container_name: werewolf-db
+        # environment:
+        #     MONGO_INITDB_ROOT_USERNAME: root
+        #     MONGO_INITDB_ROOT_PASSWORD: werewolf
+        volumes:
+            - ./keyfile:/keyfile:ro
+        restart: unless-stopped

@@ -17,6 +17,7 @@ namespace Werewolf
         private static async Task Main(string[] args)
         {
             var config = new IniParser().Parse("config.ini");
+            UseVarsFromEnv(config);
             var group = GetGroup(config, args) ?? new IniGroup("game-server");
 
             Log.Logger = new LoggerConfiguration()
@@ -26,7 +27,7 @@ namespace Werewolf
                 .CreateLogger();
             WebServerLog.LogPreAdded += WebServerLog_LogPreAdded;
 
-            using var db = new Database();
+            using var db = new Database(config.GetGroup("db") ?? new IniGroup("db"));
 
             using var pronto = GameController.Pronto = new Pronto.Pronto(new Pronto.ProntoConfig(
                 config.GetGroup("pronto") ?? new IniGroup("pronto")
@@ -87,7 +88,12 @@ namespace Werewolf
 
             server.Start();
 
-            if (Console.IsInputRedirected)
+            if (System.IO.File.Exists("/.dockerenv"))
+            {
+                Console.WriteLine("Inside docker. Use docker to quit.");
+                await Task.Delay(-1).CAF();
+            }
+            else if (Console.IsInputRedirected)
             {
                 Console.WriteLine("Enter to quit");
                 Console.ReadLine();
@@ -161,6 +167,54 @@ namespace Werewolf
             return args.Length == 0
                 ? file.GetGroup("game-server")
                 : GetGroup(file, args[0]);
+        }
+
+        private static void UseVarsFromEnv(IniFile file)
+        {
+            var env = Environment.GetEnvironmentVariables();
+            foreach (var group in file)
+            {
+                var prefix = group.IsRoot ? "" : 
+                    $"{TransformName(group.Name)}_";
+                foreach (var option in group.GetAll())
+                {
+                    var name = $"{prefix}{TransformName(option.Name)}";
+                    if (env.Contains(name))
+                    {
+                        var opt = env[name]?.ToString() ?? "";
+                        if (option.ValueText.StartsWith('"'))
+                            option.ValueText = $"\"{opt.Replace("\"", "\\\"")}\"";
+                        else option.ValueText = opt;
+                    }
+                }
+            }
+        }
+
+        private static string TransformName(string name)
+        {
+            var sb = new System.Text.StringBuilder(name.Length);
+            var skip = false;
+            foreach (var @char in name)
+            {
+                if (char.IsLower(@char))
+                {
+                    sb.Append(char.ToUpper(@char));
+                    skip = false;
+                    continue;
+                }
+                if (char.IsUpper(@char) || char.IsDigit(@char))
+                {
+                    sb.Append(@char);
+                    skip = false;
+                    continue;
+                }
+                if (!skip)
+                {
+                    sb.Append('_');
+                    skip = true;
+                }
+            }
+            return sb.ToString();
         }
     }
 }
