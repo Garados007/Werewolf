@@ -68,6 +68,7 @@ view model =
                         [ HA.type_ "text"
                         , HA.value model.email
                         , HE.onInput SetEmail
+                        , HA.placeholder model.name
                         ] []
                     ]
                 ]
@@ -77,7 +78,9 @@ view model =
                 [ HE.onClick DoBack ]
                 [ text "Back" ]
             , Html.button
-                [ HE.onClick DoContinue ]
+                [ HE.onClick DoContinue 
+                , HA.disabled <| model.name == ""
+                ]
                 [ text "Continue" ]
             ]
         ]
@@ -86,12 +89,30 @@ update : Msg -> Model -> (Model, Cmd Msg, Maybe (Result () UserInfo))
 update msg model =
     case msg of
         SetName name ->
-            Triple.triple
+            if model.email == ""
+            then Debounce.update
+                    (Debounce.Change name)
+                    model.debouncer
+                |> \(new, cmd, _) ->
+                    Triple.triple
+                        { model
+                        | name = name
+                        , debouncer = new
+                        }
+                        (Cmd.map Debounce cmd)
+                        Nothing
+            else Triple.triple
                 { model | name = name }
                 Cmd.none
                 Nothing
         SetEmail email ->
-            Debounce.update (Debounce.Change email) model.debouncer
+            Debounce.update 
+                (Debounce.Change <|
+                    if email == ""
+                    then model.name
+                    else email
+                ) 
+                model.debouncer
             |> \(new, cmd, _) ->
                 Triple.triple
                     { model 
@@ -114,12 +135,19 @@ update msg model =
             <| Just
             <| Err ()
         DoContinue ->
-            Triple.triple
-                model
-                Cmd.none
-            <| Just
-            <| Ok
-            <| Data.UserInfo model.name
-            <| "https://www.gravatar.com/avatar/"
-            ++ MD5.hex model.email
-            ++ "?d=identicon"
+            if model.name == ""
+            then Triple.triple model Cmd.none Nothing
+            else
+                Triple.triple
+                    model
+                    Cmd.none
+                <| Just
+                <| Ok
+                <| Data.UserInfo model.name
+                <| "https://www.gravatar.com/avatar/"
+                ++ MD5.hex 
+                    ( if model.email == ""
+                        then model.name
+                        else model.email
+                    )
+                ++ "?d=identicon"
