@@ -80,7 +80,7 @@ wsSend request =
                             conf.newAllCanSeeRoleOfDead
                         , Maybe.map
                             (\x -> ("autostart-votings", JE.bool x))
-                            conf.autofinishVotings
+                            conf.autostartVotings
                         , Maybe.map
                             (\x -> ("autofinish-votings", JE.bool x))
                             conf.autofinishVotings
