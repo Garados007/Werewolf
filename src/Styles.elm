@@ -155,6 +155,7 @@ viewConfig oldConfig config weight =
         , div 
             [ class "background"
             , class "old"
+            , HA.style "opacity" <| String.fromFloat <| 1 - weight
             ] []
         , div 
             [ class "background"
