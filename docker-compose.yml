@@ -22,7 +22,7 @@ services:
             dockerfile: ./docker/game-ui.Dockerfile
         container_name: werewolf-ui
         ports:
-            - 8000:80
+            - 8004:80
         restart: unless-stopped
     db:
         build:
