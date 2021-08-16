@@ -186,6 +186,11 @@ body {
 .user-image-box {
   padding-right: 0.5em;
 }
+.user-frame .user-image,
+.notification-box .player-image,
+.winner-box .image {
+  position: relative;
+}
 .user-image img {
   width: 3em;
   height: 3em;
@@ -194,6 +199,19 @@ body {
 }
 .user-frame:hover .user-image img {
   border-radius: 0;
+}
+.notification-box .player-image .guest,
+.user-frame .guest,
+.winner-box .image .guest {
+  position: absolute;
+  font-size: 0.75em;
+  top: 0;
+  left: 0;
+  background-color: var(--color-background);
+  padding: 0.05em 0.1em;
+}
+.winner-box .image .guest {
+  font-size: 2em;
 }
 .user-frame .user-name {
   font-size: 1.2em;

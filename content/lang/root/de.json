@@ -60,7 +60,8 @@
         "played-games": "gespielte Spiele",
         "leader": "Spielleiter",
         "level": "Level",
-        "player-kick": "Spieler kicken"
+        "player-kick": "Spieler kicken",
+        "guest": "Gast"
     },
     "join-token": {
         "title": "Spieler hinzufügen",

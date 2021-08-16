@@ -64,6 +64,7 @@ decodeEventData =
                     JD.succeed GameUser
                     |> required "name" JD.string
                     |> required "img" JD.string
+                    |> required "is-guest" JD.bool
                     |> required "stats"
                         ( JD.succeed GameUserStats
                             |> required "win-games" JD.int

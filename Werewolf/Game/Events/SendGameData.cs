@@ -108,18 +108,7 @@ namespace Werewolf.Game.Events
                 }
 
                 writer.WriteStartObject("user");
-                writer.WriteString("name", entry.User.Config.Username);
-                writer.WriteString("img", entry.User.Config.Image);
-                writer.WriteBoolean("is-guest", entry.User.IsGuest);
-                writer.WriteStartObject("stats");
-                writer.WriteNumber("win-games", entry.User.Stats.WinGames);
-                writer.WriteNumber("killed", entry.User.Stats.Killed);
-                writer.WriteNumber("loose-games", entry.User.Stats.LooseGames);
-                writer.WriteNumber("leader", entry.User.Stats.Leader);
-                writer.WriteNumber("level", entry.User.Stats.Level);
-                writer.WriteNumber("current-xp", entry.User.Stats.CurrentXp);
-                writer.WriteNumber("max-xp", entry.User.Stats.LevelMaxXP);
-                writer.WriteEndObject(); // end of stats
+                entry.User.WriteContent(writer);
                 writer.WriteEndObject(); // end of user
 
                 writer.WriteBoolean("is-online", entry.IsOnline);

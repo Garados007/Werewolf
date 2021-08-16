@@ -81,10 +81,17 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                 [ div [ class "user-image-box" ]
                     <| List.singleton
                     <| div [ class "user-image" ]
-                    <| List.singleton
-                    <| Html.img
+                    [ Html.img
                         [ HA.src user.img ]
                         []
+                    , if user.isGuest
+                        then div [ class "guest" ]
+                            <| List.singleton
+                            <| text
+                            <| Language.getTextOrPath lang
+                                [ "user-stats", "guest" ]
+                        else text ""
+                    ]
                 , div [ class "user-info-box" ]
                     [ div [ class "user-name" ]
                         [ text user.name ]

@@ -103,6 +103,8 @@ type alias GameParticipant =
 type alias GameUser =
     { name: String
     , img: String
+    , isGuest: Bool
+    -- , isOnline: Bool
     , stats: GameUserStats
     , level: LevelData
     }
@@ -175,6 +177,7 @@ decodeGameUserResult =
                     (JD.succeed GameUser
                         |> required "name" JD.string
                         |> required "img" JD.string
+                        |> required "is-guest" JD.bool
                         |> required "stats"
                             (JD.succeed GameUserStats
                                 |> required "win-games" JD.int

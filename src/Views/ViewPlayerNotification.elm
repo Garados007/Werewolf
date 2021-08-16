@@ -15,10 +15,17 @@ view lang game notificationId player =
                     (\user ->
                         div [ class "player" ]
                             [ div [ class "player-image" ]
-                                <| List.singleton
-                                <| Html.img
+                                [ Html.img
                                     [ HA.src user.img ]
                                     []
+                                , if user.isGuest
+                                    then div [ class "guest" ]
+                                        <| List.singleton
+                                        <| text
+                                        <| Language.getTextOrPath lang
+                                            [ "user-stats", "guest" ]
+                                    else text ""
+                                ]
                             , div [ class "player-name" ]
                                 [ text <| user.name ]
                             ]

@@ -26,6 +26,11 @@ view lang now levels game winners =
                         |> Maybe.map .name
                         |> Maybe.withDefault winner
                     
+                    isGuest : Bool
+                    isGuest = Dict.get winner game.user
+                        |> Maybe.map .isGuest
+                        |> Maybe.withDefault False
+                    
                     role : String
                     role = Language.getTextOrPath lang
                         [ "theme"
@@ -46,9 +51,18 @@ view lang now levels game winners =
                             }
                     
                 in div [ class "winner" ]
-                    [ Html.img
-                        [ HA.src img ]
-                        []
+                    [ div [ class "image" ]
+                        [ Html.img
+                            [ HA.src img ]
+                            []
+                        , if isGuest
+                            then div [ class "guest" ]
+                                <| List.singleton
+                                <| text
+                                <| Language.getTextOrPath lang
+                                    [ "user-stats", "guest" ]
+                            else text ""
+                        ]
                     , div [ class "name" ]
                         [ text name ]
                     , div [ class "role" ]
