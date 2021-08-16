@@ -41,6 +41,7 @@ type alias Model =
     , chats: List Data.ChatMessage
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
+    , codeCopied: Maybe Posix
     }
 
 type Modal
@@ -80,6 +81,7 @@ init token selLang langInfo rootLang joinToken =
     , chats = []
     , chatView = Nothing
     , joinToken = joinToken
+    , codeCopied = Nothing
     }
 
 getSelectedLanguage : Data.GameUserResult -> String

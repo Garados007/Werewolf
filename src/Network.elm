@@ -1,4 +1,4 @@
-port module Network exposing
+module Network exposing
     ( EditGameConfig
     , EditUserConfig
     , NetworkRequest (..)
@@ -13,8 +13,6 @@ port module Network exposing
     , wsReceive
     , wsConnect
     , wsSend
-    , receiveSocketMsg
-    , sendSocketCommand
     , execute
     )
 
@@ -25,9 +23,7 @@ import Json.Decode as JD
 import Json.Encode as JE
 import WebSocket
 import EventData exposing (EventData(..))
-
-port receiveSocketMsg : (JD.Value -> msg) -> Sub msg
-port sendSocketCommand : JE.Value -> Cmd msg
+import Ports exposing (..)
 
 wsReceive : (Result JD.Error WebSocket.WebSocketMsg -> msg) -> Sub msg
 wsReceive tagger =

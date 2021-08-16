@@ -67,7 +67,9 @@
         "description": "Gib den Code deinen Mitspielern weiter:",
         "hint": "Zeigen",
         "refetch": "Neu anfordern",
-        "time": "Der Code ist noch {minute}:{second-leading}{second} gültig."
+        "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
+        "copied": "Kopiert!",
+        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren"
     },
     "chat": {
         "not-allowed": "Die Nachricht durfte nicht gesendet werden."

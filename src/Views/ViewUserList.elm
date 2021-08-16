@@ -15,10 +15,11 @@ import Time exposing (Posix)
 
 type Msg
     = Send Request
+    | CopyToClipboard String
 
 view : Language -> Posix -> Dict String Level -> Data.Game -> String -> Maybe Data.LobbyJoinToken
-    -> Html Msg
-view lang now levels game myId joinToken =
+    -> Maybe Posix -> Html Msg
+view lang now levels game myId joinToken codeCopyTimestamp =
     let
         getLeaderSpecText : String -> (() -> String) -> String
         getLeaderSpecText id func =
@@ -179,6 +180,13 @@ view lang now levels game myId joinToken =
                 )
                 joinToken
 
+        isCodeCopied : Bool
+        isCodeCopied =
+            case codeCopyTimestamp of
+                Nothing -> False
+                Just stamp ->
+                    (Time.posixToMillis stamp) + 2000 >= Time.posixToMillis now
+
         viewJoinToken : () -> Html Msg
         viewJoinToken () =
             div [ class "join-token" 
@@ -195,7 +203,12 @@ view lang now levels game myId joinToken =
                         [ "join-token", "description" ]
                 , case (joinToken, joinTokenValidTime) of
                     (Just code, Just _) ->
-                        div [ class "box" ]
+                        div [ class "box" 
+                            , HE.onClick <| CopyToClipboard code.token
+                            , HA.title
+                                <| Language.getTextOrPath lang
+                                    [ "join-token", "copy-hint" ]
+                            ]
                             [ div [ class "code" ]
                                 [ text code.token ]
                             , div [ class "hint" ]
@@ -203,6 +216,13 @@ view lang now levels game myId joinToken =
                                 <| text
                                 <| Language.getTextOrPath lang
                                     [ "join-token", "hint" ]
+                            , if isCodeCopied
+                                then div [ class "copied" ]
+                                    <| List.singleton
+                                    <| text
+                                    <| Language.getTextOrPath lang
+                                        [ "join-token", "copied" ]
+                                else text ""
                             ]
                     _ ->
                         div [ class "box" 
@@ -217,6 +237,7 @@ view lang now levels game myId joinToken =
                                 <| Language.getTextOrPath lang
                                     [ "join-token", "refetch" ]
                             ]
+
                 , case joinTokenValidTime of
                     Nothing -> text ""
                     Just time ->

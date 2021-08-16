@@ -62,6 +62,16 @@
         }
       })();
     </script>
+    <script>
+      function copyToClipboard(text) {
+        const temp = document.createElement("input");
+        temp.setAttribute("value", text);
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+      }
+    </script>
     <script src="/content/index.js"></script>
 </head>
 <body>
@@ -76,6 +86,7 @@
         }
         // Add this line!
         app.ports.sendSocketCommand.subscribe(sendSocketCommand);
+        app.ports.sendToClipboard.subscribe(copyToClipboard);
     </script>
 </body>
 </html>

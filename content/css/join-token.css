@@ -22,6 +22,7 @@
   padding: 0.25em 0;
   font-size: 1.1em;
   cursor: pointer;
+  position: relative;
 }
 .join-token .box:not(:hover) .code,
 .join-token .box:hover .hint {
@@ -33,4 +34,28 @@
 .join-token .time {
   font-size: 0.75em;
   text-align: right;
+}
+.join-token .copied {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  transform: translate(-50%, 0.5em);
+  background-color: var(--color-dark);
+  color: var(--text-inv-color);
+  white-space: nowrap;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  top: 100%;
+  box-shadow: 0.25em 0.25em 0.5em var(--color-dark-transparent)
+}
+.join-token .copied:before {
+  content: " ";
+  display: block;
+  border-style: solid;
+  border-width: 0 0.5em 0.5em 0.5em;
+  border-color: transparent transparent var(--color-dark) transparent;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
 }

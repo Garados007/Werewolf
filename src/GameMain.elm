@@ -31,6 +31,7 @@ import Views.ViewGamePhase
 import Maybe.Extra
 import Level
 import Styles
+import Ports
 
 import Json.Decode as JD
 import Json.Encode as JE
@@ -195,6 +196,7 @@ viewGameFrame model lang roles gameResult game user =
                     model.now model.levels
                     game user
                     model.joinToken
+                    model.codeCopied
             ]
         , div [ class "frame-game-body" ]
             [ Html.map WrapSelectModal
@@ -245,6 +247,7 @@ viewGamePhase model lang game user phase =
                     model.now model.levels
                     game user
                     model.joinToken
+                    model.codeCopied
             ]
         , div [ class "frame-game-body", class "top" ]
             [ Html.map WrapSelectModal
@@ -325,6 +328,13 @@ update_internal msg model =
         WrapUser (Views.ViewUserList.Send req) ->
             Tuple.pair model
             <| Network.execute Response req
+        WrapUser (Views.ViewUserList.CopyToClipboard content) ->
+            Tuple.pair
+                { model
+                | codeCopied = Just model.now
+                }
+            <| Ports.sendToClipboard
+            <| JE.string content
         WrapEditor (Views.ViewRoomEditor.SetBuffer buffer req) ->
             Tuple.pair
                 { model | editor = buffer }
