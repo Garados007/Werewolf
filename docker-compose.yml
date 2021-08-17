@@ -34,4 +34,7 @@ services:
         #     MONGO_INITDB_ROOT_PASSWORD: werewolf
         volumes:
             - ./keyfile:/keyfile:ro
+            - game-db:/data/db
         restart: unless-stopped
+volumes:
+    game-db:
