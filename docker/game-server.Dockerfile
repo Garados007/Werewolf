@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as builder
 WORKDIR /src
-COPY . .
+COPY ./Themes ./Themes
+COPY ./Werewolf ./Werewolf
+COPY ./Werewolf.sln ./Werewolf.sln
 RUN mkdir -p /app && \
     dotnet build --nologo -c RELEASE && \
     dotnet publish --nologo -c RELEASE -o /app

@@ -14,8 +14,20 @@ COPY ./preprocess-elm.sh /src/
 RUN chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
+    rm -r src/Debug && \
     mkdir /content && \
-    elm make --output=/content/index.js src/Main.elm
+    elm make --optimize --output=/content/index.js src/Main.elm
+
+FROM node:latest as js-compressor
+RUN npm install uglify-js --global
+WORKDIR /content
+COPY --from=builder /content/index.js /content/source.js
+RUN uglifyjs \
+        source.js \
+        --compress 'pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,unsafe_comps,unsafe' \
+        --mangle 'reserved=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9]' \
+        --output index.js && \
+    rm source.js
 
 FROM bitnami/git:latest as vendor
 WORKDIR /src
@@ -23,6 +35,6 @@ COPY . .
 RUN git submodule update --init --recursive
 
 FROM httpd:2.4
-COPY --from=builder /content /usr/local/apache2/htdocs/content
+COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
 COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
