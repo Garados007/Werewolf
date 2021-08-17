@@ -10,7 +10,11 @@ RUN apt-get -qq update -y && \
 WORKDIR /src
 COPY ./elm.json /src/
 COPY ./src /src/src
-RUN mkdir /content && \
+COPY ./preprocess-elm.sh /src/
+RUN chmod +x preprocess-elm.sh && \
+    ./preprocess-elm.sh && \
+    cd bin && \
+    mkdir /content && \
     elm make --output=/content/index.js src/Main.elm
 
 FROM bitnami/git:latest as vendor

@@ -9,7 +9,9 @@ import Maybe.Extra
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Events as HE
+--!BEGIN
 import Debug.Extra
+--!END
 import Config exposing (oauthBaseServerUrl)
 import OAuth
 import OAuth.AuthorizationCode as Auth
@@ -269,7 +271,7 @@ init () url key =
                 [ Url.Parser.s "login" <?> queryBool "dev"
                     |> Url.Parser.map
                     (\dev ->
-                        case Debug.log "oauth" <| Auth.parseCode url of
+                        case Auth.parseCode url of
                             Auth.Empty ->
                                 ( SelectUser
                                     { dev = dev
@@ -373,8 +375,11 @@ queryBool name =
         ]
 
 view : Model -> List (Html Msg)
-view model = (\l -> l ++ [ Debug.Extra.viewModel model ])
-    <| case model of
+view model =
+--!BEGIN
+    (\l -> l ++ [ Debug.Extra.viewModel model ]) <|
+--!END
+    case model of
         SelectUser data ->
             [ Html.text
                 <| Language.getTextOrPath

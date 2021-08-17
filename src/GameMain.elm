@@ -5,7 +5,6 @@ import EventData exposing (EventData)
 import Model exposing (Model)
 import Network exposing (NetworkResponse)
 import Language exposing (Language)
-import Debug.Extra
 
 import Views.ViewUserList
 import Views.ViewRoomEditor
@@ -150,7 +149,6 @@ view_internal model lang =
                 <| Views.ViewRoleInfo.view lang roleKey
     , Views.ViewErrors.view model.errors
         |> Html.map WrapError
-    -- , Debug.Extra.viewModel model
     ]
 
 viewEvents : List (Bool, String) -> Html msg
@@ -426,8 +424,6 @@ update_internal msg model =
             ({ model | modal = Model.NoModal }, Cmd.none)
         WsMsg (Ok (WebSocket.Data d)) ->
             let
-                d_ = Debug.log "ws" d.data
-
                 decodedData : Result String EventData
                 decodedData = d.data
                     |> JD.decodeString EventData.decodeEventData
@@ -494,7 +490,7 @@ update_internal msg model =
                 { model
                 | errors = (++) model.errors
                     <| List.singleton
-                    <| Debug.toString err
+                    <| JD.errorToString err
                 }
                 Cmd.none
 
