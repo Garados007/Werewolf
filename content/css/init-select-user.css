@@ -1,0 +1,138 @@
+.init-select-user h1,
+.guest-input-box h1,
+.lobby-selection-box h1 {
+  text-align: center;
+  font-size: 5vw;
+}
+.init-select-user h2,
+.guest-input-box h2,
+.lobby-selection-box h2 {
+  text-align: center;
+  font-size: 3vw;
+}
+.init-select-user .options,
+.lobby-selection-box .options {
+  margin: 3em 0 0;
+  display: flex;
+  justify-content: space-around;
+}
+.init-select-user .option,
+.lobby-selection-box .option {
+  max-width: 50%;
+  width: 25em;
+  border: 1px solid;
+  cursor: pointer;
+  background-color: #b7b1fd;
+  border-radius: 1em;
+  padding: 1em;
+  box-sizing: border-box;
+}
+.init-select-user .option:hover {
+  background-color: #8b81ff;
+}
+.lobby-selection-box .option {
+    cursor: default;
+    background-color: rgb(133, 249, 133);
+}
+.init-select-user .option:first-child {
+  background-color: #ffeb9f;
+}
+.init-select-user .option:first-child:hover {
+  background-color: #f9dc6f;
+}
+.init-select-user .option .play-as {
+  text-align: center;
+  font-size: 1.2em;
+}
+.init-select-user .option ul {
+  font-size: 0.9em;
+  margin: 0.5em 0 0;
+  padding: 0 0 0 1.5em;
+}
+.guest-input-box .input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.5em;
+  position: relative;
+}
+.guest-input-box .input .name {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.guest-input-box .input .value {
+  position: relative;
+  max-width: 100%;
+  width: 35em;
+}
+.guest-input-box .input input {
+  font-family: inherit;
+  font-size: 1.5em;
+  border-radius: 2em;
+  border: 1px solid black;
+  padding: 0.25em 0.5em;
+  box-sizing: border-box;
+  width: 100%;
+}
+.guest-input-box .input .hint {
+  max-width: 100%;
+  width: 55em;
+  text-align: center;
+  font-size: 0.85em;
+  margin: 0.25em 0 0.5em;
+}
+.guest-input-box .profile-image {
+  display: flex;
+  justify-content: center;
+  margin: 1em 0;
+}
+.guest-input-box .profile-image img {
+  border-radius: 5em;
+  width: 5em;
+}
+.guest-input-box .button {
+  display: flex;
+  justify-content: space-around;
+  margin: 1em 0;
+}
+.guest-input-box .button button {
+  font-size: 1.5em;
+  font-family: inherit;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  border: 1px solid black;
+  cursor: pointer;
+}
+.guest-input-box .button button:disabled {
+  cursor: default;
+}
+.lobby-selection-box .option {
+    display: flex;
+    flex-direction: column;
+  position: relative;
+}
+.lobby-selection-box .option .title {
+    font-size: 1.2em;
+    text-align: center;
+}
+.lobby-selection-box .option .space {
+    flex-grow: 1;
+}
+.lobby-selection-box .option input {
+  font-family: inherit;
+  font-size: 1.2em;
+  border-radius: 2em;
+  border: 1px solid black;
+  padding: 0.25em 0.5em;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0.5em 0;
+  text-align: center;
+}
+.lobby-selection-box .option button {
+  font-family: inherit;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  border: 1px solid black;
+  cursor: pointer;
+}

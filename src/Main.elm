@@ -8,6 +8,7 @@ import Url.Parser.Query
 import Maybe.Extra
 import Dict exposing (Dict)
 import Html exposing (Html)
+import Html.Attributes as HA
 import Html.Events as HE
 --!BEGIN
 import Debug.Extra
@@ -132,6 +133,7 @@ type alias SelectLobbyData =
     , user: UserInfo
     , token: Maybe Auth.AuthenticationSuccess
     , model: LobbyInput.Model
+    , loading: Bool
     }
 
 type alias GameData =
@@ -374,39 +376,96 @@ queryBool name =
         , ("0", False)
         ]
 
+singleLangBlock : Model -> List String -> List (Html msg)
+singleLangBlock model =
+    List.singleton
+    << singleLang model
+
+singleLang : Model -> List String -> (Html msg)
+singleLang model = 
+    Html.text
+    << Language.getTextOrPath
+        (getRootLang <| getLang model)
+
 view : Model -> List (Html Msg)
 view model =
 --!BEGIN
     (\l -> l ++ [ Debug.Extra.viewModel model ]) <|
 --!END
     case model of
-        SelectUser data ->
-            [ Html.text
-                <| Language.getTextOrPath
-                    (getRootLang data.lang)
-                    [ "init", "user-mode", "select" ]
-            , Html.button
-                [ HE.onClick SelectGuestMode ]
-                [ Html.text
-                    <| Language.getTextOrPath
-                        (getRootLang data.lang)
-                        [ "init", "user-mode", "guest" ]
-                ]
-            , Html.button
-                [ HE.onClick SelectLoginMode ]
-                [ Html.text
-                    <| Language.getTextOrPath
-                        (getRootLang data.lang)
-                        [ "init", "user-mode", "login" ]
+        SelectUser _ ->
+            [ Html.node "link"
+                [ HA.attribute "rel" "stylesheet"
+                , HA.attribute "property" "stylesheet"
+                , HA.attribute "href" "/content/css/style.css"
+                ] []
+            , Html.div [ HA.class "init-select-user" ]
+                [ Html.h1 [ HA.class "welcomer"]
+                    <| singleLangBlock model
+                        [ "init", "title" ]
+                , Html.h2 []
+                    <| singleLangBlock model
+                        [ "init", "description" ]
+                , Html.div [ HA.class "options" ]
+                    [ Html.div 
+                        [ HA.class "option" 
+                        , HE.onClick SelectLoginMode
+                        ]
+                        [ Html.div [ HA.class "play-as" ]
+                            <| singleLangBlock model
+                                [ "init", "user-mode", "play-login" ]
+                        , Html.ul []
+                            <| List.map
+                                (\i ->
+                                    Html.li []
+                                        <| singleLangBlock model
+                                        [ "init", "user-mode", "login", String.fromInt i ]
+                                )
+                            <| List.range 1 3
+                        ]
+                    , Html.div 
+                        [ HA.class "option" 
+                        , HE.onClick SelectGuestMode
+                        ]
+                        [ Html.div [ HA.class "play-as" ]
+                            <| singleLangBlock model
+                                [ "init", "user-mode", "play-guest" ]
+                        , Html.ul []
+                            <| List.map
+                                (\i ->
+                                    Html.li []
+                                        <| singleLangBlock model
+                                        [ "init", "user-mode", "guest", String.fromInt i ]
+                                )
+                            <| List.range 1 2
+                        ]
+                    ]
                 ]
             ]
         GuestInput data ->
-            [ Html.map WrapGuestInput
-                <| GuestInput.view data.model
+            [ Html.node "link"
+                [ HA.attribute "rel" "stylesheet"
+                , HA.attribute "property" "stylesheet"
+                , HA.attribute "href" "/content/css/style.css"
+                ] []
+            , Html.map WrapGuestInput
+                <| GuestInput.view data.model 
+                <| getRootLang data.lang
             ]
         SelectLobby data ->
-            [ Html.map WrapLobbyInput
-                <| LobbyInput.view data.model
+            [ Html.node "link"
+                [ HA.attribute "rel" "stylesheet"
+                , HA.attribute "property" "stylesheet"
+                , HA.attribute "href" "/content/css/style.css"
+                ] []
+            , if data.loading
+                then Html.div [ HA.id "elm" ]
+                    [ Html.div [ HA.class "lds-heart" ]
+                        [ Html.div [] [] ]
+                    ]
+                else Html.map WrapLobbyInput
+                    <| LobbyInput.view data.model
+                    <| getRootLang data.lang
             ]
         Game data ->
             List.map (Html.map WrapGame)
@@ -469,6 +528,7 @@ update msg model =
                             , user = user
                             , token = Nothing
                             , model = LobbyInput.init data.dev
+                            , loading = False
                             }
                         , Browser.Navigation.pushUrl data.key
                             <| "/lobby?lang=" ++ data.lang.lang
@@ -544,6 +604,7 @@ update msg model =
                 , user = userinfo
                 , token = data.token
                 , model = LobbyInput.init data.dev
+                , loading = False
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/lobby?lang=" ++ data.lang.lang
@@ -574,7 +635,10 @@ update msg model =
                     )
                 <| Tuple.pair
                     (SelectLobby
-                        { data | model = new }
+                        { data 
+                        | model = new
+                        , loading = res /= Nothing
+                        }
                     )
                 <| case (res, data.token) of
                     (Nothing, _) ->

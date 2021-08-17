@@ -6,6 +6,7 @@ import Html.Events as HE
 import Pronto
 import Triple
 import Config
+import Language exposing (Language)
 
 type alias Model =
     { lobbyToken: String
@@ -37,23 +38,53 @@ init dev =
     , dev = dev
     }
 
-view : Model -> Html Msg
-view model =
+singleLangBlock : Language -> List String -> List (Html msg)
+singleLangBlock lang =
+    List.singleton
+    << singleLang lang
+
+singleLang : Language -> List String -> (Html msg)
+singleLang lang = 
+    Html.text
+    << Language.getTextOrPath lang
+
+view : Model -> Language -> Html Msg
+view model lang =
     div [ class "lobby-selection-box" ]
-        [ div [ class "option" ]
-            [ Html.button
-                [ HE.onClick SelectCreate ]
-                [ text "Create Lobby" ]
-            ]
-        , div [ class "option" ]
-            [ Html.input
-                [ HA.type_ "text" 
-                , HA.value model.lobbyToken
-                , HE.onInput Input
-                ] []
-            , Html.button
-                [ HE.onClick SelectJoin ]
-                [ text "Join Lobby" ]
+        [ Html.h1 [ HA.class "welcomer"]
+            <| singleLangBlock lang
+                [ "init", "title" ]
+        , Html.h2 []
+            <| singleLangBlock lang
+                [ "init", "description" ]
+        , div [ class "options" ]
+            [ div [ class "option" ]
+                [ div [ class "title" ]
+                    <| singleLangBlock lang
+                        [ "init", "lobby-input", "create" ]
+                , div [ class "space" ] []
+                , Html.button
+                    [ HE.onClick SelectCreate ]
+                    <| singleLangBlock lang
+                        [ "init", "lobby-input", "start" ]
+                ]
+            , div [ class "option" ]
+                [ div [ class "title" ]
+                    <| singleLangBlock lang
+                        [ "init", "lobby-input", "join" ]
+                , Html.input
+                    [ HA.type_ "text" 
+                    , HA.value model.lobbyToken
+                    , HA.placeholder
+                        <| Language.getTextOrPath lang
+                            [ "init", "lobby-input", "hint" ]
+                    , HE.onInput Input
+                    ] []
+                , Html.button
+                    [ HE.onClick SelectJoin ]
+                    <| singleLangBlock lang
+                        [ "init", "lobby-input", "start" ]
+                ]
             ]
         , case model.error of
             Nothing -> text ""

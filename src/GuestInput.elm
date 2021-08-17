@@ -7,6 +7,7 @@ import Html.Events as HE
 import Debounce
 import Triple
 import MD5
+import Language exposing (Language)
 
 type alias Model =
     { name: String
@@ -28,11 +29,37 @@ init =
     , debouncer = Debounce.init 500 ""
     }
 
-view : Model -> Html Msg
-view model =
+singleLangBlock : Language -> List String -> List (Html msg)
+singleLangBlock lang =
+    List.singleton
+    << singleLang lang
+
+singleLang : Language -> List String -> (Html msg)
+singleLang lang = 
+    Html.text
+    << Language.getTextOrPath lang
+
+view : Model -> Language -> Html Msg
+view model lang =
     div [ class "guest-input-box" ]
-        [ Html.h1 []
-            [ text "Guest" ]
+        [  Html.h1 [ HA.class "welcomer"]
+            <| singleLangBlock lang
+                [ "init", "title" ]
+        , Html.h2 []
+            <| singleLangBlock lang
+                [ "init", "description" ]
+        , div [ class "input" ]
+            [ div [ class "name" ]
+                <| singleLangBlock lang
+                    [ "init", "guest-input", "name" ]
+            , div [ class "value" ]
+                [ Html.input
+                    [ HA.type_ "text"
+                    , HA.value model.name
+                    , HE.onInput SetName
+                    ] []
+                ]
+            ]
         , div [ class "profile-image" ]
             [ Html.img
                 [ HA.src
@@ -42,46 +69,32 @@ view model =
                 ] []
             ]
         , div [ class "input" ]
-            [ div []
-                [ div [ class "name" ]
-                    [ text "Name" ]
-                , div [ class "value" ]
-                    [ Html.input
-                        [ HA.type_ "text"
-                        , HA.value model.name
-                        , HE.onInput SetName
-                        ] []
-                    ]
-                ]
-            , div []
-                [ div [ class "name" ]
-                    [ text "Email" ]
-                , div [ class "hint" ]
-                    [ text 
-                        <| "Insert your email or any arbitary text here. This will be used to "
-                        ++ "generate a user icon for you. If you have setup a profile picture at "
-                        ++ "Gravatar you can use your own picture if you insert your email adress. "
-                        ++ "The input is not stored and will be hashed afterwards."
-                    ]
-                , div [ class "value" ]
-                    [ Html.input
-                        [ HA.type_ "text"
-                        , HA.value model.email
-                        , HE.onInput SetEmail
-                        , HA.placeholder model.name
-                        ] []
-                    ]
+            [ div [ class "name" ]
+                <| singleLangBlock lang
+                    [ "init", "guest-input", "image-code" ]
+            , div [ class "hint" ]
+                <| singleLangBlock lang
+                    [ "init", "guest-input", "image-hint" ]
+            , div [ class "value" ]
+                [ Html.input
+                    [ HA.type_ "text"
+                    , HA.value model.email
+                    , HE.onInput SetEmail
+                    , HA.placeholder model.name
+                    ] []
                 ]
             ]
         , div [ class "button" ]
             [ Html.button
                 [ HE.onClick DoBack ]
-                [ text "Back" ]
+                <| singleLangBlock lang
+                    [ "init", "guest-input", "back" ]
             , Html.button
                 [ HE.onClick DoContinue 
                 , HA.disabled <| model.name == ""
                 ]
-                [ text "Continue" ]
+                <| singleLangBlock lang
+                    [ "init", "guest-input", "continue" ]
             ]
         ]
 

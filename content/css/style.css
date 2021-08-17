@@ -8,6 +8,7 @@
 @import url("player-notification.css");
 @import url("chat-box.css");
 @import url("join-token.css");
+@import url("init-select-user.css");
 
 :root {
   /* the default base color of the page */
