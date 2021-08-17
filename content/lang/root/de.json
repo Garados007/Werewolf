@@ -61,7 +61,6 @@
             "next": "Nächste Runde"
         },
         "loading": {
-            "is-loading": "Daten werden geladen ...",
             "not-found": "Spiel nicht gefunden."
         }
     },

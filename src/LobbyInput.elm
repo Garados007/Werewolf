@@ -12,6 +12,7 @@ type alias Model =
     { lobbyToken: String
     , dev: Bool
     , error: Maybe Error
+    , loading: Bool
     }
 
 type Msg
@@ -36,6 +37,7 @@ init dev =
     { lobbyToken = ""
     , error = Nothing
     , dev = dev
+    , loading = False
     }
 
 singleLangBlock : Language -> List String -> List (Html msg)
@@ -109,7 +111,7 @@ update msg model =
                 Nothing
         SelectJoin ->
             Triple.triple
-                model
+                { model | loading = True }
                 (Pronto.getJoinTokenInfo
                     { host = Config.prontoHost }
                     model.lobbyToken
@@ -129,12 +131,15 @@ update msg model =
                 }
         GotJoinToken Nothing ->
             Triple.triple
-                { model | error = Just InvalidLobbyToken }
+                { model 
+                | error = Just InvalidLobbyToken
+                , loading = False
+                }
                 Cmd.none
                 Nothing
         SelectCreate ->
             Triple.triple
-                model
+                { model | loading = True }
                 ( Pronto.getTargetHost
                     { host = Config.prontoHost }
                     { game = "werewolf"
@@ -155,7 +160,10 @@ update msg model =
                 }
         GotCreateServer Nothing ->
             Triple.triple
-                { model | error = Just NoServerFound }
+                { model 
+                | error = Just NoServerFound
+                , loading = False
+                }
                 Cmd.none
                 Nothing
 

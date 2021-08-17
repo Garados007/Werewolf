@@ -458,7 +458,7 @@ view model =
                 , HA.attribute "property" "stylesheet"
                 , HA.attribute "href" "/content/css/style.css"
                 ] []
-            , if data.loading
+            , if data.loading || data.model.loading
                 then Html.div [ HA.id "elm" ]
                     [ Html.div [ HA.class "lds-heart" ]
                         [ Html.div [] [] ]
