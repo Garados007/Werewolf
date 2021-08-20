@@ -10,7 +10,7 @@ import Time exposing (Posix)
 import Pronto exposing (JoinTokenInfo)
 
 type EventData
-    = SendGameData GameUserResult
+    = SendGameData GameGlobalState
     | AddParticipant String GameUser
     | AddVoting GameVoting
     | ChatEvent Data.ChatMessage
@@ -60,7 +60,7 @@ decodeEventData =
                 "SendGameData" ->
                     JD.map 
                         SendGameData
-                        decodeGameUserResult
+                        decodeGameGlobalState
                 "AddParticipant" ->
                     JD.succeed GameUser
                     |> required "name" JD.string

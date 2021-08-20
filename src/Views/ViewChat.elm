@@ -49,7 +49,7 @@ view lang game chats input =
                             <| text
                             <| (\x -> "[" ++ x ++ "]")
                             <| Maybe.withDefault chat.sender
-                            <| Maybe.map .name
+                            <| Maybe.map (.user >> .name)
                             <| Dict.get chat.sender game.user
                         , Just
                             <| Html.span [ class "chat-message" ]

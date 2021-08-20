@@ -6,7 +6,8 @@ module Data exposing
     , GameParticipant
     , GamePhase
     , GameUser
-    , GameUserResult
+    , GameUserEntry
+    , GameGlobalState
     , GameUserStats
     , GameStage
     , GameVoting
@@ -17,7 +18,7 @@ module Data exposing
     , UserConfig
     , decodeChatMessage
     , decodeError
-    , decodeGameUserResult
+    , decodeGameGlobalState
     , decodeRoleTemplates
     )
 
@@ -27,7 +28,6 @@ import Json.Decode.Pipeline exposing (required)
 import Time exposing (Posix)
 import Iso8601
 import Level exposing (LevelData)
-import Json.Decode.Pipeline exposing (hardcoded)
 
 type alias UserInfo =
     { username: String
@@ -45,18 +45,16 @@ decodeRoleTemplates : Decoder RoleTemplates
 decodeRoleTemplates =
     JD.dict <| JD.list JD.string
 
-type alias GameUserResult =
-    { game: Maybe Game
-    , user: Maybe String
-    , userConfig: Maybe UserConfig
+type alias GameGlobalState =
+    { game: Game
+    , user: String
+    , userConfig: UserConfig
     }
 
 type alias Game =
     { leader: String
     , phase: Maybe GamePhase
-    , participants: Dict String (Maybe GameParticipant)
-    , user: Dict String GameUser
-    , online: Dict String OnlineInfo
+    , user: Dict String GameUserEntry
     , winner: Maybe (List String)
     , config: Dict String Int
     , leaderIsPlayer: Bool
@@ -67,6 +65,12 @@ type alias Game =
     , votingTimeout: Bool
     , autofinishRound: Bool
     , theme: (String, String)
+    }
+
+type alias GameUserEntry =
+    { role: Maybe GameParticipant
+    , user: GameUser
+    , online: OnlineInfo
     }
 
 type alias OnlineInfo =
@@ -112,7 +116,6 @@ type alias GameUser =
     { name: String
     , img: String
     , isGuest: Bool
-    -- , isOnline: Bool
     , stats: GameUserStats
     , level: LevelData
     }
@@ -130,9 +133,9 @@ type alias UserConfig =
     , language: String
     }
 
-decodeGameUserResult : Decoder GameUserResult
-decodeGameUserResult =
-    JD.succeed GameUserResult
+decodeGameGlobalState : Decoder GameGlobalState
+decodeGameGlobalState =
+    JD.succeed GameGlobalState
         |> required "game"
             (JD.succeed Game
                 |> required "leader" JD.string
@@ -165,49 +168,41 @@ decodeGameUserResult =
                             )
                         |> JD.nullable
                     )
-                -- |> required "participants"
-                --     (JD.succeed GameParticipant
-                --         |> required "tags" (JD.list JD.string)
-                --         |> required "role" (JD.nullable JD.string)
-                --         |> JD.nullable
-                --         |> JD.dict
-                --     )
-                -- |> hardcoded Dict.empty
                 |> required "users"
-                    (JD.succeed GameParticipant
-                        |> required "tags" (JD.list JD.string)
-                        |> required "role" (JD.nullable JD.string)
-                        |> JD.nullable
-                        |> JD.field "role"
-                        |> JD.dict
-                    )
-                |> required "users"
-                    (JD.succeed GameUser
-                        |> required "name" JD.string
-                        |> required "img" JD.string
-                        |> required "is-guest" JD.bool
-                        |> required "stats"
-                            (JD.succeed GameUserStats
-                                |> required "win-games" JD.int
-                                |> required "killed" JD.int
-                                |> required "loose-games" JD.int
-                                |> required "leader" JD.int
+                    (JD.succeed GameUserEntry
+                        |> required "role"
+                            (JD.succeed GameParticipant
+                                |> required "tags" (JD.list JD.string)
+                                |> required "role" (JD.nullable JD.string)
+                                |> JD.nullable
                             )
-                        -- level
-                        |> required "stats"
-                            (JD.succeed LevelData
-                                |> required "level" JD.int
-                                |> required "current-xp" JD.int
-                                |> required "max-xp" JD.int
+                        |> required "user"
+                            (JD.succeed GameUser
+                                |> required "name" JD.string
+                                |> required "img" JD.string
+                                |> required "is-guest" JD.bool
+                                |> required "stats"
+                                    (JD.succeed GameUserStats
+                                        |> required "win-games" JD.int
+                                        |> required "killed" JD.int
+                                        |> required "loose-games" JD.int
+                                        |> required "leader" JD.int
+                                    )
+                                -- level
+                                |> required "stats"
+                                    (JD.succeed LevelData
+                                        |> required "level" JD.int
+                                        |> required "current-xp" JD.int
+                                        |> required "max-xp" JD.int
+                                    )
                             )
-                        |> JD.field "user"
-                        |> JD.dict
-                    )
-                |> required "users"
-                    (JD.succeed OnlineInfo
-                        |> required "is-online" JD.bool
-                        |> required "online-counter" JD.int
-                        |> required "last-online-change" Iso8601.decoder
+                        |> JD.andThen
+                            (\x -> JD.succeed OnlineInfo
+                                |> required "is-online" JD.bool
+                                |> required "online-counter" JD.int
+                                |> required "last-online-change" Iso8601.decoder
+                                |> JD.map (\y -> x y)
+                            )
                         |> JD.dict
                     )
                 |> required "winner"
@@ -225,15 +220,13 @@ decodeGameUserResult =
                         (JD.index 0 JD.string)
                         (JD.index 1 JD.string)
                     )
-                |> JD.nullable
             )
-        |> required "user" (JD.nullable JD.string)
+        |> required "user" JD.string
         |> required "user-config"
             ( JD.succeed UserConfig
                 |> required "theme" JD.string
                 |> required "background" JD.string
                 |> required "language" JD.string
-                |> JD.nullable
             )
 
 type alias Error = Maybe String

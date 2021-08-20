@@ -36,6 +36,7 @@ view lang game removedUser notificationId player =
                         (\() ->
                             Dict.get id removedUser
                         )
+                    <| Maybe.map .user
                     <| Dict.get id
                     <| Maybe.withDefault Dict.empty
                     <| Maybe.map .user game

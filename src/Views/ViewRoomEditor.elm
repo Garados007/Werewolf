@@ -21,7 +21,7 @@ type Msg
     | Noop
 
 view : Language -> LanguageInfo -> Data.RoleTemplates
-    -> Data.GameUserResult
+    -> Data.GameGlobalState
     -> Maybe Language.ThemeRawKey -> Data.Game -> Bool
     -> Dict String Int -> Html Msg
 view lang langInfo roles gameResult theme game editable buffer =
@@ -104,7 +104,7 @@ view lang langInfo roles gameResult theme game editable buffer =
                     ]
                 ]
         
-        maxPlayer = (+) 1 <| Dict.size game.participants
+        maxPlayer = (+) 1 <| Dict.size game.user
         maxRoles = (+) 1 <| List.sum <| Dict.values 
             <| Dict.union buffer game.config
 

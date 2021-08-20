@@ -106,7 +106,7 @@ view lang now game phase isLeader myId =
                                         <| List.map
                                             (\uid ->
                                                 case Dict.get uid game.user of
-                                                    Just user -> user.name
+                                                    Just { user } -> user.name
                                                     Nothing -> uid
                                             )
                                         <| option.user

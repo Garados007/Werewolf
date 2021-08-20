@@ -31,6 +31,9 @@
           socket.onclose = function () {
             console.log(`ws closed: ${wat.name}`);
           }
+          if (mySockets[wat.name]) {
+            mySockets[wat.name].close();
+          }
           mySockets[wat.name] = socket;
         }
         else if (wat.cmd == "send")

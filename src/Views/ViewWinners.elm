@@ -18,25 +18,25 @@ view lang now levels game winners =
                 let
                     img : String
                     img = Dict.get winner game.user
-                        |> Maybe.map .img
+                        |> Maybe.map (.user >> .img)
                         |> Maybe.withDefault ""
                     
                     name : String
                     name = Dict.get winner game.user
-                        |> Maybe.map .name
+                        |> Maybe.map (.user >> .name)
                         |> Maybe.withDefault winner
                     
                     isGuest : Bool
                     isGuest = Dict.get winner game.user
-                        |> Maybe.map .isGuest
+                        |> Maybe.map (.user >> .isGuest)
                         |> Maybe.withDefault False
                     
                     role : String
                     role = Language.getTextOrPath lang
                         [ "theme"
                         , "roles"
-                        , Dict.get winner game.participants
-                            |> Maybe.andThen identity
+                        , Dict.get winner game.user
+                            |> Maybe.andThen .role
                             |> Maybe.andThen .role
                             |> Maybe.withDefault "unknown"
                         ]

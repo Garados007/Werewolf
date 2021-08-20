@@ -36,7 +36,7 @@ view lang now levels game myId joinToken codeCopyTimestamp =
 
         getUserRole : String -> String
         getUserRole id = getLeaderSpecText id <| \() ->
-            case Dict.get id game.participants of
+            case Dict.get id game.user |> Maybe.map .role of
                 Just Nothing ->
                     Language.getTextOrPath lang
                         [ "theme", "names", "member" ]
@@ -72,7 +72,7 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                     , ("me", myId == id)
                     , Tuple.pair "dead"
                         <| not
-                        <| case Dict.get id game.participants of
+                        <| case Dict.get id game.user |> Maybe.map .role of
                             Just (Just player) -> 
                                 not <| List.member "not-alive" player.tags
                             _ -> True
@@ -95,8 +95,8 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                 , div [ class "user-info-box" ]
                     [ div [ class "user-name" ]
                         [ Html.span [] [ text user.name ]
-                        , if Dict.get id game.online
-                                |> Maybe.map .isOnline
+                        , if Dict.get id game.user
+                                |> Maybe.map (.online >> .isOnline)
                                 |> Maybe.withDefault True
                             then text ""
                             else Html.span [ class "offline" ]
@@ -281,9 +281,9 @@ view lang now levels game myId joinToken codeCopyTimestamp =
     in Dict.toList game.user
         |> List.sortBy
             (\(id, _) ->
-                ( case Dict.get id game.participants of
-                    Just (Just player) ->
-                        if List.member "not-alive" player.tags
+                ( case Dict.get id game.user |> Maybe.andThen .role of
+                    Just { tags } ->
+                        if List.member "not-alive" tags
                         then 1
                         else 0
                     _ -> 2
@@ -291,7 +291,7 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                 )
             )
         |> List.map
-            (\(id, user) -> viewGameUser id user)
+            (\(id, user) -> viewGameUser id user.user)
         |>  (\list ->
                 if game.leader == myId
                 then list ++ [ viewJoinToken () ]

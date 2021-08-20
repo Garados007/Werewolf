@@ -20,7 +20,7 @@ import Styles exposing (Styles)
 import Views.ViewThemeEditor
 
 type alias Model =
-    { game: Maybe Data.GameUserResult
+    { state: Maybe Data.GameGlobalState
     , roles: Maybe Data.RoleTemplates
     , removedUser: Dict String Data.GameUser
     , errors: List String
@@ -54,7 +54,7 @@ type Modal
 
 init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken -> Model
 init token selLang langInfo rootLang joinToken =
-    { game = Nothing
+    { state = Nothing
     , roles = Nothing
     , removedUser = Dict.empty
     , errors = []
@@ -86,11 +86,10 @@ init token selLang langInfo rootLang joinToken =
     , codeCopied = Nothing
     }
 
-getSelectedLanguage : Data.GameUserResult -> String
-getSelectedLanguage gameResult =
-    gameResult.userConfig
-        |> Maybe.map .language
-        |> Maybe.andThen
+getSelectedLanguage : Data.GameGlobalState -> String
+getSelectedLanguage state =
+    state.userConfig.language
+        |> 
             (\key ->
                 if key == ""
                 then Nothing
@@ -102,7 +101,7 @@ getLanguage : Model -> Language
 getLanguage model =
     let
         lang : Maybe String
-        lang = model.game
+        lang = model.state
             |> Maybe.map getSelectedLanguage
 
         rootLang : Language
@@ -115,9 +114,8 @@ getLanguage model =
                 model.themeLangs
             <| Maybe.andThen
                 (\x -> Maybe.map (Language.toThemeKey x) lang)
-            <| Maybe.map .theme
-            <| Maybe.andThen .game
-            <| model.game
+            <| Maybe.map (.game  >> .theme)
+            <| model.state
     in Language.alternate themeLang rootLang
     
 applyResponse : NetworkResponse -> Model -> (Model, List Network.NetworkRequest)
@@ -145,15 +143,15 @@ applyResponse response model =
                 }
                 []
 
-editGame : Model -> (Data.Game -> Data.Game) -> Maybe Data.GameUserResult
+editGame : Model -> (Data.Game -> Data.Game) -> Maybe Data.GameGlobalState
 editGame model editFunc =
     Maybe.map
-        (\gameResult ->
-            { gameResult
-            | game = Maybe.map editFunc gameResult.game
+        (\state ->
+            { state
+            | game = editFunc state.game
             }
         )
-        model.game
+        model.state
 
 applyEventData : EventData -> Model -> (Model, List Network.Request)
 applyEventData event model =
@@ -164,33 +162,35 @@ applyEventData event model =
             }
             []
         EventData.Success -> (model, [])
-        EventData.SendGameData game -> Tuple.pair
+        EventData.SendGameData state -> Tuple.pair
             { model
-            | game = Just game
+            | state = Just state
             }
-            <| List.filterMap identity
-            [ Maybe.map
-                (\g -> Network.NetReq
-                    <| Network.GetLang
-                    <| Language.toThemeKey
-                        g.theme
-                        model.selLang
-                )
-                game.game
-
+            [ Network.NetReq
+                <| Network.GetLang
+                <| Language.toThemeKey
+                    state.game.theme
+                    model.selLang
             ]
         EventData.AddParticipant id user -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
-                | user = Dict.insert id user game.user
-                , participants = Dict.insert id Nothing game.participants
+                | user = Dict.insert id
+                    { role = Nothing
+                    , user = user
+                    , online = Data.OnlineInfo
+                        False
+                        0
+                        <| Time.millisToPosix 0
+                    }
+                    game.user
                 }
             }
             []
         EventData.AddVoting voting -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase =
                     Maybe.withDefault 
@@ -231,7 +231,7 @@ applyEventData event model =
             []
         EventData.GameEnd winner -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | winner = winner
                 , phase = Nothing
@@ -239,18 +239,15 @@ applyEventData event model =
             , modal = case winner of
                 Just list -> 
                     Maybe.withDefault model.modal
-                    <| Maybe.andThen
-                        (Maybe.map
-                            (\game -> WinnerModal game list)
-                        << .game
-                        )
-                        model.game
+                    <| Maybe.map
+                        (\state -> WinnerModal state.game list)
+                        model.state
                 Nothing -> model.modal
             }
             []
         EventData.GameStart newParticipant -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = game.phase
                     |> Maybe.withDefault
@@ -259,7 +256,19 @@ applyEventData event model =
                             []
                         ) 
                     |> Just
-                , participants = newParticipant
+                , user = Dict.merge
+                    (\id a ->
+                        Dict.insert id
+                            { a | role = Nothing }
+                    )
+                    (\id a b -> 
+                        Dict.insert id
+                            { a | role = b }
+                    )
+                    (\_ _ -> identity)
+                    game.user
+                    newParticipant
+                    Dict.empty
                 , winner = Nothing
                 }
             }
@@ -286,7 +295,7 @@ applyEventData event model =
             []
         EventData.NextPhase nextPhase -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = case (nextPhase, game.phase) of
                     (Nothing, _) -> Nothing
@@ -303,7 +312,7 @@ applyEventData event model =
             []
         EventData.OnLeaderChanged newLeader -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | leader = newLeader
                 }
@@ -312,9 +321,13 @@ applyEventData event model =
         EventData.OnRoleInfoChanged Nothing _ -> (model, [])
         EventData.OnRoleInfoChanged (Just id) role -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
-                | participants = Dict.insert id (Just role) game.participants
+                | user = Dict.update id
+                    (Maybe.map
+                        <| \entry -> { entry | role = Just role }
+                    )
+                    game.user
                 }
             }
             []
@@ -333,18 +346,17 @@ applyEventData event model =
             []
         EventData.RemoveParticipant id -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | user = Dict.remove id game.user
-                , participants = Dict.remove id game.participants
                 }
             , removedUser =
-                case Maybe.andThen .game model.game
-                    |> Maybe.map .user
+                case model.state
+                    |> Maybe.map (.game >> .user)
                     |> Maybe.andThen
                         (Dict.get id)
                 of
-                    Just user ->
+                    Just { user } ->
                         Dict.insert id user model.removedUser
                     Nothing -> model.removedUser
 
@@ -352,7 +364,7 @@ applyEventData event model =
             []
         EventData.RemoveVoting id -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = 
                     Maybe.withDefault
@@ -372,7 +384,7 @@ applyEventData event model =
             []
         EventData.SendStage stage -> Tuple.pair
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = case game.phase of
                     Just oldPhase -> Just
@@ -388,22 +400,30 @@ applyEventData event model =
             []
         EventData.SetGameConfig newConfig -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | config = newConfig.config
-                , participants =
-                    (\participants ->
+                , user =
+                    (\users ->
                         if newConfig.leaderIsPlayer == game.leaderIsPlayer
-                        then participants
-                        else if newConfig.leaderIsPlayer
-                        then Dict.insert game.leader Nothing participants
-                        else Dict.remove game.leader participants
+                        then users
+                        else Dict.update game.leader
+                            (Maybe.map
+                                <| \user ->
+                                    { user
+                                    | role =
+                                        if newConfig.leaderIsPlayer
+                                        then Nothing
+                                        else user.role
+                                    }
+                            )
+                            users
                     )
                     <| if Tuple.first game.theme == Tuple.first newConfig.theme
-                        then game.participants
-                        else game.participants
-                            |> Dict.map
-                                (always <| always Nothing)
+                        then game.user
+                        else Dict.map
+                            (\_ entry -> { entry | role = Nothing })
+                            game.user
                 , leaderIsPlayer = newConfig.leaderIsPlayer
                 , deadCanSeeAllRoles = newConfig.deadCanSeeAllRoles
                 , allCanSeeRoleOfDead = newConfig.allCanSeeRoleOfDead
@@ -418,34 +438,35 @@ applyEventData event model =
             <| Maybe.withDefault []
             <| Maybe.map
                 (\game ->
-                    case Maybe.map .language game.userConfig of
-                        Nothing -> []
-                        Just l ->
-                            List.filterMap identity
-                                [ if Dict.member l model.rootLang
+                    let
+                        l : String
+                        l = game.userConfig.language
+                    in
+                        List.filterMap identity
+                            [ if Dict.member l model.rootLang
+                                then Nothing
+                                else Just <| Network.GetRootLang l
+                            , Maybe.andThen
+                                (\key ->
+                                    if Dict.member key model.themeLangs
                                     then Nothing
-                                    else Just <| Network.GetRootLang l
-                                , Maybe.andThen
-                                    (\key ->
-                                        if Dict.member key model.themeLangs
-                                        then Nothing
-                                        else Just <| Network.GetLang key
-                                    )
-                                    <| Maybe.map
-                                        (\x -> Language.toThemeKey x l)
-                                    <| Just newConfig.theme
-                                ]
+                                    else Just <| Network.GetLang key
+                                )
+                                <| Maybe.map
+                                    (\x -> Language.toThemeKey x l)
+                                <| Just newConfig.theme
+                            ]
                 )
-            <| model.game
+            <| model.state
         EventData.SetUserConfig newConfig -> Tuple.pair
             { model
-            | game = Maybe.map
+            | state = Maybe.map
                 (\gameResult ->
                     { gameResult
-                    | userConfig = Just newConfig
+                    | userConfig = newConfig
                     }
                 )
-                model.game
+                model.state
             , oldBufferedConfig = Tuple.pair model.now <|
                 if model.bufferedConfig.theme == ""
                 then newConfig
@@ -461,13 +482,12 @@ applyEventData event model =
                     , Maybe.map Network.GetLang
                         <| Maybe.map
                             (\x -> Language.toThemeKey x newConfig.language)
-                        <| Maybe.map .theme
-                        <| Maybe.andThen .game
-                        <| model.game
+                        <| Maybe.map (.game >> .theme)
+                        <| model.state
                     ]
         EventData.SetVotingTimeout vid timeout -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = 
                     Maybe.withDefault
@@ -491,7 +511,7 @@ applyEventData event model =
             []
         EventData.SetVotingVote vid oid voter -> Tuple.pair 
             { model
-            | game = editGame model <| \game ->
+            | state = editGame model <| \game ->
                 { game
                 | phase = 
                     Maybe.withDefault
@@ -532,29 +552,21 @@ applyEventData event model =
             []
         EventData.OnlineNotification user online -> Tuple.pair
             { model
-            | game = Maybe.map
-                (\gameRes ->
-                    { gameRes
-                    | game = Maybe.map
-                        (\game ->
-                            { game
-                            | online = Dict.update
-                                user
-                                (Maybe.map
-                                    (\old ->
-                                        if old.counter > online.counter
-                                        then old
-                                        else online
-                                    )
-                                >> Maybe.withDefault online
-                                >> Just
-                                )
-                                game.online
-                            }
-                        )
-                        gameRes.game
+            | state = Maybe.map
+                (\state ->
+                    { state
+                    | game = state.game |> \game ->
+                        { game
+                        | user = Dict.update
+                            user
+                            (Maybe.map
+                                <| \entry ->
+                                    { entry | online = online }
+                            )
+                            game.user
+                        }
                     }
                 )
-                model.game
+                model.state
             }
             []

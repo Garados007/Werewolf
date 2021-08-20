@@ -93,10 +93,10 @@ view_internal model lang =
         |> Maybe.Extra.orElseLazy
             (\() -> Just
                 <| Views.ViewNoGame.view lang
-                <| model.game == Nothing || model.roles == Nothing
+                <| model.state == Nothing || model.roles == Nothing
             )
         |> Maybe.withDefault (text "")
-    , case (model.chatView, Maybe.andThen .game model.game) of
+    , case (model.chatView, Maybe.map .game model.state) of
         (Just input, Just game) -> 
             Views.ViewChat.view lang game model.chats input
                 |> Html.map WrapChat
@@ -134,7 +134,7 @@ view_internal model lang =
                     (\(nid,player) ->
                         Views.ViewPlayerNotification.view
                             lang
-                            (Maybe.andThen .game model.game)
+                            (Maybe.map .game model.state)
                             model.removedUser
                             nid
                             player
@@ -169,31 +169,25 @@ viewEvents events =
 
 tryViewGameFrame : Model -> Language -> Maybe (Html Msg)
 tryViewGameFrame model lang =
-    Maybe.Extra.andThen2
-        (\result roles ->
-            Maybe.map2
-                (viewGameFrame model lang roles result)
-                result.game
-                result.user
-        )
-        model.game
+    Maybe.map2
+        (viewGameFrame model lang)
         model.roles
+        model.state
 
 viewGameFrame : Model
     -> Language
     -> Data.RoleTemplates
-    -> Data.GameUserResult
-    -> Data.Game
-    -> String
+    -> Data.GameGlobalState
     -> Html Msg
-viewGameFrame model lang roles gameResult game user =
+viewGameFrame model lang roles state =
     div [ class "frame-game-outer" ]
         [ div [ class "frame-game-left" ]
             [ Html.map WrapUser
                 <| Views.ViewUserList.view
                     lang
                     model.now model.levels
-                    game user
+                    state.game 
+                    state.user
                     model.joinToken
                     model.codeCopied
             ]
@@ -205,10 +199,10 @@ viewGameFrame model lang roles gameResult game user =
                     lang
                     model.langInfo
                     roles
-                    gameResult
-                    (Just game.theme)
-                    game
-                    (user == game.leader)
+                    state
+                    (Just state.game.theme)
+                    state.game
+                    (state.user == state.game.leader)
                     model.editor
             ]
         , viewEvents model.events
@@ -217,19 +211,14 @@ viewGameFrame model lang roles gameResult game user =
 tryViewGamePhase : Model -> Language -> Maybe (Html Msg)
 tryViewGamePhase model lang =
     Maybe.andThen
-        (\result ->
-            Maybe.Extra.andThen2
-                (\game user ->
-                    Maybe.map
-                        (\phase -> 
-                            viewGamePhase model lang game user phase
-                        )
-                        game.phase
+        (\state ->
+            Maybe.map
+                (\phase -> 
+                    viewGamePhase model lang state.game state.user phase
                 )
-                result.game
-                result.user
+                state.game.phase
         )
-        model.game
+        model.state
 
 viewGamePhase : Model
     -> Language
@@ -275,9 +264,9 @@ update msg model =
             <| Maybe.withDefault 
                 model.bufferedConfig
             <| Maybe.Extra.orElse
-                ( Maybe.andThen .userConfig model.game)
+                ( Maybe.map .userConfig model.state)
             <| Maybe.Extra.orElse
-                ( Maybe.andThen .game model.game
+                ( Maybe.map .game model.state
                     |> Maybe.andThen .phase
                     |> Maybe.map .stage
                     |> Maybe.andThen
@@ -411,8 +400,8 @@ update_internal msg model =
                 { model | chatView = Just "" }
             <| Network.wsSend
             <| Network.Message
-                (model.game
-                    |> Maybe.andThen .game
+                (model.state
+                    |> Maybe.map .game
                     |> Maybe.andThen .phase
                     |> Maybe.map .langId
                 )
