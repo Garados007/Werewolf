@@ -30,5 +30,14 @@ namespace Werewolf.User
         {
             _ = users.AddOrUpdate(user.Id, user, (_, _) => user);
         }
+
+        public bool RemoveCachedGuest(UserId id)
+        {
+            if (GetCachedUser(id)?.IsGuest ?? false)
+            {
+                return users.TryRemove(id, out _); 
+            }
+            else return false;
+        }
     }
 }

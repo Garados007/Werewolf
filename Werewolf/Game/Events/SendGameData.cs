@@ -112,6 +112,7 @@ namespace Werewolf.Game.Events
                 writer.WriteEndObject(); // end of user
 
                 writer.WriteBoolean("is-online", entry.IsOnline);
+                writer.WriteNumber("online-counter", entry.ConnectionChanged);
                 writer.WriteString("last-online-change", entry.LastConnectionUpdate);
 
                 writer.WriteEndObject(); // end of id

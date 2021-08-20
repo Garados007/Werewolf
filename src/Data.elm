@@ -12,6 +12,7 @@ module Data exposing
     , GameVoting
     , GameVotingOption
     , LobbyJoinToken
+    , OnlineInfo
     , RoleTemplates
     , UserConfig
     , decodeChatMessage
@@ -55,6 +56,7 @@ type alias Game =
     , phase: Maybe GamePhase
     , participants: Dict String (Maybe GameParticipant)
     , user: Dict String GameUser
+    , online: Dict String OnlineInfo
     , winner: Maybe (List String)
     , config: Dict String Int
     , leaderIsPlayer: Bool
@@ -65,6 +67,12 @@ type alias Game =
     , votingTimeout: Bool
     , autofinishRound: Bool
     , theme: (String, String)
+    }
+
+type alias OnlineInfo =
+    { isOnline: Bool
+    , counter: Int
+    , lastChanged: Posix
     }
 
 type alias GamePhase =
@@ -193,6 +201,13 @@ decodeGameUserResult =
                                 |> required "max-xp" JD.int
                             )
                         |> JD.field "user"
+                        |> JD.dict
+                    )
+                |> required "users"
+                    (JD.succeed OnlineInfo
+                        |> required "is-online" JD.bool
+                        |> required "online-counter" JD.int
+                        |> required "last-online-change" Iso8601.decoder
                         |> JD.dict
                     )
                 |> required "winner"

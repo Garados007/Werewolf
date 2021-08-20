@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MaxLib.WebServer;
@@ -261,6 +262,16 @@ namespace Werewolf.Game
             w.WriteEndObject();
             w.Flush();
 
+            _ = Task.Run(async () => 
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30));
+                if (room.Users.TryGetValue(user.Id, out Theme.GameUserEntry? entry) 
+                    && !entry.WasOnlineOnce)
+                {
+                    room.RemoveParticipant(user);
+                }
+            });
+
             return new HttpStreamDataSource(s)
             {
                 MimeType = MimeType.ApplicationJson
@@ -298,6 +309,16 @@ namespace Werewolf.Game
                 };
             }
             room.AddParticipant(user);
+
+            _ = Task.Run(async () => 
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30));
+                if (room.Users.TryGetValue(user.Id, out Theme.GameUserEntry? entry) 
+                    && !entry.WasOnlineOnce)
+                {
+                    room.RemoveParticipant(user);
+                }
+            });
 
             var userToken = GameController.Current.GetUserToken(room, user);
             return new HttpStringDataSource($"\"{userToken.Replace("\"", "\\\"")}\"")

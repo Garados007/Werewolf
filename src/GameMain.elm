@@ -135,6 +135,7 @@ view_internal model lang =
                         Views.ViewPlayerNotification.view
                             lang
                             (Maybe.andThen .game model.game)
+                            model.removedUser
                             nid
                             player
                     )

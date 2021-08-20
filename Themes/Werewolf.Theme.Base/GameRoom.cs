@@ -80,7 +80,7 @@ namespace Werewolf.Theme
 
         public bool RemoveParticipant(UserInfo user)
         {
-            if (!Users.IsEmpty && user.Id == Leader)
+            if (Users.Count > 1 && user.Id == Leader)
                 return false;
             _ = Users.Remove(user.Id, out _);
             SendEvent(new Events.RemoveParticipant(user.Id));

@@ -76,6 +76,13 @@
             "title": "Spielerbenachrichtigung"
         }
     },
+    "theme": {
+        "event": {
+            "player-notification": {
+                "offline-player-left": "Ein Spieler wurde automatisch aus dem Spiel gekickt, der er 30 Sekunden offline ist."
+            }
+        }
+    },
     "user-stats": {
         "won-games": "gewonnene Spiele",
         "died": "gestorben",
@@ -83,7 +90,8 @@
         "leader": "Spielleiter",
         "level": "Level",
         "player-kick": "Spieler kicken",
-        "guest": "Gast"
+        "guest": "Gast",
+        "offline": "(offline)"
     },
     "join-token": {
         "title": "Spieler hinzufügen",

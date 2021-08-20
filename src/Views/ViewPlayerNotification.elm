@@ -3,11 +3,13 @@ module Views.ViewPlayerNotification exposing (..)
 import Data
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
-import Dict
+import Dict exposing (Dict)
 import Language exposing (Language)
+import Maybe.Extra
 
-view : Language -> Maybe Data.Game -> String -> List String -> Html Never
-view lang game notificationId player =
+view : Language -> Maybe Data.Game -> Dict String Data.GameUser -> String -> List String 
+    -> Html Never
+view lang game removedUser notificationId player =
     div [ class "notification-box" ]
         [ div [ class "player-list" ]
             <| List.filterMap
@@ -30,6 +32,10 @@ view lang game notificationId player =
                                 [ text <| user.name ]
                             ]
                     )
+                    <| Maybe.Extra.orElseLazy
+                        (\() ->
+                            Dict.get id removedUser
+                        )
                     <| Dict.get id
                     <| Maybe.withDefault Dict.empty
                     <| Maybe.map .user game

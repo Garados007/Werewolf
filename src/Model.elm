@@ -22,6 +22,7 @@ import Views.ViewThemeEditor
 type alias Model =
     { game: Maybe Data.GameUserResult
     , roles: Maybe Data.RoleTemplates
+    , removedUser: Dict String Data.GameUser
     , errors: List String
     , token: String
     , now: Posix
@@ -55,6 +56,7 @@ init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.Lo
 init token selLang langInfo rootLang joinToken =
     { game = Nothing
     , roles = Nothing
+    , removedUser = Dict.empty
     , errors = []
     , token = token
     , now = Time.millisToPosix 0
@@ -336,6 +338,16 @@ applyEventData event model =
                 | user = Dict.remove id game.user
                 , participants = Dict.remove id game.participants
                 }
+            , removedUser =
+                case Maybe.andThen .game model.game
+                    |> Maybe.map .user
+                    |> Maybe.andThen
+                        (Dict.get id)
+                of
+                    Just user ->
+                        Dict.insert id user model.removedUser
+                    Nothing -> model.removedUser
+
             }
             []
         EventData.RemoveVoting id -> Tuple.pair 
@@ -516,5 +528,33 @@ applyEventData event model =
         EventData.GetJoinToken token -> Tuple.pair
             { model 
             | joinToken = Just token
+            }
+            []
+        EventData.OnlineNotification user online -> Tuple.pair
+            { model
+            | game = Maybe.map
+                (\gameRes ->
+                    { gameRes
+                    | game = Maybe.map
+                        (\game ->
+                            { game
+                            | online = Dict.update
+                                user
+                                (Maybe.map
+                                    (\old ->
+                                        if old.counter > online.counter
+                                        then old
+                                        else online
+                                    )
+                                >> Maybe.withDefault online
+                                >> Just
+                                )
+                                game.online
+                            }
+                        )
+                        gameRes.game
+                    }
+                )
+                model.game
             }
             []

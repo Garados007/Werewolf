@@ -9,7 +9,11 @@ namespace Werewolf.Theme
 
         public UserInfo User { get; set; }
 
+        public int ConnectionChanged { get; private set; }
+
         public bool IsOnline => connections > 0;
+
+        public bool WasOnlineOnce { get; private set; }
 
         private int connections;
         private readonly object connectionLock = new object();
@@ -26,7 +30,9 @@ namespace Werewolf.Theme
             lock (connectionLock)
             {
                 connections++;
+                ConnectionChanged++;
                 LastConnectionUpdate = DateTime.UtcNow;
+                WasOnlineOnce = true;
             }
         }
 
@@ -35,6 +41,7 @@ namespace Werewolf.Theme
             lock (connectionLock)
             {
                 connections = Math.Max(0, connections - 1);
+                ConnectionChanged++;
                 LastConnectionUpdate = DateTime.UtcNow;
             }
         }

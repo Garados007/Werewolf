@@ -29,20 +29,23 @@ namespace Werewolf.Game
             entry.AddConnection();
             Closed += (_, __) =>
             {
-                GameController.Current.RemoveWsConnection(this);
-                entry.RemoveConnection();
+                if (GameController.Current.RemoveWsConnection(this))
+                    entry.RemoveConnection();
+                game.SendEvent(new Theme.Events.OnlineNotification(entry));
             };
             _ = SendFrame(new Events.SendGameData(
                 game, 
                 entry.User,
                 userFactory
             ));
+            game.SendEvent(new Theme.Events.OnlineNotification(entry));
         }
 
         protected override Task ReceiveClose(CloseReason? reason, string? info)
         {
-            GameController.Current.RemoveWsConnection(this);
-            UserEntry.RemoveConnection();
+            if (GameController.Current.RemoveWsConnection(this))
+                UserEntry.RemoveConnection();
+            Game.SendEvent(new Theme.Events.OnlineNotification(UserEntry));
             return Task.CompletedTask;
         }
 

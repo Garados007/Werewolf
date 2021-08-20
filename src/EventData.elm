@@ -31,6 +31,7 @@ type EventData
     | SubmitRoles RoleTemplates
     | Success
     | GetJoinToken LobbyJoinToken
+    | OnlineNotification String Data.OnlineInfo
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -187,6 +188,13 @@ decodeEventData =
                     |> required "token" JD.string
                     |> required "alive-until" Iso8601.decoder
                     |> JD.map GetJoinToken
+                "OnlineNotification" ->
+                    JD.succeed OnlineInfo
+                    |> required "online" JD.bool
+                    |> required "counter" JD.int
+                    |> required "last-changed" Iso8601.decoder
+                    |> JD.map2 OnlineNotification
+                        (JD.field "user" JD.string)
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

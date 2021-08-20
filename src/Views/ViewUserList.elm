@@ -94,7 +94,17 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                     ]
                 , div [ class "user-info-box" ]
                     [ div [ class "user-name" ]
-                        [ text user.name ]
+                        [ Html.span [] [ text user.name ]
+                        , if Dict.get id game.online
+                                |> Maybe.map .isOnline
+                                |> Maybe.withDefault True
+                            then text ""
+                            else Html.span [ class "offline" ]
+                                <| List.singleton
+                                <| text
+                                <| Language.getTextOrPath lang
+                                    [ "user-stats", "offline" ]
+                        ]
                     , div [ class "user-role" ]
                         [ text <| getUserRole id ]
                     ]

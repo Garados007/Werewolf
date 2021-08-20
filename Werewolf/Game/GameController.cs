@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Werewolf.Theme;
 using Werewolf.User;
+using System.Linq;
 
 namespace Werewolf.Game
 {
@@ -271,11 +272,48 @@ namespace Werewolf.Game
             lockWsConnections.ExitWriteLock();
         }
 
-        public void RemoveWsConnection(GameWebSocketConnection connection)
+        public bool RemoveWsConnection(GameWebSocketConnection connection)
         {
             lockWsConnections.EnterWriteLock();
-            _ = wsConnections.Remove(connection);
+            var removed = wsConnections.Remove(connection);
             lockWsConnections.ExitWriteLock();
+            if (removed)
+            {
+                _ = Task.Run(async () =>
+                {
+                    // time for reconnect
+                    await Task.Delay(TimeSpan.FromSeconds(30));
+                    // check if user was reconnected
+                    if (connection.UserEntry.IsOnline ||
+                        DateTime.Now - connection.UserEntry.LastConnectionUpdate < TimeSpan.FromSeconds(20))
+                        return;
+                    // submit leave message
+                    connection.Game.SendEvent(new Theme.Events.PlayerNotification(
+                        "offline-player-left",
+                        new[] { connection.UserEntry.User.Id }
+                    ));
+                    // check for new leader, old leader is removed
+                    if (connection.Game.Leader == connection.UserEntry.User.Id &&
+                        connection.Game.Users.Count > 1)
+                    {
+                        UserId? user = connection.Game.Users
+                            .Where(x => x.Key != connection.UserEntry.User.Id)
+                            .Select(x => x.Key)
+                            .FirstOrDefault();
+                        if (user is not null)
+                            connection.Game.Leader = user.Value;
+                    }
+                    // remove user
+                    connection.Game.RemoveParticipant(connection.UserEntry.User);
+                    connection.UserFactory.RemoveCachedGuest(connection.UserEntry.User.Id);
+                    // remove game if empty
+                    if (connection.Game.Users.IsEmpty)
+                    {
+                        RemoveGame(connection.Game.Id);
+                    }
+                });
+            }
+            return removed;
         }
 
         public void Dispose()
