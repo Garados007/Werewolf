@@ -18,7 +18,6 @@ import OAuth
 import OAuth.AuthorizationCode as Auth
 import Http
 import Json.Decode as JD
-import Json.Encode as JE
 import MD5
 import Data exposing (UserInfo)
 import GuestInput

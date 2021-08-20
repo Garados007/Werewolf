@@ -1,7 +1,7 @@
 module GuestInput exposing (..)
 
 import Data exposing (UserInfo)
-import Html exposing (Html, div, text)
+import Html exposing (Html, div)
 import Html.Attributes as HA exposing (class)
 import Html.Events as HE
 import Debounce

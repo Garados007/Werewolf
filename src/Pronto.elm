@@ -18,7 +18,6 @@ import Url
 import Json.Decode as JD exposing (Decoder)
 import Json.Decode.Pipeline exposing (required, optional)
 import Json.Encode as JE
-import Html exposing (b)
 import Iso8601
 
 {-|

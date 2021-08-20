@@ -7,7 +7,6 @@ import Json.Decode.Pipeline exposing (required)
 import Iso8601
 import Dict exposing (Dict)
 import Time exposing (Posix)
-import Pronto exposing (JoinTokenInfo)
 
 type EventData
     = SendGameData GameGlobalState
