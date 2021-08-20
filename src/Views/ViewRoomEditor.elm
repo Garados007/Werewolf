@@ -104,7 +104,10 @@ view lang langInfo roles gameResult theme game editable buffer =
                     ]
                 ]
         
-        maxPlayer = (+) 1 <| Dict.size game.user
+        maxPlayer =
+            if game.leaderIsPlayer
+            then Dict.size game.user + 1
+            else Dict.size game.user
         maxRoles = (+) 1 <| List.sum <| Dict.values 
             <| Dict.union buffer game.config
 
