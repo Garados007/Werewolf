@@ -85,11 +85,20 @@ namespace Werewolf.Theme.Default.Phases
             public override bool CanVote(Role voter)
                 => voter == Girl;
 
+#if DEBUG
+            private static int? Seed = null;
+#endif
+
             public override void Execute(GameRoom game, int id)
             {
                 if (id != 1)
                     return;
+#if DEBUG       
+                Console.WriteLine($"Use Seed {Seed}");
+                var rng = Seed is null ? new Random() : new Random(Seed.Value);
+#else
                 var rng = new Random();
+#endif
                 int wolfCount = game.AliveRoles.Where(x => x is WerwolfBase).Count();
                 int aliveCount = game.AliveRoles.Count();
                 var probabilitySeeWolf = (double)wolfCount / aliveCount;
@@ -107,6 +116,14 @@ namespace Werewolf.Theme.Default.Phases
 
         public class GirlVotePhase : SeperateVotingPhaseBase<GirlVote, Girl>
         {
+            public override bool CanExecute(GameRoom game)
+            {
+                return base.CanExecute(game) &&
+                    !game.Users.Select(x => x.Value.Role)
+                        .Where(x => x is OldMan oldman && oldman.WasKilledByVillager)
+                        .Any();
+            }
+
             protected override GirlVote Create(Girl role, GameRoom game)
                 => new GirlVote(role);
 

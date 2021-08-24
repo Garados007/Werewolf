@@ -13,6 +13,14 @@ namespace Werewolf.Theme.Votings
         public override IEnumerable<(int id, VoteOption option)> Options
             => OptionsDict.Select(x => (x.Key, x.Value.opt));
 
+        public int? GetOptionIndex(UserId id)
+        {
+            return OptionsDict
+                .Where(x => x.Value.id == id)
+                .Select(x => (int?)x.Key)
+                .FirstOrDefault();
+        }
+
         protected virtual bool AllowDoNothingOption { get; }
 
         protected int? NoOptionId { get; }

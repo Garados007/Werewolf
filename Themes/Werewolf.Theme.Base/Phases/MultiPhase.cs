@@ -21,9 +21,11 @@ namespace Werewolf.Theme.Phases
 
         public override async Task InitAsync(GameRoom game)
         {
-            await base.InitAsync(game);
-            await Phase1.InitAsync(game);
-            await Phase2.InitAsync(game);
+            await base.InitAsync(game).ConfigureAwait(false);
+            if (Phase1.CanExecute(game))
+                await Phase1.InitAsync(game).ConfigureAwait(false);
+            if (Phase2.CanExecute(game))
+                await Phase2.InitAsync(game).ConfigureAwait(false);
         }
 
         public override bool IsGamePhase => Phase1.IsGamePhase || Phase2.IsGamePhase;

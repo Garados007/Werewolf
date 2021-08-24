@@ -10,6 +10,7 @@ content/index.js
 *.g.cs
 *.service.cs
 elm-stuff
+TestResults
 # runtime stuff
 .litedb
 .env
