@@ -37,4 +37,5 @@ RUN git submodule update --init --recursive
 FROM httpd:2.4
 COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
 COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
+COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
