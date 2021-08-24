@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 as builder
 WORKDIR /src
 COPY ./Themes ./Themes
 COPY ./Werewolf ./Werewolf
+COPY ./Test ./Test
 COPY ./Werewolf.sln ./Werewolf.sln
 RUN mkdir -p /app && \
     dotnet build --nologo -c RELEASE && \
