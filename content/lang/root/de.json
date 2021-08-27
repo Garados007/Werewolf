@@ -79,6 +79,20 @@
             "title": "Serverwartung",
             "desc": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
             "reason": "Grund:"
+        },
+        "connection": {
+            "close": {
+                "title": "Keine Verbindung zum Server",
+                "desc": "Es konnte keine Verbindung zum Spieleserver hergestellt werden. Das kann daran liegen, dass der Server derzeit Offline ist oder dass die Lobby nicht mehr existiert. Bitte versuche eine neue Lobby zu erstellen."
+            },
+            "code": {
+                "1000": {
+                    "lobby not found": "Die Lobby existiert nicht mehr auf dem Server. Bitte erstelle eine Neue."
+                },
+                "1012": {
+                    "": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu können."
+                }
+            }
         }
     },
     "theme": {

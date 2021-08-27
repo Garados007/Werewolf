@@ -43,6 +43,7 @@ type alias Model =
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
+    , closeReason: Maybe Network.SocketClose
     }
 
 type Modal
@@ -85,6 +86,7 @@ init token selLang langInfo rootLang joinToken =
     , chatView = Nothing
     , joinToken = joinToken
     , codeCopied = Nothing
+    , closeReason = Nothing
     }
 
 getSelectedLanguage : Data.GameGlobalState -> String
@@ -102,8 +104,7 @@ getLanguage : Model -> Language
 getLanguage model =
     let
         lang : Maybe String
-        lang = model.state
-            |> Maybe.map getSelectedLanguage
+        lang = Just model.selLang
 
         rootLang : Language
         rootLang =

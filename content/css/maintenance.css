@@ -1,5 +1,6 @@
 .modal-content .maintenance.desc,
-.modal-content .maintenance.reason {
+.modal-content .maintenance.reason,
+.modal-content .connection-error {
     max-width: 35em;
     padding: 0.5em;
 }

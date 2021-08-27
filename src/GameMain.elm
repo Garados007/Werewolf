@@ -18,6 +18,7 @@ import Views.ViewWinners
 import Views.ViewPlayerNotification
 import Views.ViewRoleInfo
 import Views.ViewChat
+import Views.ViewCloseReason
 
 import Browser.Dom
 import Html exposing (Html, div, text)
@@ -59,6 +60,7 @@ type Msg
     | WrapChat Views.ViewChat.Msg
     | CloseModal
     | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
+    | WsClose (Result JD.Error Network.SocketClose)
 
 init : String -> String -> String -> LanguageInfo -> Dict String Language 
     -> Maybe Data.LobbyJoinToken -> (Model, Cmd Msg)
@@ -170,6 +172,11 @@ view_internal model lang =
                     , Html.span [] [ text r ]
                     ]
             ]
+    , case model.closeReason of
+        Nothing -> text ""
+        Just info ->
+            Html.map (always Noop)
+            <| Views.ViewCloseReason.view lang info
     , Views.ViewErrors.view model.errors
         |> Html.map WrapError
     ]
@@ -505,6 +512,20 @@ update_internal msg model =
                     <| JD.errorToString err
                 }
                 Cmd.none
+        WsClose (Err err) ->
+            Tuple.pair
+                { model
+                | errors = (++) model.errors
+                    <| List.singleton
+                    <| JD.errorToString err
+                }
+                Cmd.none
+        WsClose (Ok reason) ->
+            Tuple.pair
+                { model
+                | closeReason = Just reason
+                }
+                Cmd.none
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -530,4 +551,5 @@ subscriptions model =
         --     else Time.every 20000 (always FetchData)
         -- , Time.every 60000 (always FetchData)
         , Network.wsReceive WsMsg
+        , Network.wsClose WsClose
         ]

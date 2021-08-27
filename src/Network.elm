@@ -4,6 +4,7 @@ module Network exposing
     , NetworkRequest (..)
     , NetworkResponse (..)
     , SocketRequest (..)
+    , SocketClose
     , Request (..)
     , editGameConfig
     , editUserConfig
@@ -12,6 +13,7 @@ module Network exposing
     , getRootLang
     , wsReceive
     , wsConnect
+    , wsClose
     , wsSend
     , execute
     )
@@ -42,6 +44,16 @@ wsConnect api token =
                 else "wss://" ++ api ++ "/ws/" ++ token
             , protocol = ""
             }
+
+wsClose : (Result JD.Error SocketClose -> msg) -> Sub msg
+wsClose tagger =
+    receiveSocketClose
+        <| tagger
+        << JD.decodeValue
+            (JD.map2 SocketClose
+                (JD.field "code" JD.int)
+                (JD.field "reason" JD.string)
+            )
 
 wsSend : SocketRequest -> Cmd msg
 wsSend request =
@@ -155,6 +167,11 @@ execute tagger request =
         SockReq req -> wsSend req
         NetReq req -> executeRequest req
             |> Cmd.map tagger
+
+type alias SocketClose =
+    { code: Int
+    , reason: String
+    }
 
 type Request
     = SockReq SocketRequest

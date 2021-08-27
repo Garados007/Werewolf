@@ -18,9 +18,6 @@
                                             , msg : "data"
                                             , data : event.data} );
           }
-          socket.onerror = function (event) {
-            console.log(event);
-          }
           socket.onopen = function () {
             if (socket.buffer) {
               for (var i in socket.buffer)
@@ -28,8 +25,14 @@
               delete socket.buffer;
             }
           }
-          socket.onclose = function () {
-            console.log(`ws closed: ${wat.name}`);
+          socket.onclose = function (data) {
+            app.ports.receiveSocketClose.send(
+              { name : wat.name
+              , code : data.code
+              , reason : data.reason
+              }
+            );
+            delete mySockets[wat.name];
           }
           if (mySockets[wat.name]) {
             mySockets[wat.name].close();

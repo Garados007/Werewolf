@@ -80,6 +80,10 @@ namespace Werewolf
 
             var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
             ws.Add(new GameWebSocketEndpoint(userController));
+            ws.CloseEndpoint = new MaxLib.WebServer.WebSocket.WebSocketCloserEndpoint(
+                MaxLib.WebServer.WebSocket.CloseReason.NormalClose,
+                "lobby not found"
+            );
             server.AddWebService(ws);
 
             var searcher = new LocalIOMapper();
