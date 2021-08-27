@@ -276,6 +276,7 @@ namespace Werewolf.Game
         {
             lockWsConnections.EnterWriteLock();
             var removed = wsConnections.Remove(connection);
+            var empty = wsConnections.Count == 0;
             lockWsConnections.ExitWriteLock();
             if (removed)
             {
@@ -313,7 +314,25 @@ namespace Werewolf.Game
                     }
                 });
             }
+            if (empty && Program.MaintenanceMode)
+                Program.CloseServer();
             return removed;
+        }
+
+        public void BroadcastEvent(MaxLib.WebServer.WebSocket.EventBase @event)
+        {
+            lockWsConnections.EnterReadLock();
+            foreach (var connection in wsConnections)
+                _ = connection.SendEvent(@event);
+            if (@event is Events.EnterMaintenance && wsConnections.Count == 0 && Program.MaintenanceMode)
+            {
+                _ = Task.Run(async () => 
+                {
+                    await Task.Delay(500).CAF(); // give the server some time to send response
+                    Program.CloseServer();
+                });
+            }
+            lockWsConnections.ExitReadLock();
         }
 
         public void Dispose()

@@ -43,6 +43,7 @@ import Views.ViewModal
 import Model
 import Language exposing (LanguageInfo)
 import Dict exposing (Dict)
+import Http
 
 type Msg
     = Response NetworkResponse
@@ -148,6 +149,27 @@ view_internal model lang =
                     )
                 <| List.singleton
                 <| Views.ViewRoleInfo.view lang roleKey
+        Model.Maintenance reason ->
+            Html.map (always CloseModal)
+            <| Views.ViewModal.viewOnlyClose
+                ( Language.getTextOrPath lang
+                    [ "modals", "maintenance", "title" ]
+                )
+            [ div [ class "maintenance", class "desc" ]
+                [ text <| Language.getTextOrPath lang
+                    [ "modals", "maintenance", "desc" ]
+                ]
+            , case reason of
+                Nothing -> text ""
+                Just r ->
+                    div [ class "maintenance", class "reason" ]
+                    [ Html.span []
+                        [ text <| Language.getTextOrPath lang
+                            [ "modals", "maintenance", "reason" ]
+                        ]
+                    , Html.span [] [ text r ]
+                    ]
+            ]
     , Views.ViewErrors.view model.errors
         |> Html.map WrapError
     ]

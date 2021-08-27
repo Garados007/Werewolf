@@ -74,6 +74,11 @@
         },
         "player-notification": {
             "title": "Spielerbenachrichtigung"
+        },
+        "maintenance": {
+            "title": "Serverwartung",
+            "desc": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
+            "reason": "Grund:"
         }
     },
     "theme": {

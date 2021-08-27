@@ -51,6 +51,7 @@ type Modal
     | WinnerModal Data.Game (List String)
     | PlayerNotification (Dict String (List String))
     | RoleInfo String
+    | Maintenance (Maybe String)
 
 init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken -> Model
 init token selLang langInfo rootLang joinToken =
@@ -568,5 +569,10 @@ applyEventData event model =
                     }
                 )
                 model.state
+            }
+            []
+        EventData.Maintenance reason shutdown -> Tuple.pair
+            { model
+            | modal = Maintenance reason
             }
             []

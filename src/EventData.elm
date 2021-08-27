@@ -31,6 +31,7 @@ type EventData
     | Success
     | GetJoinToken LobbyJoinToken
     | OnlineNotification String Data.OnlineInfo
+    | Maintenance (Maybe String) Posix
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -194,6 +195,10 @@ decodeEventData =
                     |> required "last-changed" Iso8601.decoder
                     |> JD.map2 OnlineNotification
                         (JD.field "user" JD.string)
+                "EnterMaintenance" ->
+                    JD.succeed Maintenance
+                    |> required "reason" (JD.nullable JD.string)
+                    |> required "forced-shutdown" Iso8601.decoder
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

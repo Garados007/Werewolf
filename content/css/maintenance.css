@@ -1,0 +1,11 @@
+.modal-content .maintenance.desc,
+.modal-content .maintenance.reason {
+    max-width: 35em;
+    padding: 0.5em;
+}
+.modal-content .maintenance.reason span:first-child {
+    margin-right: 0.5em;
+}
+.modal-content .maintenance.reason span:last-child {
+    font-family: monospace;
+}

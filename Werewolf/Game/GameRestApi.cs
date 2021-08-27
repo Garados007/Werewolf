@@ -74,7 +74,14 @@ namespace Werewolf.Game
                     ))
                     .Add(new PostRule("name"))
                     .Add(new PostRule("image"))
-                    .Add(new PostRule("language"))
+                    .Add(new PostRule("language")),
+                RestActionEndpoint.Create<string, string?>(Maintenance, "key", "reason")
+                    .Add(fact.Location(
+                        fact.UrlConstant("maintenance"),
+                        fact.MaxLength()
+                    ))
+                    .Add(new PostRule("key"))
+                    .Add(fact.Optional(new PostRule("reason"))),
             });
 
             return api;
@@ -199,6 +206,12 @@ namespace Werewolf.Game
 
         private async Task<HttpDataSource> User(string token, bool guest)
         {
+            if (Program.MaintenanceMode)
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+
             UserId? guestId;
             var user = GameController.UserFactory is UserController controller 
                 ? (guest
@@ -220,6 +233,12 @@ namespace Werewolf.Game
 
         private async Task<HttpDataSource> LobbyCreate(string token, bool guest)
         {
+            if (Program.MaintenanceMode)
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+
             UserId? guestId;
             var user = GameController.UserFactory is UserController controller 
                 ? (guest
@@ -280,6 +299,12 @@ namespace Werewolf.Game
 
         private async Task<HttpDataSource> LobbyJoin(string lobby, string token, bool guest)
         {
+            if (Program.MaintenanceMode)
+                return new HttpStringDataSource("null")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+
             UserId? guestId;
             var user = GameController.UserFactory is UserController controller 
                 ? (guest
@@ -329,7 +354,7 @@ namespace Werewolf.Game
     
         private async Task<HttpDataSource> GuestCreate(string name, string image, string language)
         {
-            if (!(GameController.UserFactory is UserController controller))
+            if (!(GameController.UserFactory is UserController controller) || Program.MaintenanceMode)
             {
                 return new HttpStringDataSource("null")
                 {
@@ -357,6 +382,50 @@ namespace Werewolf.Game
             return new HttpStringDataSource($"\"{id.Replace("\"", "\\\"")}\"")
             {
                 MimeType = MimeType.ApplicationJson
+            };
+        }
+
+        private async Task<HttpDataSource> Maintenance(string key, string? reason)
+        {
+            if (!File.Exists("maintenance.key") || 
+                (await File.ReadAllTextAsync("maintenance.key").CAF()).Trim() != key.Trim())
+            {
+                return new HttpStringDataSource("{\"success\":false,\"error\":\"invalid key\"}")
+                {
+                    MimeType = MimeType.ApplicationJson,
+                };
+            }
+
+            Serilog.Log.Information("Enter Maintenance mode (reason: {reason})", reason);
+
+            Program.MaintenanceMode = true;
+            Program.ForcedShutdown = DateTime.UtcNow + TimeSpan.FromMinutes(30);
+
+            GameController.Current.BroadcastEvent(new Events.EnterMaintenance()
+            {
+                Reason = reason,
+                ForcedShutdown = Program.ForcedShutdown,
+            });
+
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromMinutes(30)).ConfigureAwait(false);
+                Program.CloseServer();
+            });
+
+            var m = new MemoryStream();
+            var w = new Utf8JsonWriter(m);
+            w.WriteStartObject();
+            w.WriteBoolean("success", true);
+            if (reason is null)
+                w.WriteNull("reason");
+            else w.WriteString("reason", reason);
+            w.WriteEndObject();
+            w.Flush();
+
+            return new HttpStreamDataSource(m)
+            {
+                MimeType = MimeType.ApplicationJson,
             };
         }
     }

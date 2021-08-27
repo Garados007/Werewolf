@@ -51,8 +51,11 @@ namespace Werewolf.Game
 
         public async Task SendEvent(GameEvent @event)
         {
-            await SendFrame(new Events.SubmitGameEvents(@event, Game, UserEntry.User));
+            await SendFrame(new Events.SubmitGameEvents(@event, Game, UserEntry.User)).CAF();
         }
+
+        public async Task SendEvent(EventBase @event)
+            => await SendFrame(@event).CAF();
 
         protected override Task ReceivedFrame(EventBase @event)
         {
@@ -358,6 +361,9 @@ namespace Werewolf.Game
             if (!Game.FullConfiguration)
                 return "some roles are missing or there are to much roles defined";
 
+            if (Program.MaintenanceMode)
+                return "Server is in maintenance mode. You cannot create a new game. Try to create a new lobby.";
+
             var random = new Random();
             var roles = Game.RoleConfiguration
                 .SelectMany(x => Enumerable.Repeat(x.Key, x.Value))
@@ -533,8 +539,12 @@ namespace Werewolf.Game
 
         private async Task<string?> Handle(Events.RefetchJoinToken refetchJoinToken)
         {
+
             if (UserEntry.User.Id != Game.Leader)
                 return "you are not the leader of the group";
+
+            if (Program.MaintenanceMode)
+                return "This server is in maintenance mode. You cannot create a new join token.";
 
             var joinToken = await GameController.Current.GetJoinTokenAsync(Game.Id).CAF();
 
