@@ -410,6 +410,13 @@ namespace Werewolf.Game
             _ = Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromMinutes(30)).ConfigureAwait(false);
+                try {
+                    await Task.WhenAny(
+                        Task.Delay(TimeSpan.FromSeconds(10)),
+                        GameController.Current.CloseAllWsConnectionsBecauseOfRestart()
+                    ).CAF();
+                }
+                catch (TaskCanceledException) {}
                 Program.CloseServer();
             });
 
