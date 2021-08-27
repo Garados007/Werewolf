@@ -60,6 +60,7 @@
         const param = new URLSearchParams(window.location.search);
         if (!param.has("lang")) {
           var lang = navigator.language || navigator.userLanguage;
+          lang = /^(\w+)[$\W]/.exec(lang)[1];
           param.set("lang", lang);
           window.location.search = param.toString();
         }
