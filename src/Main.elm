@@ -742,7 +742,11 @@ update msg model =
                 model
             , Cmd.none
             )
-        (ReceiveRootLang _ (Err _), _) -> (model, Cmd.none)
+        (ReceiveRootLang "de" (Err _), _) -> (model, Cmd.none)
+        (ReceiveRootLang l (Err _), _) ->
+            Tuple.pair model
+            <| Browser.Navigation.load 
+            <| "?lang=de&lang-fallback-for=" ++ Url.percentEncode l
 
 formEncodedBody : List (String, String) -> Http.Body
 formEncodedBody = 
