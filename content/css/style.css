@@ -10,6 +10,7 @@
 @import url("join-token.css");
 @import url("init-select-user.css");
 @import url("maintenance.css");
+@import url("version.css");
 
 :root {
   /* the default base color of the page */

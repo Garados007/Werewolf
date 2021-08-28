@@ -30,6 +30,7 @@ import Network
 import Model
 import GameMain
 import Html.Attributes exposing (lang)
+import Views.ViewVersion
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -440,6 +441,7 @@ view model =
                         ]
                     ]
                 ]
+            , Views.ViewVersion.view
             ]
         GuestInput data ->
             [ Html.node "link"
@@ -450,6 +452,7 @@ view model =
             , Html.map WrapGuestInput
                 <| GuestInput.view data.model 
                 <| getRootLang data.lang
+            , Views.ViewVersion.view
             ]
         SelectLobby data ->
             [ Html.node "link"
@@ -465,6 +468,7 @@ view model =
                 else Html.map WrapLobbyInput
                     <| LobbyInput.view data.model
                     <| getRootLang data.lang
+            , Views.ViewVersion.view
             ]
         Game data ->
             List.map (Html.map WrapGame)

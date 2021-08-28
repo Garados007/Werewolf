@@ -1,3 +1,8 @@
+FROM bitnami/git:latest as version
+WORKDIR /src
+COPY ./.git ./.git
+RUN git rev-parse --short HEAD > version-suffix
+
 FROM ubuntu:latest as builder
 RUN apt-get -qq update -y && \
     apt-get -qq upgrade -y && \
@@ -11,10 +16,16 @@ WORKDIR /src
 COPY ./elm.json /src/
 COPY ./src /src/src
 COPY ./preprocess-elm.sh /src/
-RUN chmod +x preprocess-elm.sh && \
+COPY ./version.txt ./version-prefix
+COPY --from=version /src/version-suffix ./version-suffix
+RUN verpre="$(cat "version-prefix")" && \
+    versuf="$(cat "version-suffix")" && \
+    chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
     rm -r src/Debug && \
+    sed -i "s/version = \".*\"/version = \"$verpre-$versuf\"/" \
+        src/Config.elm && \
     mkdir /content && \
     elm make --optimize --output=/content/index.js src/Main.elm
 

@@ -16,7 +16,7 @@ fi
 
 # build the new docker compose setup
 
-docker-compose build
+docker-compose build || exit $?
 
 # check if docker is running
 

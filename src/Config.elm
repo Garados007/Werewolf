@@ -46,3 +46,6 @@ oauthClientId = "werewolf"
 
 prontoHost : String
 prontoHost = "https://pronto.2complex.de"
+
+version : String
+version = "debug"
