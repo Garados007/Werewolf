@@ -15,13 +15,11 @@ RUN mkdir -p /app && \
     verpre="$(cat "version-prefix")" && \
     versuf="$(cat "version-suffix")" && \
     dotnet build --nologo -c RELEASE \
-        --version "$verpre-$versuf" && \
-        # --version-prefix "$verpre" \
-        # --version-suffix "$versuf" && \
+        /p:version="$verpre-$versuf" \
+        Werewolf/Werewolf.csproj && \
     dotnet publish --nologo -c RELEASE -o /app \
-        --version "$verpre-$versuf" && \
-        # --version-prefix "$verpre" \
-        # --version-suffix "$versuf" && \
+        /p:version="$verpre-$versuf" \
+        Werewolf/Werewolf.csproj && \
     rm ./version-*
 
 FROM mcr.microsoft.com/dotnet/runtime:5.0
