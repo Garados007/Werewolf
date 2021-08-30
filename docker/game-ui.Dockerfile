@@ -40,6 +40,22 @@ RUN uglifyjs \
         --output index.js && \
     rm source.js
 
+FROM node:latest as css-compressor
+RUN npm install -g csso-cli && \
+    npm install -g clean-css-cli
+WORKDIR /content
+COPY ./content /content
+RUN mkdir -p bin && \
+    cd css && \
+    cleancss --inline all -O2 --source-map \
+        -o style.min.css \
+        style.css && \
+    cd .. && \
+    csso -i css/style.min.css \
+        --input-source-map css/style.min.css.map \
+        -o bin/style.css \
+        -s file
+
 FROM bitnami/git:latest as vendor
 WORKDIR /src
 COPY . .
@@ -48,5 +64,6 @@ RUN git submodule update --init --recursive
 FROM httpd:2.4
 COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
 COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
+COPY --from=css-compressor /content/bin /usr/local/apache2/htdocs/content/css
 COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf

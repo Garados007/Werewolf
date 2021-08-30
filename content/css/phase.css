@@ -1,0 +1,43 @@
+.phase-header,
+.phase-controls {
+  border: 0.3em solid var(--color-dark);
+  padding: 1.5em;
+  width: 50em;
+  max-width: 100%;
+  margin: 1em 0;
+  box-sizing: border-box;
+}
+.phase-header .title {
+  font-size: 2.5em;
+  text-align: center;
+}
+.phase-votings {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+.phase-controls {
+  padding: 0;
+  display: flex;
+}
+.phase-controls .button {
+  flex-grow: 1;
+  text-align: center;
+  padding: 1em 1.5em;
+  font-size: 1.3em;
+  cursor: pointer;
+}
+.phase-controls .button:hover {
+  background-color: var(--color-medium);
+}
+@media (max-width: 900px) {
+  .phase-header,
+  .phase-controls {
+    flex-direction: column-reverse;
+    width: unset;
+  }
+  .phase-controls > *:nth-child(1) {
+    border-top: 0.05em solid var(--color-dark);
+  }
+}
