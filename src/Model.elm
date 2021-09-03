@@ -17,6 +17,7 @@ import Time exposing (Posix)
 import Level exposing (Level)
 import Language exposing (Language, LanguageInfo)
 import Styles exposing (Styles)
+import Storage exposing (Storage)
 
 import Views.ViewThemeEditor
 
@@ -48,6 +49,7 @@ type alias Model =
     , streamerMode: Bool
     , closeReason: Maybe Network.SocketClose
     , maintenance: Maybe Posix
+    , storage: Storage
     }
 
 type EditorPage
@@ -63,8 +65,9 @@ type Modal
     | RoleInfo String
     | Maintenance (Maybe String)
 
-init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken -> Model
-init token selLang langInfo rootLang joinToken =
+init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken 
+    -> Storage -> Model
+init token selLang langInfo rootLang joinToken storage =
     { state = Nothing
     , roles = Nothing
     , removedUser = Dict.empty
@@ -96,9 +99,11 @@ init token selLang langInfo rootLang joinToken =
     , chatView = Nothing
     , joinToken = joinToken
     , codeCopied = Nothing
-    , streamerMode = False
+    , streamerMode = Storage.get .streamerMode storage
+        |> Maybe.withDefault False
     , closeReason = Nothing
     , maintenance = Nothing
+    , storage = storage
     }
 
 getSelectedLanguage : Data.GameGlobalState -> String
