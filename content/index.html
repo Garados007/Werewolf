@@ -7,7 +7,7 @@
       var mySockets = {};
   
       function sendSocketCommand(wat) {
-        console.log( "ssc: " +  JSON.stringify(wat, null, 4));
+        // console.log( "ssc: " +  JSON.stringify(wat, null, 4));
         if (wat.cmd == "connect")
         {
           // console.log("connecting!");
@@ -151,6 +151,7 @@ body {
     <div class="lds-heart"><div></div></div>
   </div>
   <script src="/content/index.js"></script>
+  <script src="/content/js/local-storage.js"></script>
   <script>
       var app = Elm.Main.init( { 
           node: document.getElementById("elm") 
@@ -162,6 +163,7 @@ body {
       // Add this line!
       app.ports.sendSocketCommand.subscribe(sendSocketCommand);
       app.ports.sendToClipboard.subscribe(copyToClipboard);
+      new ElmLocalStoragePorts().subscribe(app, "settingGetItem", "settingSetItem", "settingClear", "settingListKeys", "settingResponse");
   </script>
 </body>
 </html>

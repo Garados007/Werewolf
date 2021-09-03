@@ -138,21 +138,32 @@ namespace Werewolf.User
                 return null;
             var user = await FindUser(subId).CAF();
             if (user is not null)
+            {
+                // update information
+                string? value;
+                if ((value = GetSaneStringFromJson(json.RootElement, "picture", VerfifyUrl) ??
+                        GravatarLinkFromEmail(GetSaneStringFromJson(json.RootElement, "email"))
+                    ) is not null
+                    && value != user.Config.Image)
+                    await user.Config.SetImageAsync(value).CAF();
+                if ((value = GetSaneStringFromJson(json.RootElement, "game_username") ??
+                        GetSaneStringFromJson(json.RootElement, "preferred_username")) is not null
+                    && value != user.Config.Username)
+                    await user.Config.SetUsernameAsync(value).CAF();
                 return user;
+            }
             
             // create user
             user = await CreateAsync(
                 subId,
                 new DB.UserConfig
                 {
-                    Image = (json.RootElement.TryGetProperty("picture", out node) ?
-                        node.GetString() : null) ??
-                        GravatarLinkFromEmail(json.RootElement.TryGetProperty("email", out node) ? 
-                        node.GetString() : null),
-                    Language = json.RootElement.TryGetProperty("locale", out node) ?
-                        node.GetString() ?? "en" : "en",
-                    Username = json.RootElement.TryGetProperty("preferred_username", out node) ?
-                        node.GetString() ?? "missing-username" : "missing-username",
+                    Image = GetSaneStringFromJson(json.RootElement, "picture", VerfifyUrl) ??
+                        GravatarLinkFromEmail(GetSaneStringFromJson(json.RootElement, "email")),
+                    Language = GetSaneStringFromJson(json.RootElement, "locale") ?? "en",
+                    Username = GetSaneStringFromJson(json.RootElement, "game_username") ??
+                        GetSaneStringFromJson(json.RootElement, "preferred_username") ??
+                        "missing-username",
                     ThemeColor = "#333333",
                     BackgroundImage = null,
                 }
@@ -163,6 +174,26 @@ namespace Werewolf.User
             // nevermind it doesn't work
             Serilog.Log.Warning("Cannot create new user. Check your configuration settings.");
             return null;
+        }
+
+        private static string? GetSaneStringFromJson(JsonElement json, string name, 
+            Func<string, bool>? extraCheck = null)
+        {
+            if (!json.TryGetProperty(name, out JsonElement node))
+                return null;
+            var value = node.GetString();
+            if (value is null || value == "")
+                return null;
+            if (extraCheck is not null && !extraCheck(value))
+                return null;
+            return value;
+        }
+
+        private static bool VerfifyUrl(string url)
+        {
+            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri))
+                return false;
+            return uri.Scheme.ToLower() == "http" || uri.Scheme.ToLower() == "https";            
         }
 
         public static string GravatarLinkFromEmail(string? email)

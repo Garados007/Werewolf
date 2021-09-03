@@ -44,6 +44,7 @@ import Views.ViewModal
 import Model
 import Language exposing (LanguageInfo)
 import Dict exposing (Dict)
+import Storage exposing (Storage)
 
 type Msg
     = Response NetworkResponse
@@ -64,9 +65,9 @@ type Msg
     | WsClose (Result JD.Error Network.SocketClose)
 
 init : String -> String -> String -> LanguageInfo -> Dict String Language 
-    -> Maybe Data.LobbyJoinToken -> (Model, Cmd Msg)
-init token api selLang langInfo rootLang joinToken =
-    ( Model.init token selLang langInfo rootLang joinToken
+    -> Maybe Data.LobbyJoinToken -> Storage -> (Model, Cmd Msg)
+init token api selLang langInfo rootLang joinToken storage =
+    ( Model.init token selLang langInfo rootLang joinToken storage
     , Cmd.batch
         [ Task.perform identity
             <| Task.succeed Init
@@ -420,9 +421,15 @@ update_internal msg model =
             <| Ports.sendToClipboard
             <| JE.string content
         WrapUser (Views.ViewUserList.SetStreamerMode mode) ->
-            Tuple.pair
-                { model | streamerMode = mode }
-                Cmd.none
+            Storage.set
+                (\x -> { x | streamerMode = Just mode })
+                model.storage
+            |> \(storage, storageCmd) -> Tuple.pair
+                { model 
+                | streamerMode = mode
+                , storage = storage
+                }
+                storageCmd
         WrapEditor (Views.ViewRoomEditor.SetBuffer buffer req) ->
             Tuple.pair
                 { model | editor = buffer }

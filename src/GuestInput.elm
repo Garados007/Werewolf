@@ -8,6 +8,7 @@ import Debounce
 import Triple
 import MD5
 import Language exposing (Language)
+import Storage exposing (Storage)
 
 type alias Model =
     { name: String
@@ -21,9 +22,10 @@ type Msg
     | Debounce (Debounce.Msg String)
     | DoContinue
 
-init : Model
-init =
-    { name = ""
+init : Storage -> Model
+init storage =
+    { name = Maybe.withDefault ""
+        <| Storage.get .guestName storage
     , email = ""
     , debouncer = Debounce.init 500 ""
     }

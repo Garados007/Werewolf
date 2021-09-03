@@ -27,6 +27,7 @@ import Pronto
 import Language
 import Network
 import Styles
+import Storage exposing (Storage)
 
 import Model
 import GameMain
@@ -118,6 +119,7 @@ type alias SelectUserData =
     , key: Key
     , url: Url
     , guest: GuestInput.Model
+    , storage: Storage
     }
 
 type alias OAuthLoginData =
@@ -126,6 +128,7 @@ type alias OAuthLoginData =
     , key: Key
     , url: Url
     , token: Maybe Auth.AuthenticationSuccess
+    , storage: Storage
     }
 
 type alias SelectLobbyData =
@@ -138,6 +141,7 @@ type alias SelectLobbyData =
     , model: LobbyInput.Model
     , loading: Bool
     , viewUser: Maybe Bool
+    , storage: Storage
     }
 
 type alias GameData =
@@ -151,6 +155,7 @@ type alias InitGameData =
     { lang: LangContainer
     , serverId: String
     , lobbyId: String
+    , storage: Storage
     }
 
 type Model
@@ -174,6 +179,7 @@ type Msg
     | WrapGuestInput GuestInput.Msg
     | WrapLobbyInput LobbyInput.Msg
     | WrapGame GameMain.Msg
+    | WrapStorage Storage.Msg
 
 getLang : Model -> LangContainer
 getLang model =
@@ -210,6 +216,30 @@ setLang lang model =
             }
         InitGame data -> InitGame { data | lang = lang }
 
+getStorage : Model -> Storage
+getStorage model =
+    case model of
+        SelectUser { storage } -> storage
+        OAuthLogin { storage } -> storage
+        SelectLobby { storage } -> storage
+        Game { game } -> game.storage
+        InitGame { storage } -> storage
+
+setStorage : Storage -> Model -> Model
+setStorage storage model =
+    case model of
+        SelectUser data -> SelectUser { data | storage = storage }
+        OAuthLogin data -> OAuthLogin { data | storage = storage }
+        SelectLobby data -> SelectLobby { data | storage = storage }
+        Game data -> Game 
+            { data 
+            | game = data.game |> \game ->
+                { game
+                | storage = storage
+                }
+            }
+        InitGame data -> InitGame { data | storage = storage }
+
 redirectUri : Url -> LangContainer -> Bool -> Url
 redirectUri url lang dev =
     { url
@@ -238,6 +268,8 @@ init () url key =
                 }
             , root = Dict.empty
             }
+        
+        (storage, storageCmd) = Storage.init
     in 
         Tuple.mapSecond
             (\cmd ->
@@ -248,6 +280,7 @@ init () url key =
                     , Network.getRootLang lang.lang
                         |> Cmd.map 
                             (ReceiveRootLang lang.lang)
+                    , Cmd.map WrapStorage storageCmd
                     ]
             )
         <| Maybe.Extra.unpack
@@ -266,7 +299,8 @@ init () url key =
                         , fail = fail
                         , key = key
                         , url = url
-                        , guest = GuestInput.init
+                        , guest = GuestInput.init storage
+                        , storage = storage
                         }
                     , Cmd.none
                     )
@@ -285,7 +319,8 @@ init () url key =
                                     , fail = False
                                     , key = key
                                     , url = url
-                                    , guest = GuestInput.init
+                                    , guest = GuestInput.init storage
+                                    , storage = storage
                                     }
                                 , Browser.Navigation.pushUrl key
                                     <| "/?lang=" ++ lang.lang ++
@@ -298,7 +333,8 @@ init () url key =
                                     , fail = True
                                     , key = key
                                     , url = url
-                                    , guest = GuestInput.init
+                                    , guest = GuestInput.init storage
+                                    , storage = storage
                                     }
                                 , Browser.Navigation.pushUrl key
                                     <| "/?fail=true&lang=" ++ lang.lang ++
@@ -311,6 +347,7 @@ init () url key =
                                     , key = key
                                     , url = url
                                     , token = Nothing
+                                    , storage = storage
                                     }
                                 , Http.request <|
                                     Auth.makeTokenRequest
@@ -335,6 +372,7 @@ init () url key =
                             { lang = lang
                             , serverId = serverId
                             , lobbyId = lobbyId
+                            , storage = storage
                             }
                         , Cmd.map
                             (Maybe.withDefault Noop)
@@ -569,21 +607,29 @@ update msg model =
                         , Cmd.none
                         )
                     Just user ->
-                        ( SelectLobby
-                            { dev = data.dev
-                            , lang = data.lang
-                            , key = data.key
-                            , url = data.url
-                            , user = user
-                            , token = Nothing
-                            , model = LobbyInput.init data.dev
-                            , loading = False
-                            , viewUser = Nothing
-                            }
-                        , Browser.Navigation.pushUrl data.key
-                            <| "/lobby?lang=" ++ data.lang.lang
-                            ++ (if data.dev then "&dev=true" else "")
-                        )
+                        Storage.set 
+                            (\x -> { x | guestName = Just user.username })
+                            data.storage
+                        |> \(storage, storageCmd) ->
+                            ( SelectLobby
+                                { dev = data.dev
+                                , lang = data.lang
+                                , key = data.key
+                                , url = data.url
+                                , user = user
+                                , token = Nothing
+                                , model = LobbyInput.init data.dev
+                                , loading = False
+                                , viewUser = Nothing
+                                , storage = storage
+                                }
+                            , Cmd.batch
+                                [ Browser.Navigation.pushUrl data.key
+                                    <| "/lobby?lang=" ++ data.lang.lang
+                                    ++ (if data.dev then "&dev=true" else "")
+                                , storageCmd
+                                ]
+                            )
         (WrapGuestInput _, _) -> (model, Cmd.none)
         (SelectLoginMode, SelectUser data) ->
             ( model
@@ -606,10 +652,11 @@ update msg model =
             ( SelectUser
                 { dev = data.dev
                 , fail = False
-                , guest = GuestInput.init
+                , guest = GuestInput.init data.storage
                 , key = data.key
                 , lang = data.lang
                 , url = data.url
+                , storage = data.storage
                 }
             , Cmd.none
             )
@@ -629,7 +676,11 @@ update msg model =
                     }
                 , expect = Http.expectJson GotUserInfo
                     <| JD.map2 UserInfo
-                        (JD.field Config.oauthUsernameMap JD.string)
+                        ( JD.oneOf
+                            [ JD.field Config.oauthUsernameMap JD.string
+                            , JD.field Config.oauthUsernameDefaultMap JD.string
+                            ]
+                        )
                     <| JD.oneOf
                         [ JD.field Config.oauthPictureMap JD.string
                         , JD.field Config.oauthEmailMap JD.string
@@ -651,11 +702,12 @@ update msg model =
                 , fail = True
                 , key = data.key
                 , url = data.url
-                , guest = GuestInput.init
+                , guest = GuestInput.init data.storage
+                , storage = data.storage
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/?fail=true&lang=" ++ data.lang.lang
-                ++ (if data.dev then "&dev=true" else "")
+                    <| "/?fail=true&lang=" ++ data.lang.lang
+                    ++ (if data.dev then "&dev=true" else "")
             )
         (GotAccessToken _, _) -> (model, Cmd.none)
         (GotUserInfo (Ok userinfo), OAuthLogin data) ->
@@ -669,6 +721,7 @@ update msg model =
                 , model = LobbyInput.init data.dev
                 , loading = False
                 , viewUser = Nothing
+                , storage = data.storage
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/lobby?lang=" ++ data.lang.lang
@@ -681,11 +734,12 @@ update msg model =
                 , fail = True
                 , key = data.key
                 , url = data.url
-                , guest = GuestInput.init
+                , guest = GuestInput.init data.storage
+                , storage = data.storage
                 }
             , Browser.Navigation.pushUrl data.key
-                <| "/?fail=true&lang=" ++ data.lang.lang
-                ++ (if data.dev then "&dev=true" else "")
+                    <| "/?fail=true&lang=" ++ data.lang.lang
+                    ++ (if data.dev then "&dev=true" else "")
             )
         (GotUserInfo _, _) -> (model, Cmd.none)
         (WrapLobbyInput sub, SelectLobby data) ->
@@ -741,6 +795,7 @@ update msg model =
                 data.lang.info
                 data.lang.root
                 token.joinToken
+                data.storage
             |> \(new, cmd) ->
                 ( Game
                     { server = info
@@ -773,6 +828,7 @@ update msg model =
                 data.lang.info
                 data.lang.root
                 token.joinToken
+                data.storage
         (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
         (WrapGame sub, Game data) ->
             Tuple.mapBoth
@@ -811,6 +867,38 @@ update msg model =
             Tuple.pair model
             <| Browser.Navigation.load 
             <| "?lang=de&lang-fallback-for=" ++ Url.percentEncode l
+        (WrapStorage sub, _) ->
+            getStorage model
+            |> Storage.update sub
+            |> \(storage, key) ->
+                (case (key, model) of
+                    (Just Storage.StorageGuestName, SelectUser data) ->
+                        SelectUser
+                            { data
+                            | guest = data.guest |> \guest ->
+                                { guest
+                                | name =
+                                    if guest.name == ""
+                                    then Storage.get .guestName storage
+                                        |> Maybe.withDefault ""
+                                    else guest.name
+                                }
+                            }
+                    (Just Storage.StorageStreamerMode, Game data) ->
+                        Game
+                            { data
+                            | game = data.game |> \game ->
+                                { game
+                                | streamerMode = Storage.get .streamerMode storage
+                                    |> Maybe.withDefault game.streamerMode
+                                }
+                            }
+                    _ -> model
+                )
+            |> \newModel ->
+                ( setStorage storage newModel
+                , Cmd.none
+                )
 
 formEncodedBody : List (String, String) -> Http.Body
 formEncodedBody = 
@@ -876,8 +964,11 @@ getEnterLobby info token guest =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    case model of
-        Game data ->
-            Sub.map WrapGame
-            <| GameMain.subscriptions data.game
-        _ -> Sub.none
+    Sub.batch
+        [ case model of
+            Game data ->
+                Sub.map WrapGame
+                <| GameMain.subscriptions data.game
+            _ -> Sub.none
+        , Sub.map WrapStorage Storage.subscriptions
+        ]
