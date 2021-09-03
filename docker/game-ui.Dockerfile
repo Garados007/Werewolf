@@ -47,14 +47,17 @@ WORKDIR /content
 COPY ./content /content
 RUN mkdir -p bin && \
     cd css && \
+    cp style.css orig.style.css && \
+    cp orig.style.css ../bin/ && \
     cleancss --inline all -O2 --source-map \
         -o style.min.css \
-        style.css && \
+        orig.style.css && \
     cd .. && \
     csso -i css/style.min.css \
         --input-source-map css/style.min.css.map \
         -o bin/style.css \
-        -s file
+        -s file \
+        -u css/usage.json
 
 FROM bitnami/git:latest as vendor
 WORKDIR /src
