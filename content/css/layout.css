@@ -18,6 +18,11 @@
   font-size: 1.4em;
   padding: 0.2em;
 }
+.view-layout-buttons-left,
+.view-layout-buttons-right {
+  display: flex;
+  flex-wrap: nowrap;
+}
 .view-layout-buttons-left .view-layout-button,
 .view-layout-buttons-right .view-layout-button {
   cursor: pointer;
@@ -62,7 +67,7 @@
   right: 0;
   bottom: 0;
   z-index: 1;
-  transition: left 0.3s;
+  transition: left 0.3s, background 0.3s;
 }
 .view-layout-main-body {
   display: flex;
@@ -107,7 +112,7 @@
   }
   .view-layout-left-content-inner {
     max-width: 100vw;
-    background-color: var(--color-light-transparent);
+    background-color: var(--color-light);
     right: unset;
     left: -20em;
   }
