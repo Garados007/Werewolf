@@ -32,10 +32,10 @@ view lang guest user =
                     [ Html.span [] [ text user.username ] ]
                 ]
             ]
-        , Html.button 
-            [ class "reset-user"
-            , HE.onClick ()
-            ]
+        , div [ class "reset-user" ]
+            <| List.singleton
+            <| Html.button 
+                [ HE.onClick () ]
             <| List.singleton
             <| text
             <| Language.getTextOrPath lang

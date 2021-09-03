@@ -13,7 +13,7 @@ namespace Test.Tools.User
 
         public override string Image => "";
 
-        public override string ThemeColor => "#ffffff";
+        public override string ThemeColor => "#333333";
 
         public override string? BackgroundImage => null;
 

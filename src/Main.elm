@@ -26,6 +26,7 @@ import Iso8601
 import Pronto
 import Language
 import Network
+import Styles
 
 import Model
 import GameMain
@@ -35,6 +36,7 @@ import Views.ViewLayout as Layout
 import Views.ViewUserPreview
 import Views.Icons
 import Data exposing (Game)
+import Time
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -90,7 +92,11 @@ main =
     Browser.application
         { init = init
         , view = \model ->
-            { title = "Werewolf"
+            { title = 
+                Maybe.withDefault "Werewolf"
+                <| Language.getText
+                    (getRootLang <| getLang model)
+                    [ "init", "title" ]
             , body = view model
             }
         , update = update
@@ -422,12 +428,22 @@ view model =
 --!BEGIN
     (\l -> l ++ [ Debug.Extra.viewModel model ]) <|
 --!END
-    ((::)
-        <| Html.node "link"
+    ((++)
+        [ Html.node "link"
             [ HA.attribute "rel" "stylesheet"
             , HA.attribute "property" "stylesheet"
             , HA.attribute "href" "/content/css/style.css"
             ] []
+        , Styles.view
+            (case model of
+                Game data -> data.game.now
+                _ -> Time.millisToPosix 0
+            )
+            (case model of
+                Game data -> data.game.styles
+                _ -> Styles.init
+            )
+        ]
     )
     <| case model of
         SelectUser data ->
@@ -445,8 +461,10 @@ view model =
                     [ Html.h3 []
                         <| singleLangBlock model
                             [ "init", "user-mode", "play-login" ]
-                    , Html.button
-                        [ HE.onClick SelectLoginMode ]
+                    , Html.div [ HA.class "login-button" ]
+                        <| List.singleton
+                        <| Html.button
+                            [ HE.onClick SelectLoginMode ]
                         <| singleLangBlock model
                             [ "init", "user-mode", "continue-login" ]
                     , Html.h3 []
@@ -511,7 +529,7 @@ view model =
                 , banner =
                     List.map (Layout.mapBanner WrapGame)
                     <| GameMain.viewBanner data.game
-                , contentClass = "init-select-user"
+                , contentClass = ""
                 , content = List.map (Html.map WrapGame)
                     <| GameMain.view data.game
                 , bottomRightButton = Nothing

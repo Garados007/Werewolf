@@ -12,7 +12,7 @@ namespace Werewolf.User.DB
         public string Image { get; set; } = ""; 
 
         [BsonRequired]
-        public string ThemeColor { get; set; } = "#ffffff";
+        public string ThemeColor { get; set; } = "#333333";
 
         public string? BackgroundImage { get; set; }
 

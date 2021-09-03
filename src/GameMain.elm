@@ -184,7 +184,7 @@ view_internal model lang =
         , HA.attribute "property" "stylesheet"
         , HA.attribute "href" "/content/vendor/flag-icon-css/css/flag-icon.min.css"
         ] []
-    , Styles.view model.now model.styles
+    -- , Styles.view model.now model.styles
     , tryViewGamePhase model lang
         |> Maybe.Extra.orElseLazy
             (\() -> tryViewGameFrame model lang)

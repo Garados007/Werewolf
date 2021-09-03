@@ -1,9 +1,11 @@
 {
     "init": {
         "title": "Werwölfe von Düsterwald",
+        "reset-user": "Nutzer zurücksetzen",
         "user-mode": {
             "play-login": "Mit Account spielen",
             "play-guest": "Als Gast spielen",
+            "continue-login": "Anmelden oder Registrieren",
             "login": {
                 "1": "Erhalte Statistiken",
                 "2": "Steige im Level auf",
