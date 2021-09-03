@@ -151,6 +151,7 @@ viewLeftSection model =
                     state.user
                     model.joinToken
                     model.codeCopied
+                    model.streamerMode
 
 viewTitle : Model -> Layout.LayoutText
 viewTitle model =
@@ -389,6 +390,10 @@ update_internal msg model =
                 }
             <| Ports.sendToClipboard
             <| JE.string content
+        WrapUser (Views.ViewUserList.SetStreamerMode mode) ->
+            Tuple.pair
+                { model | streamerMode = mode }
+                Cmd.none
         WrapEditor (Views.ViewRoomEditor.SetBuffer buffer req) ->
             Tuple.pair
                 { model | editor = buffer }

@@ -127,7 +127,9 @@
         "refetch": "Neu anfordern",
         "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
         "copied": "Kopiert!",
-        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren"
+        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren",
+        "streamer-mode": "Streamer Mode",
+        "stream-replacement": "Klicken!"
     },
     "chat": {
         "not-allowed": "Die Nachricht durfte nicht gesendet werden."

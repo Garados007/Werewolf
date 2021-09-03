@@ -45,6 +45,7 @@ type alias Model =
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
+    , streamerMode: Bool
     , closeReason: Maybe Network.SocketClose
     }
 
@@ -94,6 +95,7 @@ init token selLang langInfo rootLang joinToken =
     , chatView = Nothing
     , joinToken = joinToken
     , codeCopied = Nothing
+    , streamerMode = False
     , closeReason = Nothing
     }
 
