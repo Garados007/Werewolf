@@ -153,7 +153,7 @@ namespace Werewolf.User
                         node.GetString() ?? "en" : "en",
                     Username = json.RootElement.TryGetProperty("preferred_username", out node) ?
                         node.GetString() ?? "missing-username" : "missing-username",
-                    ThemeColor = "#ffffff",
+                    ThemeColor = "#333333",
                     BackgroundImage = null,
                 }
             ).CAF();

@@ -17,8 +17,11 @@ type Msg msg
 viewCondClose : Bool -> String -> List (Html msg) -> Html (Msg msg)
 viewCondClose close title content =
     div [ class "modal-background" ]
-        <| List.singleton
-        <| div [ class "modal-window" ]
+        [ div 
+            [ class "modal-background-closer" 
+            , HE.onClick Close
+            ] []
+        , div [ class "modal-window" ]
             [ div [ class "modal-title-box" ]
                 [ div [ class "modal-title" ]
                     [ text title ]
@@ -34,6 +37,7 @@ viewCondClose close title content =
                 <| div [ class "modal-content" ]
                     content
             ]
+        ]
 
 view : String -> List (Html msg) -> Html (Msg msg)
 view = viewCondClose True

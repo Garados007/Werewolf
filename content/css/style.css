@@ -1,6 +1,6 @@
 @import url("events.css");
-@import url("error-box.css");
 @import url("frame.css");
+@import url("layout.css");
 
 @import url("modals.css");
 @import url("theme-editor.css");
@@ -12,7 +12,6 @@
 @import url("init-select-user.css");
 @import url("maintenance.css");
 @import url("version.css");
-@import url("settings.css");
 @import url("voting.css");
 @import url("phase.css");
 @import url("user-frame-winner.css");

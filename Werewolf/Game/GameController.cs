@@ -98,7 +98,14 @@ namespace Werewolf.Game
             // this is a magic value that results in a "Test_" url
             id = unchecked((int)0xfb_2d_eb_4d);
 #endif
-            var room = new GameRoom(id, leader);
+            var room = new GameRoom(id, leader)
+            {
+                LeaderIsPlayer = true,
+                DeadCanSeeAllRoles = true,
+                AutostartVotings = true,
+                UseVotingTimeouts = true,
+                AutoFinishRounds = true,
+            };
             room.Theme = new Theme.Default.DefaultTheme(room, UserFactory);
             rooms.TryAdd(id, new GameRoomEntry(room));
             room.OnEvent += OnGameEvent;

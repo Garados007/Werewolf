@@ -1,6 +1,7 @@
 module Model exposing
     ( Model
     , Modal (..)
+    , EditorPage(..)
     , applyResponse
     , applyEventData
     , getLanguage
@@ -29,6 +30,7 @@ type alias Model =
     , modal: Modal
     -- local editor
     , editor: Dict String Int
+    , editorPage: EditorPage
     -- buffer
     , oldBufferedConfig: (Posix, Data.UserConfig)
     , bufferedConfig: Data.UserConfig
@@ -43,8 +45,15 @@ type alias Model =
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
+    , streamerMode: Bool
     , closeReason: Maybe Network.SocketClose
+    , maintenance: Maybe Posix
     }
+
+type EditorPage
+    = PageTheme
+    | PageRole
+    | PageOptions
 
 type Modal
     = NoModal
@@ -64,6 +73,7 @@ init token selLang langInfo rootLang joinToken =
     , now = Time.millisToPosix 0
     , modal = NoModal
     , editor = Dict.empty
+    , editorPage = PageTheme
     , oldBufferedConfig = Tuple.pair
         (Time.millisToPosix 0)
         { theme = ""
@@ -86,7 +96,9 @@ init token selLang langInfo rootLang joinToken =
     , chatView = Nothing
     , joinToken = joinToken
     , codeCopied = Nothing
+    , streamerMode = False
     , closeReason = Nothing
+    , maintenance = Nothing
     }
 
 getSelectedLanguage : Data.GameGlobalState -> String
@@ -575,5 +587,6 @@ applyEventData event model =
         EventData.Maintenance reason shutdown -> Tuple.pair
             { model
             | modal = Maintenance reason
+            , maintenance = Just shutdown
             }
             []

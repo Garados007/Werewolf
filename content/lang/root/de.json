@@ -1,10 +1,11 @@
 {
     "init": {
         "title": "Werwölfe von Düsterwald",
-        "description": "Spiele hier das beliebte Spiel mit deinen Freunden",
+        "reset-user": "Nutzer zurücksetzen",
         "user-mode": {
             "play-login": "Mit Account spielen",
             "play-guest": "Als Gast spielen",
+            "continue-login": "Anmelden oder Registrieren",
             "login": {
                 "1": "Erhalte Statistiken",
                 "2": "Steige im Level auf",
@@ -19,7 +20,6 @@
             "name": "Name",
             "image-code": "Bildcode",
             "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
-            "back": "Zurück",
             "continue": "Als Gast fortfahren"
         },
         "lobby-input": {
@@ -39,6 +39,14 @@
             "votings-timeout": "Votings automatisch nach einen Timeout beenden",
             "auto-finish-rounds": "Runden automatisch beenden wenn kein Voting mehr existiert",
             "start": "Start"
+        },
+        "page": {
+            "theme": "Thema",
+            "roles": "Rollen",
+            "options": "Optionen"
+        },
+        "bar": {
+            "stats": "Rollen: {roles}/{player}"
         }
     },
     "game": {
@@ -63,6 +71,9 @@
         "loading": {
             "not-found": "Spiel nicht gefunden."
         }
+    },
+    "banner": {
+        "maintenance": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet."
     },
     "modals": {
         "theme-editor": {
@@ -119,7 +130,9 @@
         "refetch": "Neu anfordern",
         "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
         "copied": "Kopiert!",
-        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren"
+        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren",
+        "streamer-mode": "Streamer Mode",
+        "stream-replacement": "Klicken!"
     },
     "chat": {
         "not-allowed": "Die Nachricht durfte nicht gesendet werden."

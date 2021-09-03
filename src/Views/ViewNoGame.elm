@@ -7,11 +7,7 @@ import Language exposing (Language)
 view : Language -> Bool -> Html msg
 view lang isLoading =
     if isLoading
-    then 
-        div [ HA.id "elm" ]
-            [ div [ class "lds-heart" ]
-                [ div [] [] ]
-            ]
+    then text ""
     else
     div [ class "frame-status-box" ]
         <| List.singleton

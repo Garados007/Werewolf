@@ -19,7 +19,6 @@ type Msg
     = SetName String
     | SetEmail String
     | Debounce (Debounce.Msg String)
-    | DoBack
     | DoContinue
 
 init : Model
@@ -42,13 +41,7 @@ singleLang lang =
 view : Model -> Language -> Html Msg
 view model lang =
     div [ class "guest-input-box" ]
-        [  Html.h1 [ HA.class "welcomer"]
-            <| singleLangBlock lang
-                [ "init", "title" ]
-        , Html.h2 []
-            <| singleLangBlock lang
-                [ "init", "description" ]
-        , div [ class "input" ]
+        [ div [ class "input" ]
             [ div [ class "name" ]
                 <| singleLangBlock lang
                     [ "init", "guest-input", "name" ]
@@ -86,10 +79,6 @@ view model lang =
             ]
         , div [ class "button" ]
             [ Html.button
-                [ HE.onClick DoBack ]
-                <| singleLangBlock lang
-                    [ "init", "guest-input", "back" ]
-            , Html.button
                 [ HE.onClick DoContinue 
                 , HA.disabled <| model.name == ""
                 ]
@@ -98,7 +87,7 @@ view model lang =
             ]
         ]
 
-update : Msg -> Model -> (Model, Cmd Msg, Maybe (Result () UserInfo))
+update : Msg -> Model -> (Model, Cmd Msg, Maybe UserInfo)
 update msg model =
     case msg of
         SetName name ->
@@ -141,12 +130,6 @@ update msg model =
                     { model | debouncer = new }
                     (Cmd.map Debounce cmd)
                     Nothing
-        DoBack ->
-            Triple.triple
-                model
-                Cmd.none
-            <| Just
-            <| Err ()
         DoContinue ->
             if model.name == ""
             then Triple.triple model Cmd.none Nothing
@@ -155,7 +138,6 @@ update msg model =
                     model
                     Cmd.none
                 <| Just
-                <| Ok
                 <| Data.UserInfo model.name
                 <| "https://www.gravatar.com/avatar/"
                 ++ MD5.hex 
