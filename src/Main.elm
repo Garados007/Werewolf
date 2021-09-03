@@ -676,7 +676,11 @@ update msg model =
                     }
                 , expect = Http.expectJson GotUserInfo
                     <| JD.map2 UserInfo
-                        (JD.field Config.oauthUsernameMap JD.string)
+                        ( JD.oneOf
+                            [ JD.field Config.oauthUsernameMap JD.string
+                            , JD.field Config.oauthUsernameDefaultMap JD.string
+                            ]
+                        )
                     <| JD.oneOf
                         [ JD.field Config.oauthPictureMap JD.string
                         , JD.field Config.oauthEmailMap JD.string
