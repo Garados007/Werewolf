@@ -1,6 +1,7 @@
 module Model exposing
     ( Model
     , Modal (..)
+    , EditorPage(..)
     , applyResponse
     , applyEventData
     , getLanguage
@@ -29,6 +30,7 @@ type alias Model =
     , modal: Modal
     -- local editor
     , editor: Dict String Int
+    , editorPage: EditorPage
     -- buffer
     , oldBufferedConfig: (Posix, Data.UserConfig)
     , bufferedConfig: Data.UserConfig
@@ -45,6 +47,11 @@ type alias Model =
     , codeCopied: Maybe Posix
     , closeReason: Maybe Network.SocketClose
     }
+
+type EditorPage
+    = PageTheme
+    | PageRole
+    | PageOptions
 
 type Modal
     = NoModal
@@ -64,6 +71,7 @@ init token selLang langInfo rootLang joinToken =
     , now = Time.millisToPosix 0
     , modal = NoModal
     , editor = Dict.empty
+    , editorPage = PageTheme
     , oldBufferedConfig = Tuple.pair
         (Time.millisToPosix 0)
         { theme = ""

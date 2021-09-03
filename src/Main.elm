@@ -31,6 +31,10 @@ import Model
 import GameMain
 import Html.Attributes exposing (lang)
 import Views.ViewVersion
+import Views.ViewLayout as Layout
+import Views.ViewUserPreview
+import Views.Icons
+import Data exposing (Game)
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -107,14 +111,7 @@ type alias SelectUserData =
     , fail: Bool
     , key: Key
     , url: Url
-    }
-
-type alias GuestInputData =
-    { dev: Bool
-    , lang: LangContainer
-    , key: Key
-    , url: Url
-    , model: GuestInput.Model
+    , guest: GuestInput.Model
     }
 
 type alias OAuthLoginData =
@@ -134,12 +131,14 @@ type alias SelectLobbyData =
     , token: Maybe Auth.AuthenticationSuccess
     , model: LobbyInput.Model
     , loading: Bool
+    , viewUser: Maybe Bool
     }
 
 type alias GameData =
     { server: LobbyInput.ConnectInfo
     , user: Maybe UserInfo
     , game: Model.Model
+    , viewUser: Maybe Bool
     }
 
 type alias InitGameData =
@@ -150,7 +149,6 @@ type alias InitGameData =
 
 type Model
     = SelectUser SelectUserData
-    | GuestInput GuestInputData
     | OAuthLogin OAuthLoginData
     | SelectLobby SelectLobbyData
     | Game GameData
@@ -158,8 +156,9 @@ type Model
 
 type Msg
     = Noop
-    | SelectGuestMode
     | SelectLoginMode
+    | ResetUser
+    | ViewUser Bool
     | GotAccessToken (Result Http.Error Auth.AuthenticationSuccess)
     | GotUserInfo (Result Http.Error UserInfo)
     | ReceiveGuestToken LobbyInput.ConnectInfo (Result Http.Error String)
@@ -174,7 +173,6 @@ getLang : Model -> LangContainer
 getLang model =
     case model of
         SelectUser { lang } -> lang
-        GuestInput { lang } -> lang
         OAuthLogin { lang } -> lang
         SelectLobby { lang } -> lang
         Game { game } ->
@@ -193,7 +191,6 @@ setLang : LangContainer -> Model -> Model
 setLang lang model =
     case model of
         SelectUser data -> SelectUser { data | lang = lang }
-        GuestInput data -> GuestInput { data | lang = lang }
         OAuthLogin data -> OAuthLogin { data | lang = lang }
         SelectLobby data -> SelectLobby { data | lang = lang }
         Game data -> Game 
@@ -263,6 +260,7 @@ init () url key =
                         , fail = fail
                         , key = key
                         , url = url
+                        , guest = GuestInput.init
                         }
                     , Cmd.none
                     )
@@ -281,6 +279,7 @@ init () url key =
                                     , fail = False
                                     , key = key
                                     , url = url
+                                    , guest = GuestInput.init
                                     }
                                 , Browser.Navigation.pushUrl key
                                     <| "/?lang=" ++ lang.lang ++
@@ -293,6 +292,7 @@ init () url key =
                                     , fail = True
                                     , key = key
                                     , url = url
+                                    , guest = GuestInput.init
                                     }
                                 , Browser.Navigation.pushUrl key
                                     <| "/?fail=true&lang=" ++ lang.lang ++
@@ -387,113 +387,153 @@ singleLang model =
     << Language.getTextOrPath
         (getRootLang <| getLang model)
 
+viewUserButtons : Maybe Bool -> List (Layout.LayoutButton Msg)
+viewUserButtons viewUsers =
+    case viewUsers of
+        Nothing ->
+            [ Layout.LayoutButton
+                (ViewUser True)
+                (Layout.LayoutImageSvg Views.Icons.svgUsers)
+                (Layout.StaticLayoutText "Show User")
+                [ "view-layout-left-show", "view-layout-left-auto" ]
+            , Layout.LayoutButton
+                (ViewUser False)
+                (Layout.LayoutImageSvg Views.Icons.svgUsers)
+                (Layout.StaticLayoutText "Hide User")
+                [ "view-layout-left-hide", "view-layout-left-auto" ]
+            ]
+        Just True ->
+            [ Layout.LayoutButton
+                (ViewUser False)
+                (Layout.LayoutImageSvg Views.Icons.svgUsers)
+                (Layout.StaticLayoutText "Hide User")
+                [ "view-layout-left-hide" ]
+            ]
+        Just False ->
+            [ Layout.LayoutButton
+                (ViewUser True)
+                (Layout.LayoutImageSvg Views.Icons.svgUsers)
+                (Layout.StaticLayoutText "Show User")
+                [ "view-layout-left-show" ]
+            ]
+
 view : Model -> List (Html Msg)
 view model =
 --!BEGIN
     (\l -> l ++ [ Debug.Extra.viewModel model ]) <|
 --!END
-    case model of
-        SelectUser _ ->
-            [ Html.node "link"
-                [ HA.attribute "rel" "stylesheet"
-                , HA.attribute "property" "stylesheet"
-                , HA.attribute "href" "/content/css/style.css"
-                ] []
-            , Html.div [ HA.class "init-select-user" ]
-                [ Html.h1 [ HA.class "welcomer"]
-                    <| singleLangBlock model
-                        [ "init", "title" ]
-                , Html.h2 []
-                    <| singleLangBlock model
-                        [ "init", "description" ]
-                , Html.div [ HA.class "options" ]
-                    [ Html.div 
-                        [ HA.class "option" 
-                        , HE.onClick SelectLoginMode
-                        ]
-                        [ Html.div [ HA.class "play-as" ]
-                            <| singleLangBlock model
-                                [ "init", "user-mode", "play-login" ]
-                        , Html.ul []
-                            <| List.map
-                                (\i ->
-                                    Html.li []
-                                        <| singleLangBlock model
-                                        [ "init", "user-mode", "login", String.fromInt i ]
-                                )
-                            <| List.range 1 3
-                        ]
-                    , Html.div 
-                        [ HA.class "option" 
-                        , HE.onClick SelectGuestMode
-                        ]
-                        [ Html.div [ HA.class "play-as" ]
-                            <| singleLangBlock model
-                                [ "init", "user-mode", "play-guest" ]
-                        , Html.ul []
-                            <| List.map
-                                (\i ->
-                                    Html.li []
-                                        <| singleLangBlock model
-                                        [ "init", "user-mode", "guest", String.fromInt i ]
-                                )
-                            <| List.range 1 2
-                        ]
+    ((::)
+        <| Html.node "link"
+            [ HA.attribute "rel" "stylesheet"
+            , HA.attribute "property" "stylesheet"
+            , HA.attribute "href" "/content/css/style.css"
+            ] []
+    )
+    <| case model of
+        SelectUser data ->
+            List.singleton
+            <| Layout.view (getRootLang <| getLang model)
+                { titleButtonsLeft = []
+                , titleButtonsRight = []
+                , titleText = Layout.LangLayoutText
+                    [ "init", "title" ]
+                , leftSection = Html.text ""
+                , showLeftSection = Just False
+                , banner = []
+                , contentClass = "init-select-user"
+                , content =
+                    [ Html.h3 []
+                        <| singleLangBlock model
+                            [ "init", "user-mode", "play-login" ]
+                    , Html.button
+                        [ HE.onClick SelectLoginMode ]
+                        <| singleLangBlock model
+                            [ "init", "user-mode", "continue-login" ]
+                    , Html.h3 []
+                        <| singleLangBlock model
+                            [ "init", "user-mode", "play-guest" ]
+                    , Html.map WrapGuestInput
+                        <| GuestInput.view data.guest 
+                        <| getRootLang data.lang
+                    , Views.ViewVersion.view
                     ]
+                , bottomRightButton = Nothing
+                }
+        SelectLobby data -> List.singleton <|
+            if data.loading || data.model.loading
+            then Html.div [ HA.id "elm" ]
+                [ Html.div [ HA.class "lds-heart" ]
+                    [ Html.div [] [] ]
                 ]
-            , Views.ViewVersion.view
-            ]
-        GuestInput data ->
-            [ Html.node "link"
-                [ HA.attribute "rel" "stylesheet"
-                , HA.attribute "property" "stylesheet"
-                , HA.attribute "href" "/content/css/style.css"
-                ] []
-            , Html.map WrapGuestInput
-                <| GuestInput.view data.model 
-                <| getRootLang data.lang
-            , Views.ViewVersion.view
-            ]
-        SelectLobby data ->
-            [ Html.node "link"
-                [ HA.attribute "rel" "stylesheet"
-                , HA.attribute "property" "stylesheet"
-                , HA.attribute "href" "/content/css/style.css"
-                ] []
-            , if data.loading || data.model.loading
-                then Html.div [ HA.id "elm" ]
-                    [ Html.div [ HA.class "lds-heart" ]
-                        [ Html.div [] [] ]
+            else Layout.view (getRootLang data.lang)
+                { titleButtonsLeft = viewUserButtons data.viewUser
+                , titleButtonsRight = []
+                , titleText = Layout.LangLayoutText
+                    [ "init", "title" ]
+                , leftSection =
+                    Html.map (always ResetUser)
+                    <| Views.ViewUserPreview.view
+                        (getRootLang data.lang)
+                        (data.token == Nothing)
+                        data.user
+                , showLeftSection = data.viewUser
+                , banner = List.map
+                    (Layout.mapBanner WrapLobbyInput)
+                    <| LobbyInput.viewBanner data.model
+                , contentClass = "init-select-user"
+                , content =
+                    [ Html.map WrapLobbyInput
+                        <| LobbyInput.view data.model
+                        <| getRootLang data.lang
+                    , Views.ViewVersion.view
                     ]
-                else Html.map WrapLobbyInput
-                    <| LobbyInput.view data.model
-                    <| getRootLang data.lang
-            , Views.ViewVersion.view
-            ]
-        Game data ->
-            List.map (Html.map WrapGame)
-            <| GameMain.view data.game
+                , bottomRightButton = Nothing
+                }
+        Game data -> List.singleton <|
+            if GameMain.isLoading data.game
+            then Html.div [ HA.id "elm" ]
+                [ Html.div [ HA.class "lds-heart" ]
+                    [ Html.div [] [] ]
+                ]
+            else Layout.view (Model.getLanguage data.game)
+                { titleButtonsLeft =
+                    (\x -> x ++ viewUserButtons data.viewUser)
+                    <| List.map (Layout.mapButton WrapGame)
+                    <| GameMain.viewTopLeftButtons data.game
+                , titleButtonsRight =
+                    List.map (Layout.mapButton WrapGame)
+                    <| GameMain.viewTopRightButtons data.game
+                , titleText = GameMain.viewTitle data.game
+                , leftSection =
+                    Html.map WrapGame
+                    <| GameMain.viewLeftSection data.game
+                , showLeftSection = data.viewUser
+                , banner =
+                    List.map (Layout.mapBanner WrapGame)
+                    <| GameMain.viewBanner data.game
+                , contentClass = "init-select-user"
+                , content = List.map (Html.map WrapGame)
+                    <| GameMain.view data.game
+                , bottomRightButton = Nothing
+                }
+            
         _ -> []
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case (msg, model) of
         (Noop, _) -> (model, Cmd.none)
-        (SelectGuestMode, SelectUser data) ->
-            ( GuestInput
-                { dev = data.dev
-                , lang = data.lang
-                , key = data.key
-                , url = data.url
-                , model = GuestInput.init
-                }
-            , Browser.Navigation.pushUrl data.key
-                <| "/guest?lang=" ++ data.lang.lang
-                ++ (if data.dev then "&dev=true" else "")
+        (ViewUser viewUser, SelectLobby data) ->
+            ( SelectLobby { data | viewUser = Just viewUser }
+            , Cmd.none
             )
-        (SelectGuestMode, _) -> (model, Cmd.none)
-        (WrapGuestInput sub, GuestInput data) ->
-            GuestInput.update sub data.model
+        (ViewUser viewUser, Game data) ->
+            ( Game { data | viewUser = Just viewUser }
+            , Cmd.none
+            )
+        (ViewUser _, _) -> (model, Cmd.none)
+        (WrapGuestInput sub, SelectUser data) ->
+            GuestInput.update sub data.guest
             |> \(new, cmd, res) ->
                 Tuple.mapSecond
                     (\other ->
@@ -504,25 +544,13 @@ update msg model =
                     )
                 <| case res of
                     Nothing ->
-                        ( GuestInput
+                        ( SelectUser
                             { data
-                            | model = new
+                            | guest = new
                             }
                         , Cmd.none
                         )
-                    Just (Err ()) ->
-                        ( SelectUser
-                            { dev = data.dev
-                            , lang = data.lang
-                            , fail = False
-                            , key = data.key
-                            , url = data.url
-                            }
-                        , Browser.Navigation.pushUrl data.key
-                            <| "/?lang=" ++ data.lang.lang
-                            ++ (if data.dev then "&dev=true" else "")
-                        )
-                    Just (Ok user) ->
+                    Just user ->
                         ( SelectLobby
                             { dev = data.dev
                             , lang = data.lang
@@ -532,6 +560,7 @@ update msg model =
                             , token = Nothing
                             , model = LobbyInput.init data.dev
                             , loading = False
+                            , viewUser = Nothing
                             }
                         , Browser.Navigation.pushUrl data.key
                             <| "/lobby?lang=" ++ data.lang.lang
@@ -555,6 +584,18 @@ update msg model =
                     }
             )
         (SelectLoginMode, _) -> (model, Cmd.none)
+        (ResetUser, SelectLobby data) ->
+            ( SelectUser
+                { dev = data.dev
+                , fail = False
+                , guest = GuestInput.init
+                , key = data.key
+                , lang = data.lang
+                , url = data.url
+                }
+            , Cmd.none
+            )
+        (ResetUser, _) -> (model, Cmd.none)
         (GotAccessToken (Ok token), OAuthLogin data) ->
             ( OAuthLogin
                 { data
@@ -592,6 +633,7 @@ update msg model =
                 , fail = True
                 , key = data.key
                 , url = data.url
+                , guest = GuestInput.init
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/?fail=true&lang=" ++ data.lang.lang
@@ -608,6 +650,7 @@ update msg model =
                 , token = data.token
                 , model = LobbyInput.init data.dev
                 , loading = False
+                , viewUser = Nothing
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/lobby?lang=" ++ data.lang.lang
@@ -620,6 +663,7 @@ update msg model =
                 , fail = True
                 , key = data.key
                 , url = data.url
+                , guest = GuestInput.init
                 }
             , Browser.Navigation.pushUrl data.key
                 <| "/?fail=true&lang=" ++ data.lang.lang
@@ -684,6 +728,7 @@ update msg model =
                     { server = info
                     , user = Just data.user
                     , game = new
+                    , viewUser = data.viewUser
                     }
                 , Cmd.batch
                     [ Browser.Navigation.pushUrl data.key
@@ -699,6 +744,7 @@ update msg model =
                         { server = info
                         , user = Nothing
                         , game = new
+                        , viewUser = Nothing
                         }
                 )
                 (Cmd.map WrapGame)

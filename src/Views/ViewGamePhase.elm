@@ -19,16 +19,6 @@ type Msg
 view : Language -> Posix -> Data.Game -> Data.GamePhase -> Bool -> String -> Html Msg
 view lang now game phase isLeader myId =
     let
-        viewPhaseHeader : Html Msg
-        viewPhaseHeader =
-            div [ class "phase-header" ]
-                [ div [ class "title" ]
-                    <| List.singleton
-                    <| text
-                    <| Language.getTextOrPath lang
-                        [ "theme", "phases", phase.langId ]
-                ]
-
         viewVoting : Data.GameVoting -> Html Msg
         viewVoting voting =
             div [ class "voting-box" ]
@@ -220,30 +210,7 @@ view lang now game phase isLeader myId =
                     ]
                 ]
 
-        viewPhaseControls : () -> Html Msg
-        viewPhaseControls () =
-            div [ class "phase-controls" ]
-                [ div 
-                    [ class "button" 
-                    , HE.onClick <| Send <| SockReq <| GameStop
-                    ]
-                    [ text <| Language.getTextOrPath lang
-                        [ "game", "phase", "end" ]
-                    ]
-                , div
-                    [ class "button"
-                    , HE.onClick <| Send <| SockReq <| GameNext
-                    ]
-                    [ text <| Language.getTextOrPath lang
-                        [ "game", "phase", "next" ]
-                    ]
-                ]
-
     in div [ class "phase-container" ]
-        [ viewPhaseHeader
-        , div [ class "phase-votings" ]
+        [ div [ class "phase-votings" ]
             <| List.map viewVoting phase.voting
-        , if isLeader
-            then viewPhaseControls ()
-            else text ""
         ]

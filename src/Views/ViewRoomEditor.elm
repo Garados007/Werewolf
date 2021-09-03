@@ -1,8 +1,11 @@
-module Views.ViewRoomEditor exposing (..)
+module Views.ViewRoomEditor exposing
+    ( Msg(..)
+    , view
+    )
 
 import Data
 import Network exposing (NetworkRequest(..), EditGameConfig, editGameConfig)
-import Model
+import Model exposing (EditorPage(..))
 
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
@@ -15,16 +18,36 @@ import Json.Encode as JE
 
 type Msg
     = SetBuffer (Dict String Int) EditGameConfig
+    | SetPage EditorPage
     | SendConf EditGameConfig
     | StartGame
     | ShowRoleInfo String
     | Noop
 
+viewPageSelector : Language -> EditorPage -> Html Msg
+viewPageSelector lang page =
+    div [ class "editor-page-selector" ]
+        <| List.map
+            (\(theme, key) ->
+                Html.button
+                    [ HA.disabled <| page == theme 
+                    , HE.onClick <| SetPage theme
+                    ]
+                    [ text <| Language.getTextOrPath lang
+                        [ "settings", "page", key ]
+
+                    ]
+            )
+            [ (PageTheme, "theme")
+            , (PageRole, "roles")
+            , (PageOptions, "options")
+            ]
+
 view : Language -> LanguageInfo -> Data.RoleTemplates
     -> Data.GameGlobalState
     -> Maybe Language.ThemeRawKey -> Data.Game -> Bool
-    -> Dict String Int -> Html Msg
-view lang langInfo roles gameResult theme game editable buffer =
+    -> EditorPage -> Dict String Int -> Html Msg
+view lang langInfo roles gameResult theme game editable page buffer =
     let
 
         handleNewRoleCount : String -> Maybe Int -> Msg
@@ -106,9 +129,9 @@ view lang langInfo roles gameResult theme game editable buffer =
         
         maxPlayer =
             if game.leaderIsPlayer
-            then Dict.size game.user + 1
-            else Dict.size game.user
-        maxRoles = (+) 1 <| List.sum <| Dict.values 
+            then Dict.size game.user
+            else Dict.size game.user - 1
+        maxRoles = List.sum <| Dict.values 
             <| Dict.union buffer game.config
 
         viewRoleBar : Html msg
@@ -124,33 +147,22 @@ view lang langInfo roles gameResult theme game editable buffer =
                         [ class "editor-bar-fill-inner" 
                         , HA.style "width" <|
                             (String.fromFloat
-                                <| 100 *
-                                    (toFloat <| min maxPlayer maxRoles) /
-                                    (toFloat <| max maxPlayer maxRoles)
+                                <| (*) 100
+                                <| clamp 0 1
+                                <| if maxPlayer == 0
+                                    then 0
+                                    else toFloat maxRoles / toFloat maxPlayer
                             ) ++ "%"
                         ] []
-                , div
-                    [ class "editor-bar-player-box" 
-                    , HA.style "left" <|
-                        (String.fromFloat
-                            <| min 100
-                            <| 100 * (toFloat maxPlayer) / (toFloat maxRoles)
-                        ) ++ "%"
-                    ]
-                    [ div [ class "line" ] []
-                    , div [ class "number" ] [ text <| String.fromInt <| maxPlayer - 1 ]
-                    ]
-                , div
-                    [ class "editor-bar-roles-box" 
-                    , HA.style "left" <|
-                        (String.fromFloat
-                            <| min 100
-                            <| 100 * (toFloat maxRoles) / (toFloat maxPlayer)
-                        ) ++ "%"
-                    ]
-                    [ div [ class "line" ] []
-                    , div [ class "number" ] [ text <| String.fromInt <| maxRoles - 1 ]
-                    ]
+                , div [ class "editor-bar-desc" ]
+                    <| List.singleton
+                    <| text
+                    <| Language.getTextFormatOrPath lang
+                        [ "settings", "bar", "stats" ]
+                    <| Dict.fromList
+                        [ ("roles", String.fromInt maxRoles)
+                        , ("player", String.fromInt maxPlayer)
+                        ]
                 ]
 
         viewCheckbox : String -> Bool -> Bool -> (Bool -> Msg) -> Html Msg
@@ -230,87 +242,98 @@ view lang langInfo roles gameResult theme game editable buffer =
             <| Dict.toList langInfo.themes
 
     in div [ class "editor" ]
-        [ div [ class "editor-roles" ]
-            -- <| List.map viewSingleRole
-            <| List.map viewSingleRoleBox
-            <| Maybe.withDefault []
-            <| Maybe.andThen
-                (\(k, _) -> Dict.get k roles)
-            <| theme
+        [ viewPageSelector lang page
         , viewRoleBar
-        , div [ class "editor-checks" ]
-            [ viewCheckbox 
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "leader-is-player" ]
-                )
-                True
-                game.leaderIsPlayer
-                <| \new -> SendConf
-                    { editGameConfig
-                    | leaderIsPlayer = Just new
-                    }
-            , viewCheckbox 
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "dead-can-see-all-roles" ]
-                )
-                True
-                game.deadCanSeeAllRoles
-                <| \new -> SendConf
-                    { editGameConfig
-                    | newDeadCanSeeAllRoles = Just new
-                    }
-            , viewCheckbox 
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "all-can-see-role-of-dead" ]
-                )
-                True
-                game.allCanSeeRoleOfDead
-                <| \new -> SendConf
-                    { editGameConfig
-                    | newAllCanSeeRoleOfDead = Just new
-                    }
-            , viewCheckbox 
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "auto-start-votings" ]
-                )
-                (not game.leaderIsPlayer)
-                game.autostartVotings
-                <| \new -> SendConf
-                    { editGameConfig
-                    | autostartVotings = Just new
-                    }
-            , viewCheckbox 
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "auto-finish-votings" ]
-                )
-                (not game.votingTimeout && not game.leaderIsPlayer)
-                game.autofinishVotings
-                <| \new -> SendConf
-                    { editGameConfig
-                    | autofinishVotings = Just new
-                    }
-            , viewCheckbox
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "votings-timeout" ]
-                )
-                (not game.autofinishVotings && not game.leaderIsPlayer)
-                game.votingTimeout
-                <| \new -> SendConf
-                    { editGameConfig
-                    | votingTimeout = Just new
-                    }
-            , viewCheckbox
-                (Language.getTextOrPath lang 
-                    [ "settings", "game-room", "auto-finish-rounds" ]
-                )
-                (not game.leaderIsPlayer)
-                game.autofinishRound
-                <| \new -> SendConf
-                    { editGameConfig
-                    | autofinishRound = Just new
-                    }
-            ]
-        , viewThemeSelector editable
+        , case page of
+            PageTheme ->
+                div [ class "editor-content-theme" ]
+                    [ viewThemeSelector editable ]
+            PageRole ->
+                div [ class "editor-content-roles" ]
+                    [ div [ class "editor-roles" ]
+                        -- <| List.map viewSingleRole
+                        <| List.map viewSingleRoleBox
+                        <| Maybe.withDefault []
+                        <| Maybe.andThen
+                            (\(k, _) -> Dict.get k roles)
+                        <| theme
+                    ]
+            PageOptions ->
+                div [ class "editor-content-options" ]
+                    [ div [ class "editor-checks" ]
+                        [ viewCheckbox 
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "leader-is-player" ]
+                            )
+                            True
+                            game.leaderIsPlayer
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | leaderIsPlayer = Just new
+                                }
+                        , viewCheckbox 
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "dead-can-see-all-roles" ]
+                            )
+                            True
+                            game.deadCanSeeAllRoles
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | newDeadCanSeeAllRoles = Just new
+                                }
+                        , viewCheckbox 
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "all-can-see-role-of-dead" ]
+                            )
+                            True
+                            game.allCanSeeRoleOfDead
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | newAllCanSeeRoleOfDead = Just new
+                                }
+                        , viewCheckbox 
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "auto-start-votings" ]
+                            )
+                            (not game.leaderIsPlayer)
+                            game.autostartVotings
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | autostartVotings = Just new
+                                }
+                        , viewCheckbox 
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "auto-finish-votings" ]
+                            )
+                            (not game.votingTimeout && not game.leaderIsPlayer)
+                            game.autofinishVotings
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | autofinishVotings = Just new
+                                }
+                        , viewCheckbox
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "votings-timeout" ]
+                            )
+                            (not game.autofinishVotings && not game.leaderIsPlayer)
+                            game.votingTimeout
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | votingTimeout = Just new
+                                }
+                        , viewCheckbox
+                            (Language.getTextOrPath lang 
+                                [ "settings", "game-room", "auto-finish-rounds" ]
+                            )
+                            (not game.leaderIsPlayer)
+                            game.autofinishRound
+                            <| \new -> SendConf
+                                { editGameConfig
+                                | autofinishRound = Just new
+                                }
+                        ]
+
+                    ]
         , if editable
             then div 
                 [ HA.classList

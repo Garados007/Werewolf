@@ -1,7 +1,8 @@
 .editor {
-  max-width: 100%;
-  flex-grow: 1;
-  padding: 0.6em 3em 0.6em 1em;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .editor-roles {
   display: flex;
@@ -101,14 +102,17 @@
 }
 
 .editor-bar-box {
-  margin: 4em auto;
   position: relative;
-  max-width: 35em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 }
 .editor-bar-fill-outer {
-  margin: 2em 0;
+  margin: 0.7em 0;
   position: relative;
-  height: 2em;
+  height: 0.7em;
+  flex: 1 1 100%;
   background-color: var(--color-dark-transparent);
 }
 .editor-bar-fill-inner {
@@ -117,31 +121,9 @@
   background-color: var(--color-darker-transparent);
   transition: width 0.3s;
 }
-.editor-bar-player-box, .editor-bar-roles-box {
-  position: absolute;
-  top: 0;
-  width: 0;
-  transition: left 0.3s;
-}
-.editor-bar-player-box .line, .editor-bar-roles-box .line {
-  position: absolute;
-  height: 2.5em;
-  bottom: -2em;
-  border: 0.1em solid var(--text-color);
-  transform: translateX(-50%);
-}
-.editor-bar-player-box .number, .editor-bar-roles-box .number {
-  position: absolute;
-  bottom: 0.6em;
-  transform: translateX(-50%);
-}
-.editor-bar-player-box .line {
-  bottom: unset;;
-  top: 0em;
-}
-.editor-bar-player-box .number {
-  bottom: unset;
-  top: 2.6em;
+.editor-bar-desc {
+  white-space: nowrap;
+  margin: 0 0.5em;
 }
 .editor-checks {
   margin: 0 auto;
@@ -155,15 +137,14 @@
   text-decoration: line-through;
 }
 .editor .start-button {
-  margin: 2em auto;
-  max-width: 35em;
+  flex-shrink: 0;
   box-sizing: border-box;
   padding: 0.5em 0.8em;
   background-color: var(--color-light-transparent);
   cursor: pointer;
   text-align: center;
   font-size: 1.1em;
-  border-radius: 0.4em;
+  margin-top: 0.1em;
 }
 .editor .start-button.disabled {
   cursor: not-allowed;
@@ -178,4 +159,37 @@
   max-width: 100%;
   color: inherit;
   background-color: var(--color-dark-transparent);
+}
+
+
+/* new definitions */
+.editor .editor-page-selector {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.editor .editor-page-selector button {
+  flex: 1 0;
+  background-color: var(--color-medium);
+  border: none;
+  padding: 0.4em 0.5em;
+  font-size: 1.1em;
+  font-family: inherit;
+  cursor: pointer;
+  display: block;
+}
+.editor .editor-page-selector button:hover,
+.editor .editor-page-selector button:disabled {
+  background-color: var(--color-light);
+}
+.editor .editor-page-selector button:disabled {
+  color: var(--text-color-light);
+}
+.editor .editor-content-theme,
+.editor .editor-content-roles,
+.editor .editor-content-options {
+  flex: 1 1 100%;
+  overflow: auto;
 }
