@@ -72,6 +72,9 @@
             "not-found": "Spiel nicht gefunden."
         }
     },
+    "banner": {
+        "maintenance": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet."
+    },
     "modals": {
         "theme-editor": {
             "title": "Theme Einstellungen",

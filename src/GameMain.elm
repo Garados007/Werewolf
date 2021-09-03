@@ -129,14 +129,43 @@ viewTopRightButtons model =
 
 viewBanner : Model -> List (Layout.LayoutBanner Msg)
 viewBanner model =
-    List.indexedMap
-        (\index error ->
-            { closeable = Just
-                <| WrapError index
-            , content = text error
-            }
-        )
-        model.errors
+    List.concat
+        [ case model.maintenance of
+            Nothing -> []
+            Just posix ->
+                let
+                    diff : Int
+                    diff = max 0 <| Time.posixToMillis posix - Time.posixToMillis model.now
+
+                    sec : Int
+                    sec = modBy 60 <| diff // 1000
+
+                in List.singleton
+                        { closeable = Nothing
+                        , content = text
+                            <| Language.getTextFormatOrPath
+                                (Model.getLanguage model)
+                                [ "banner", "maintenance" ]
+                            <| Dict.fromList
+                                [ Tuple.pair "minute" 
+                                    <| String.fromInt
+                                    <| diff // 60000
+                                , Tuple.pair "sec-prefix" <|
+                                    if sec >= 10 then "" else "0"
+                                , Tuple.pair "sec"
+                                    <| String.fromInt sec
+                                ]
+                        }
+        , List.indexedMap
+            (\index error ->
+                { closeable = Just
+                    <| WrapError index
+                , content = text error
+                }
+            )
+            model.errors
+        ]
+   
 
 viewLeftSection : Model -> Html Msg
 viewLeftSection model =

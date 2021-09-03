@@ -47,6 +47,7 @@ type alias Model =
     , codeCopied: Maybe Posix
     , streamerMode: Bool
     , closeReason: Maybe Network.SocketClose
+    , maintenance: Maybe Posix
     }
 
 type EditorPage
@@ -97,6 +98,7 @@ init token selLang langInfo rootLang joinToken =
     , codeCopied = Nothing
     , streamerMode = False
     , closeReason = Nothing
+    , maintenance = Nothing
     }
 
 getSelectedLanguage : Data.GameGlobalState -> String
@@ -585,5 +587,6 @@ applyEventData event model =
         EventData.Maintenance reason shutdown -> Tuple.pair
             { model
             | modal = Maintenance reason
+            , maintenance = Just shutdown
             }
             []
