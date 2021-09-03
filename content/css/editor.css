@@ -119,7 +119,7 @@
   position: absolute;
   height: 100%;
   background-color: var(--color-darker-transparent);
-  transition: width 0.3s;
+  transition: width 0.75s;
 }
 .editor-bar-desc {
   white-space: nowrap;
