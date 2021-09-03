@@ -81,7 +81,9 @@ viewTopLeftButtons model =
         (OpenModal
             <| Model.SettingsModal
             <| Views.ViewThemeEditor.init
-            <| model.bufferedConfig
+            <| Maybe.withDefault model.bufferedConfig
+            <| Maybe.map .userConfig
+            <| model.state
         )
         (Layout.LayoutImageSvg Views.Icons.svgGear)
         (Layout.StaticLayoutText "Settings")
