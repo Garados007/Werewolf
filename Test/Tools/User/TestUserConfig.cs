@@ -33,5 +33,15 @@ namespace Test.Tools.User
         {
             return ValueTask.CompletedTask;
         }
+
+        public override ValueTask SetUsernameAsync(string username)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        public override ValueTask SetImageAsync(string image)
+        {
+            return ValueTask.CompletedTask;
+        }
     }
 }
