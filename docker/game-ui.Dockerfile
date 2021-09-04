@@ -1,7 +1,8 @@
 FROM bitnami/git:latest as version
 WORKDIR /src
 COPY ./.git ./.git
-RUN git rev-parse --short HEAD > version-suffix
+COPY ./version.txt ./
+RUN echo "$(cat version.txt)-$(git rev-parse --short HEAD)" > version
 
 FROM ubuntu:latest as builder
 RUN apt-get -qq update -y && \
@@ -16,15 +17,13 @@ WORKDIR /src
 COPY ./elm.json /src/
 COPY ./src /src/src
 COPY ./preprocess-elm.sh /src/
-COPY ./version.txt ./version-prefix
-COPY --from=version /src/version-suffix ./version-suffix
-RUN verpre="$(cat "version-prefix")" && \
-    versuf="$(cat "version-suffix")" && \
+COPY --from=version /src/version ./version
+RUN ver="$(cat "version")" && \
     chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
     rm -r src/Debug && \
-    sed -i "s/version = \".*\"/version = \"$verpre-$versuf\"/" \
+    sed -i "s/version = \".*\"/version = \"$ver\"/" \
         src/Config.elm && \
     mkdir /content && \
     elm make --optimize --output=/content/index.js src/Main.elm
@@ -70,3 +69,7 @@ COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
 COPY --from=css-compressor /content/bin /usr/local/apache2/htdocs/content/css
 COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
+COPY --from=version /src/version /usr/local/apache2/htdocs/content/version
+RUN ver="$(cat /usr/local/apache2/htdocs/content/version)" && \
+    sed -i "s@/content/index.js@/content/index.js?_v=$ver@" \
+        /usr/local/apache2/htdocs/content/index.html

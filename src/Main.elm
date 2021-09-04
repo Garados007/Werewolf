@@ -474,7 +474,8 @@ view model =
         [ Html.node "link"
             [ HA.attribute "rel" "stylesheet"
             , HA.attribute "property" "stylesheet"
-            , HA.attribute "href" "/content/css/style.css"
+            , HA.attribute "href" 
+                <| Network.versionUrl "/content/css/style.css"
             ] []
         , Styles.view
             (case model of
