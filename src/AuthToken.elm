@@ -53,11 +53,9 @@ update msg auth =
                     Just x -> x
                     Nothing ->
                         auth.token.expiresIn
-                            |> Debug.log "auth:time:expire:expire-in"
                             |> Maybe.withDefault 300
                             |> (*) 1000
                             |> (+) (Time.posixToMillis now)
-                            |> Debug.log "auth:time:expire:result"
                             |> Time.millisToPosix
 
                 new : AuthToken
@@ -68,7 +66,7 @@ update msg auth =
                     }
 
             in 
-                if Debug.log "auth:time:refresh" <| Time.posixToMillis expire <= Time.posixToMillis now
+                if Time.posixToMillis expire <= Time.posixToMillis now
                     && not auth.requested
                 then case auth.token.refreshToken of
                     Just token ->
