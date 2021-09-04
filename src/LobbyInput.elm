@@ -67,8 +67,8 @@ viewBanner model =
                 , content = text "No Server found"
                 }
 
-view : Model -> Language -> Html Msg
-view model lang =
+view : Model -> Bool -> Language -> Html Msg
+view model canContinue lang =
     div [ class "lobby-selection-box" ]
         [ div [ class "options" ]
             [ div [ class "option" ]
@@ -77,7 +77,9 @@ view model lang =
                         [ "init", "lobby-input", "create" ]
                 , div [ class "space" ] []
                 , Html.button
-                    [ HE.onClick SelectCreate ]
+                    [ HE.onClick SelectCreate 
+                    , HA.disabled <| not canContinue
+                    ]
                     <| singleLangBlock lang
                         [ "init", "lobby-input", "start" ]
                 ]
@@ -94,19 +96,13 @@ view model lang =
                     , HE.onInput Input
                     ] []
                 , Html.button
-                    [ HE.onClick SelectJoin ]
+                    [ HE.onClick SelectJoin
+                    , HA.disabled <| not canContinue
+                    ]
                     <| singleLangBlock lang
                         [ "init", "lobby-input", "start" ]
                 ]
             ]
-        , case model.error of
-            Nothing -> text ""
-            Just InvalidLobbyToken ->
-                div [ class "error" ]
-                    [ text "Invalid Lobby token" ]
-            Just NoServerFound ->
-                div [ class "error" ]
-                    [ text "No Server found" ]
         ]
 
 update : Msg -> Model -> (Model, Cmd Msg, Maybe ConnectInfo)
