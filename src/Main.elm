@@ -38,6 +38,7 @@ import Views.ViewUserPreview
 import Views.Icons
 import Data exposing (Game)
 import Time
+import AuthToken exposing (AuthToken)
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new 
 purpose and setup routines.
@@ -48,15 +49,10 @@ that didn't exists in the old Game Page.
 Now there exists the following states which will cycle and iterate through depending on the user
 choises:
 
-- `SelectUser`: The user will see the two options. Login or guest mode. If the user click on
-    guest mode the state will transition to `GuestInput`. If the user click on Login a full
-    OAuth process will be startet and transition to `OAuthLogin`.
+- `SelectUser`: The user has the option to login and transition to `OAuthLogin` or enter the
+    guest information and transition to `SelectLobby`.
 
     Path: `/?dev=*` (or any invalid path)
-- `GuestInput`: Insert the details for the guest user. After successful input it will transition 
-    to `SelectLobyy`. If the user aborts it will transition back to `SelectUser`.
-
-    Path: `/guest?dev=*`
 - `OAuthLogin`: A full OAuth process will be triggered. If it succeeds we have our access token and 
     refresh token. Both of them has to be updated regulary. After that it will transition to
     `SelectLobby`.
@@ -113,35 +109,41 @@ type alias LangContainer =
     }
 
 type alias SelectUserData = 
+    -- common data
     { dev: Bool
     , lang: LangContainer
     , fail: Bool
     , key: Key
     , url: Url
-    , guest: GuestInput.Model
     , storage: Storage
+    -- actual data
+    , guest: GuestInput.Model
     }
 
 type alias OAuthLoginData =
+    -- common data
     { dev: Bool
     , lang: LangContainer
     , key: Key
     , url: Url
-    , token: Maybe Auth.AuthenticationSuccess
     , storage: Storage
+    -- actual data
+    , token: Maybe Auth.AuthenticationSuccess
     }
 
 type alias SelectLobbyData =
+    -- common data
     { dev: Bool
     , lang: LangContainer
     , key: Key
     , url: Url
+    , storage: Storage
+    -- actual data
+    , token: Maybe AuthToken
     , user: UserInfo
-    , token: Maybe Auth.AuthenticationSuccess
     , model: LobbyInput.Model
     , loading: Bool
     , viewUser: Maybe Bool
-    , storage: Storage
     }
 
 type alias GameData =
@@ -180,6 +182,8 @@ type Msg
     | WrapLobbyInput LobbyInput.Msg
     | WrapGame GameMain.Msg
     | WrapStorage Storage.Msg
+    | WrapAuthToken AuthToken.Msg
+    | RemoveLostToken
 
 getLang : Model -> LangContainer
 getLang model =
@@ -533,13 +537,24 @@ view model =
                         (data.token == Nothing)
                         data.user
                 , showLeftSection = data.viewUser
-                , banner = List.map
-                    (Layout.mapBanner WrapLobbyInput)
-                    <| LobbyInput.viewBanner data.model
+                , banner = List.concat
+                    [ if Maybe.map .lost data.token == Just True
+                        then List.singleton
+                            { closeable = Just RemoveLostToken
+                            , content = Html.text
+                                <| Language.getTextOrPath
+                                    (getRootLang data.lang)
+                                    [ "init", "lost-token" ]
+                            }
+                        else []
+                    , List.map (Layout.mapBanner WrapLobbyInput)
+                        <| LobbyInput.viewBanner data.model
+                    ]
                 , contentClass = "init-select-user"
                 , content =
                     [ Html.map WrapLobbyInput
                         <| LobbyInput.view data.model
+                            (Maybe.map .lost data.token /= Just True)
                         <| getRootLang data.lang
                     , Views.ViewVersion.view
                     ]
@@ -717,7 +732,7 @@ update msg model =
                 , key = data.key
                 , url = data.url
                 , user = userinfo
-                , token = data.token
+                , token = Maybe.map AuthToken.init data.token
                 , model = LobbyInput.init data.dev
                 , loading = False
                 , viewUser = Nothing
@@ -771,7 +786,7 @@ update msg model =
                     (Just info, Just token) ->
                         getEnterLobby
                             info
-                            (OAuth.tokenToString token.token
+                            (OAuth.tokenToString token.token.token
                                 |> String.split " "
                                 |> List.drop 1
                                 |> List.head
@@ -899,6 +914,22 @@ update msg model =
                 ( setStorage storage newModel
                 , Cmd.none
                 )
+        (WrapAuthToken sub, SelectLobby data) ->
+            case data.token of
+                Just auth ->
+                    AuthToken.update sub auth
+                    |> \(new, cmd) ->
+                        (SelectLobby
+                            { data | token = Just new }
+                        , Cmd.map WrapAuthToken cmd
+                        )
+                Nothing -> (model, Cmd.none)
+        (WrapAuthToken _, _) -> (model, Cmd.none)
+        (RemoveLostToken, SelectLobby data) ->
+            (SelectLobby { data | token = Nothing }
+            , Cmd.none
+            )
+        (RemoveLostToken, _) -> (model, Cmd.none)
 
 formEncodedBody : List (String, String) -> Http.Body
 formEncodedBody = 
@@ -966,6 +997,10 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ case model of
+            SelectLobby { token } ->
+                Maybe.map AuthToken.subscriptions token
+                |> Maybe.withDefault Sub.none
+                |> Sub.map WrapAuthToken
             Game data ->
                 Sub.map WrapGame
                 <| GameMain.subscriptions data.game

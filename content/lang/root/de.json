@@ -2,6 +2,7 @@
     "init": {
         "title": "Werwölfe von Düsterwald",
         "reset-user": "Nutzer zurücksetzen",
+        "lost-token": "Der Nutzertoken konnte leider nicht aktualisiert werden. Es ist eine erneute Anmeldung erforderlich oder man spielt als Gast weiter.",
         "user-mode": {
             "play-login": "Mit Account spielen",
             "play-guest": "Als Gast spielen",
