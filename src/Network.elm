@@ -16,6 +16,7 @@ module Network exposing
     , wsClose
     , wsSend
     , execute
+    , versionUrl
     )
 
 import Http
@@ -26,6 +27,8 @@ import Json.Encode as JE
 import WebSocket
 import EventData exposing (EventData(..))
 import Ports exposing (..)
+import Config
+import Url
 
 wsReceive : (Result JD.Error WebSocket.WebSocketMsg -> msg) -> Sub msg
 wsReceive tagger =
@@ -266,24 +269,30 @@ type alias EditUserConfig =
     , newLanguage: Maybe String
     }
 
+versionUrl : String -> String
+versionUrl url =
+    if Config.version == "debug"
+    then url
+    else url ++ "?_v=" ++ Url.percentEncode Config.version
+
 getLangInfo : Cmd (Response LanguageInfo)
 getLangInfo =
     Http.get
-        { url = "/content/lang/index.json"
+        { url = versionUrl "/content/lang/index.json"
         , expect = Http.expectJson identity Language.decodeLanguageInfo
         }
 
 getRootLang : String -> Cmd (Response Language)
 getRootLang lang =
     Http.get
-        { url = "/content/lang/root/" ++ lang ++ ".json"
+        { url = versionUrl <| "/content/lang/root/" ++ lang ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }
 
 getLang : Language.ThemeKey -> Cmd (Response Language)
 getLang (k1, k2, k3) =
     Http.get
-        { url = "/content/lang/" ++ k1 ++ "/" ++ k2 ++
+        { url = versionUrl <| "/content/lang/" ++ k1 ++ "/" ++ k2 ++
             "/" ++ k3 ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }

@@ -474,11 +474,8 @@ view model =
         [ Html.node "link"
             [ HA.attribute "rel" "stylesheet"
             , HA.attribute "property" "stylesheet"
-            , HA.attribute "href" <|
-                if Config.version == "debug"
-                then "/content/css/style.css"
-                else "/content/css/style.css?_v="
-                    ++ Url.percentEncode Config.version
+            , HA.attribute "href" 
+                <| Network.versionUrl "/content/css/style.css"
             ] []
         , Styles.view
             (case model of
