@@ -167,56 +167,65 @@ namespace Werewolf.Theme
                 var winnerSpan = winner.Value;
                 var winIds = new List<UserId>(winner.Value.Length);
                 var xpMultiplier = Users.Values.Where(x => x.Role is not null).Count() * 0.15 - 0.15;
-                await Task.WhenAll(Users.Select(
-                    arg =>
-                    {
-                        var (id, entry) = arg;
-                        uint dLeader = 0,
-                            dKilled = 0,
-                            dWinGames = 0,
-                            dLooseGames = 0;
-                        ulong dXP = 0;
-                        if (id == Leader && !LeaderIsPlayer)
+                try
+                {
+                    await Task.WhenAll(Users.Select(
+                        arg =>
                         {
-                            dLeader++;
-                            dXP += (ulong)Math.Round(xpMultiplier * 100);
-                        }
-                        if (entry.Role != null)
-                        {
-                            if (entry.Role.IsAlive)
+                            var (id, entry) = arg;
+                            uint dLeader = 0,
+                                dKilled = 0,
+                                dWinGames = 0,
+                                dLooseGames = 0;
+                            ulong dXP = 0;
+                            if (id == Leader && !LeaderIsPlayer)
                             {
-                                dXP += (ulong)Math.Round(xpMultiplier * 160);
+                                dLeader++;
+                                dXP += (ulong)Math.Round(xpMultiplier * 100);
                             }
-                            else
+                            if (entry.Role != null)
                             {
-                                dKilled++;
-                            }
-
-                            bool won = false;
-                            foreach (var other in winnerSpan.Span)
-                                if (other == entry.Role)
+                                if (entry.Role.IsAlive)
                                 {
-                                    won = true;
-                                    break;
+                                    dXP += (ulong)Math.Round(xpMultiplier * 160);
                                 }
-                            if (won)
-                            {
-                                dWinGames++;
-                                dXP += (ulong)Math.Round(xpMultiplier * 120);
-                                winIds.Add(id);
+                                else
+                                {
+                                    dKilled++;
+                                }
+
+                                bool won = false;
+                                foreach (var other in winnerSpan.Span)
+                                    if (other == entry.Role)
+                                    {
+                                        won = true;
+                                        break;
+                                    }
+                                if (won)
+                                {
+                                    dWinGames++;
+                                    dXP += (ulong)Math.Round(xpMultiplier * 120);
+                                    winIds.Add(id);
+                                }
+                                else
+                                {
+                                    dLooseGames++;
+                                }
                             }
-                            else
-                            {
-                                dLooseGames++;
-                            }
+                            return entry.User.Stats.IncAsync(dWinGames, dKilled, dLooseGames, dLeader, dXP);
                         }
-                        return entry.User.Stats.IncAsync(dWinGames, dKilled, dLooseGames, dLeader, dXP);
-                    }
-                ));
+                    ));
+                }
+                catch (Exception e)
+                {
+                    Serilog.Log.Error(e, "cannot calculate winner stats");
+                }
                 Winner = (ExecutionRound, winIds.ToArray());
             }
             Phase = null;
             SendEvent(new Events.GameEnd());
+            if (winner != null)
+                SendEvent(new Events.SendStats());
             foreach (var entry in Users.Values)
                 if (entry.Role != null)
                     SendEvent(new Events.OnRoleInfoChanged(entry.Role, ExecutionRound));

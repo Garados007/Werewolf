@@ -32,6 +32,7 @@ type EventData
     | GetJoinToken LobbyJoinToken
     | OnlineNotification String Data.OnlineInfo
     | Maintenance (Maybe String) Posix
+    | SendStats (Dict String (GameUserStats, LevelData))
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -199,6 +200,22 @@ decodeEventData =
                     JD.succeed Maintenance
                     |> required "reason" (JD.nullable JD.string)
                     |> required "forced-shutdown" Iso8601.decoder
+                "SendStats" ->
+                    JD.field "stats"
+                    <| JD.map SendStats
+                    <| JD.dict
+                    <| JD.map2 Tuple.pair
+                        (JD.succeed GameUserStats
+                            |> required "win-games" JD.int
+                            |> required "killed" JD.int
+                            |> required "loose-games" JD.int
+                            |> required "leader" JD.int
+                        )
+                        (JD.succeed LevelData
+                            |> required "level" JD.int
+                            |> required "current-xp" JD.int
+                            |> required "max-xp" JD.int
+                        )
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

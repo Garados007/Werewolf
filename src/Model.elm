@@ -184,6 +184,21 @@ applyEventData event model =
         EventData.SendGameData state -> Tuple.pair
             { model
             | state = Just state
+            , levels = Dict.merge
+                -- remove old level entries that are no longer used
+                (\_ _ -> identity)
+                -- update existing level entries
+                (\k old new -> Dict.insert k
+                    <| Level.updateData model.now new old
+                )
+                -- add new level entries
+                (\k -> Dict.insert k << Level.init model.now)
+                model.levels
+                (Dict.map
+                    (\_ x -> x.user.level)
+                    state.game.user
+                )
+                Dict.empty
             }
             [ Network.NetReq
                 <| Network.GetLang
@@ -205,6 +220,15 @@ applyEventData event model =
                     }
                     game.user
                 }
+            , levels = Dict.update id
+                (\x -> Just <| case x of
+                    Just level -> Level.updateData
+                        model.now
+                        user.level
+                        level
+                    Nothing -> Level.init model.now user.level
+                )
+                model.levels
             }
             []
         EventData.AddVoting voting -> Tuple.pair 
@@ -378,7 +402,7 @@ applyEventData event model =
                     Just { user } ->
                         Dict.insert id user model.removedUser
                     Nothing -> model.removedUser
-
+            , levels = Dict.remove id model.levels
             }
             []
         EventData.RemoveVoting id -> Tuple.pair 
@@ -593,5 +617,47 @@ applyEventData event model =
             { model
             | modal = Maintenance reason
             , maintenance = Just shutdown
+            }
+            []
+        EventData.SendStats stats -> Tuple.pair
+            { model
+            | state = Maybe.map
+                (\state ->
+                    { state
+                    | game = state.game |> \game ->
+                        { game
+                        | user = Dict.merge
+                            Dict.insert
+                            (\k gameUser (stat, level) ->
+                                Dict.insert k
+                                { gameUser
+                                | user = gameUser.user |> \user ->
+                                    { user
+                                    | stats = stat
+                                    , level = level
+                                    }
+                                }
+                            )
+                            (\_ _ -> identity)
+                            game.user
+                            stats
+                            Dict.empty
+                        }
+                    }
+                )
+                model.state
+            , levels = Dict.merge
+                Dict.insert
+                (\k old (_, new) ->
+                    Dict.insert k
+                        <| Level.updateData model.now new old
+                )
+                (\k (_, new) ->
+                    Dict.insert k
+                        <| Level.init model.now new
+                )
+                model.levels
+                stats
+                Dict.empty
             }
             []
