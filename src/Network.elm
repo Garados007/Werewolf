@@ -14,6 +14,7 @@ module Network exposing
     , wsReceive
     , wsConnect
     , wsClose
+    , wsExit
     , wsSend
     , execute
     , versionUrl
@@ -47,6 +48,12 @@ wsConnect api token =
                 else "wss://" ++ api ++ "/ws/" ++ token
             , protocol = ""
             }
+
+wsExit : Cmd msg
+wsExit =
+    WebSocket.send sendSocketCommand
+        <| WebSocket.Close
+            { name = "wss" }
 
 wsClose : (Result JD.Error SocketClose -> msg) -> Sub msg
 wsClose tagger =

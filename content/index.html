@@ -13,12 +13,27 @@
         if (wat.cmd == "connect")
         {
           // console.log("connecting!");
-          let socket = new WebSocket(wat.address);
+          let socket;
+          try { socket = new WebSocket(wat.address); }
+          catch (e) {
+            console.error("open ws", e);
+            // app.ports.receiveSocketClose.send(
+            //   { name : wat.name
+            //   , code : 0
+            //   , reason : "cannot create socket"
+            //   }
+            // );
+            // return;
+          }
           socket.onmessage = function (event) {
             // console.log( "onmessage: " +  JSON.stringify(event.data, null, 4));
-            app.ports.receiveSocketMsg.send({ name : wat.name
-                                            , msg : "data"
-                                            , data : event.data} );
+            socket.errorCounter = 0;
+            app.ports.receiveSocketMsg.send(
+              { name : wat.name
+              , msg : "data"
+              , data : event.data
+              }
+            );
           }
           socket.onopen = function () {
             if (socket.buffer) {
@@ -28,6 +43,13 @@
             }
           }
           socket.onclose = function (data) {
+            console.log(`ws closed: ${data.code}, ${data.reason}, counter=${socket.errorCounter||0}`);
+            if (data.code == 1006 && data.reason == "") {
+              if (!socket.errorCounter || socket.errorCounter < 3) {
+                socket.errorCounter = 1 + (socket.errorCounter || 0);
+                return;
+              }
+            }
             app.ports.receiveSocketClose.send(
               { name : wat.name
               , code : data.code
@@ -55,7 +77,8 @@
         else if (wat.cmd == "close")
         {
           // console.log("closing socket: " + wat.name);
-          mySockets[wat.name].close();
+          if (mySockets[wat.name])
+            mySockets[wat.name].close();
           delete mySockets[wat.name];
         }
       }
