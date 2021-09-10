@@ -5,7 +5,7 @@
         public override string LanguageId => "day";
 
         public override string BackgroundId =>
-            $"/content/img/{typeof(DefaultTheme).FullName}/background-day.png";
+            $"/content/img/stage/{typeof(DefaultTheme).FullName}/background-day.png";
 
         public override string ColorTheme => "#34a3fe";
     }

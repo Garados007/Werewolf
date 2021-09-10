@@ -16,6 +16,8 @@ import Language exposing (Language)
 import Language.Config exposing (LangConfig)
 import Json.Decode as JD
 import Json.Encode as JE
+import Url
+import Set exposing (Set)
 
 type Msg
     = SetBuffer (Dict String Int) EditGameConfig
@@ -23,6 +25,7 @@ type Msg
     | SendConf EditGameConfig
     | StartGame
     | ShowRoleInfo String
+    | MissingImg String
     | Noop
 
 viewPageSelector : Language -> EditorPage -> Html Msg
@@ -46,8 +49,8 @@ viewPageSelector lang page =
 
 view : Language -> LangConfig -> Data.RoleTemplates
     -> Maybe Language.ThemeRawKey -> Data.Game -> Bool
-    -> EditorPage -> Dict String Int -> Html Msg
-view lang langConfig roles theme game editable page buffer =
+    -> EditorPage -> Dict String Int -> Set String -> Html Msg
+view lang langConfig roles theme game editable page buffer missingImg =
     let
 
         handleNewRoleCount : String -> Maybe Int -> Msg
@@ -61,6 +64,25 @@ view lang langConfig roles theme game editable page buffer =
                     )
                     <| Dict.insert id new buffer
 
+        showImg : String -> String -> String -> Html Msg
+        showImg imgClass fallback path =
+            Html.node "picture" [ class imgClass ]
+                [ Html.source
+                    [ HA.attribute "srcset"
+                        <| if Set.member path missingImg
+                            then fallback
+                            else path
+                    ] []
+                , Html.img
+                    [ HA.src
+                        <| if Set.member path missingImg
+                            then fallback
+                            else path
+                    , HE.on "error" <| JD.succeed <| MissingImg path
+                    , class imgClass
+                    ] []
+                ]
+
         viewSingleRoleBox : String -> Html Msg
         viewSingleRoleBox id =
             div [ class "editor-role-box" ]
@@ -69,10 +91,29 @@ view lang langConfig roles theme game editable page buffer =
                     , HE.onClick <| ShowRoleInfo id
                     ]
                     [ text "i" ]
-                , Html.img 
-                    [ class "editor-role-image"
-                    , HA.src "/content/img/assasin.svg"
-                    ] []
+                , showImg "editor-role-image" "/content/img/assasin.svg"
+                    <| "/content/img/roles/" ++
+                        (case theme of
+                            Just (k, _) -> Url.percentEncode k ++ "/"
+                            Nothing -> ""
+                        ) ++
+                        Url.percentEncode id ++ ".png"
+                -- , Html.object 
+                --     [ class "editor-role-image"
+                --     , HA.attribute "data" 
+                --         <| "/content/img/roles/" ++
+                --             (case theme of
+                --                 Just (k, _) -> Url.percentEncode k ++ "/"
+                --                 Nothing -> ""
+                --             ) ++
+                --             Url.percentEncode id ++ ".png"
+                --     ]
+                --     [ Html.img
+                --         [ HA.src "/content/img/assasin.svg"
+                --         , HA.type_ "image/svg+xml"
+                --         , class "editor-role-image"
+                --         ] []
+                --     ]
                 , div [ class "editor-role-name" ]
                     <| List.singleton
                     <| text

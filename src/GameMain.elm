@@ -42,6 +42,7 @@ import Styles
 import Views.ViewModal
 import Model
 import Storage exposing (Storage)
+import Set
 
 type Msg
     = Response NetworkResponse
@@ -324,6 +325,7 @@ viewGameFrame model lang roles state =
             (state.user == state.game.leader)
             model.editorPage
             model.editor
+            model.missingImg
 
 tryViewGamePhase : Model -> Language -> Maybe (Html Msg)
 tryViewGamePhase model lang =
@@ -438,6 +440,10 @@ update_internal msg model =
                 Cmd.none
         WrapEditor Views.ViewRoomEditor.Noop ->
             Tuple.pair model Cmd.none
+        WrapEditor (Views.ViewRoomEditor.MissingImg path) ->
+            Tuple.pair
+                { model | missingImg = Set.insert path model.missingImg }
+                Cmd.none
         WrapPhase Views.ViewGamePhase.Noop ->
             Tuple.pair model Cmd.none
         WrapPhase (Views.ViewGamePhase.Send req) ->

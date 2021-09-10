@@ -46,6 +46,9 @@
   height: 4em;
   margin: 1em 0.6em;
 }
+img.editor-role-image {
+  margin: unset;
+}
 .editor-role-name {
   padding: 0 0.5em 0.5em;
   flex-grow: 1;

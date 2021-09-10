@@ -20,6 +20,7 @@ import Styles exposing (Styles)
 import Storage exposing (Storage)
 
 import Views.ViewThemeEditor
+import Set exposing (Set)
 
 type alias Model =
     { state: Maybe Data.GameGlobalState
@@ -47,6 +48,7 @@ type alias Model =
     , closeReason: Maybe Network.SocketClose
     , maintenance: Maybe Posix
     , storage: Storage
+    , missingImg: Set String
     }
 
 type EditorPage
@@ -96,6 +98,7 @@ init token lang joinToken storage =
     , closeReason = Nothing
     , maintenance = Nothing
     , storage = storage
+    , missingImg = Set.empty
     }
 
 getLang : Model -> Language.Language
