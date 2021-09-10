@@ -1,4 +1,5 @@
 {
+    "fallback": "Die Übersetzung für die Sprache \"{lang}\" konnte leider nicht gefunden werden. Von daher siehst du nun alles auf Deutsch.",
     "init": {
         "title": "Werwölfe von Düsterwald",
         "reset-user": "Nutzer zurücksetzen",

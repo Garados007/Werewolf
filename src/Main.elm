@@ -180,6 +180,7 @@ type Msg
     | WrapAuthToken AuthToken.Msg
     | RemoveLostToken
     | Navigate Url
+    | RemoveFallback
 
 getLang : Model -> LangConfig
 getLang model =
@@ -226,6 +227,25 @@ setStorage storage model =
                 }
             }
         InitGame data -> InitGame { data | storage = storage }
+
+getNav : Model -> NavOpts
+getNav model = 
+    case model of
+        SelectUser { nav } -> nav
+        OAuthLogin { nav } -> nav
+        SelectLobby { nav } -> nav
+        Game { nav } -> nav
+        InitGame { nav } -> nav
+
+setNav : NavOpts -> Model -> Model
+setNav nav model =
+    case model of
+        SelectUser data -> SelectUser { data | nav = nav }
+        OAuthLogin data -> OAuthLogin { data | nav = nav }
+        SelectLobby data -> SelectLobby { data | nav = nav }
+        Game data -> Game { data | nav = nav }
+        InitGame data -> InitGame { data | nav = nav }
+
 
 init : () -> Url -> Key -> (Model, Cmd Msg)
 init () url key =
@@ -459,23 +479,9 @@ urlChange model url =
         hasChange : Bool
         hasChange = nav_old.url /= nav_new.url
 
-        setNav : Model -> Model
-        setNav mod =
-            case mod of
-                SelectUser data ->
-                    SelectUser { data | nav = nav_new }
-                OAuthLogin data ->
-                    OAuthLogin { data | nav = nav_new }
-                SelectLobby data ->
-                    SelectLobby { data | nav = nav_new }
-                Game data ->
-                    Game { data | nav = nav_new }
-                InitGame data ->
-                    InitGame { data | nav = nav_new }
-
     in  if hasChange
-        then (setNav new, newCmd)
-        else (setNav model, Cmd.none)
+        then (setNav nav_new new, newCmd)
+        else (setNav nav_new model, Cmd.none)
 
 singleLangBlock : Model -> List String -> List (Html msg)
 singleLangBlock model =
@@ -518,6 +524,21 @@ viewUserButtons viewUsers =
                 [ "view-layout-left-show" ]
             ]
 
+viewLangFallbackBanner : Model -> List (Layout.LayoutBanner Msg) -> List (Layout.LayoutBanner Msg)
+viewLangFallbackBanner model list =
+    case getNav model |> .langFallback of
+        Just origin -> 
+            { closeable = Just RemoveFallback
+            , content = Html.text
+                <| Language.getTextFormatOrPath
+                    (LangConfig.getRootLang <| getLang model)
+                    [ "fallback" ]
+                <| Dict.fromList
+                    [ ("lang", origin) ]
+            }
+            :: list
+        Nothing -> list
+
 view : Model -> List (Html Msg)
 view model =
 --!BEGIN
@@ -551,7 +572,7 @@ view model =
                     [ "init", "title" ]
                 , leftSection = Html.text ""
                 , showLeftSection = Just False
-                , banner = []
+                , banner = viewLangFallbackBanner model []
                 , contentClass = "init-select-user"
                 , content =
                     [ Html.h3 []
@@ -591,7 +612,8 @@ view model =
                         (data.token == Nothing)
                         data.user
                 , showLeftSection = data.viewUser
-                , banner = List.concat
+                , banner = viewLangFallbackBanner model 
+                    <| List.concat
                     [ if Maybe.map .lost data.token == Just True
                         then List.singleton
                             { closeable = Just RemoveLostToken
@@ -634,8 +656,8 @@ view model =
                     Html.map WrapGame
                     <| GameMain.viewLeftSection data.game
                 , showLeftSection = data.viewUser
-                , banner =
-                    List.map (Layout.mapBanner WrapGame)
+                , banner = viewLangFallbackBanner model 
+                    <| List.map (Layout.mapBanner WrapGame)
                     <| GameMain.viewBanner data.game
                 , contentClass = ""
                 , content = List.map (Html.map WrapGame)
@@ -1000,6 +1022,15 @@ update msg model =
             )
         (RemoveLostToken, _) -> (model, Cmd.none)
         (Navigate url, _) -> urlChange model url
+        (RemoveFallback, _) ->
+            getNav model
+            |> \old_nav ->
+                navigateTo 
+                    { old_nav | langFallback = Nothing }
+                    old_nav.url.path
+            |> \(nav, ncmd) ->
+                (setNav nav model, ncmd)
+
 
 returnGame : GameData -> (Model, Cmd Msg)
 returnGame data =
