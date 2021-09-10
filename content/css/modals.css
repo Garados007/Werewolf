@@ -47,3 +47,22 @@
   overflow: auto;
   position: relative;
 }
+button.modal-button {
+  font-family: inherit;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  background-color: var(--color-light);
+  color: var(--text-color);
+  border: 0.1em solid var(--color-medium);
+}
+button.modal-button:hover {
+  background-color: var(--color-light-transparent);
+}
+.modal-button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0.5em;
+}

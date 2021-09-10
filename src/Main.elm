@@ -880,33 +880,36 @@ update msg model =
                 data.storage
         (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
         (WrapGame sub, Game data) ->
-            (\(new, cmd) ->
-                if new.lang.lang /= data.game.lang.lang
-                then data.nav 
-                    |> \old_nav -> navigateTo
-                        { old_nav 
-                        | lang = new.lang.lang
-                        , langFallback = Nothing
-                        }
-                        old_nav.url.path
-                    |> \(nav, ncmd) ->
-                        ( Game
-                            { data 
-                            | game = new
-                            , nav = nav
-                            }
-                        , Cmd.batch
-                            [ Cmd.map WrapGame cmd
-                            , ncmd
-                            ]
-                        )
-                else
-                    ( Game
-                        { data | game = new }
-                    , Cmd.map WrapGame cmd
+            case sub of
+                GameMain.Return -> returnGame data
+                _ ->
+                    (\(new, cmd) ->
+                        if new.lang.lang /= data.game.lang.lang
+                        then data.nav 
+                            |> \old_nav -> navigateTo
+                                { old_nav 
+                                | lang = new.lang.lang
+                                , langFallback = Nothing
+                                }
+                                old_nav.url.path
+                            |> \(nav, ncmd) ->
+                                ( Game
+                                    { data 
+                                    | game = new
+                                    , nav = nav
+                                    }
+                                , Cmd.batch
+                                    [ Cmd.map WrapGame cmd
+                                    , ncmd
+                                    ]
+                                )
+                        else
+                            ( Game
+                                { data | game = new }
+                            , Cmd.map WrapGame cmd
+                            )
                     )
-            )
-            <| GameMain.update sub data.game
+                    <| GameMain.update sub data.game
         (WrapGame _, _) -> (model, Cmd.none)
         (ReceiveLangInfo (Ok info), _) ->
             (setLang
@@ -997,6 +1000,35 @@ update msg model =
             )
         (RemoveLostToken, _) -> (model, Cmd.none)
         (Navigate url, _) -> urlChange model url
+
+returnGame : GameData -> (Model, Cmd Msg)
+returnGame data =
+    navigateTo data.nav "/"
+    |> \(nav, ncmd) ->
+        ( case data.lobbyUser of
+            Just (user, token) ->
+                SelectLobby
+                    { nav = nav
+                    , lang = data.game.lang
+                    , storage = data.game.storage
+                    , token = token
+                    , user = user
+                    , model = LobbyInput.init nav.dev
+                    , loading = False
+                    , viewUser = data.viewUser
+                    }
+            Nothing ->
+                SelectUser
+                    { nav = nav
+                    , lang = data.game.lang
+                    , guest = GuestInput.init data.game.storage
+                    , storage = data.game.storage
+                    }
+        , Cmd.batch
+            [ Network.wsExit
+            , ncmd
+            ]
+        )
 
 getGuestToken : LobbyInput.ConnectInfo -> String -> String -> String -> Cmd Msg
 getGuestToken info name image language =

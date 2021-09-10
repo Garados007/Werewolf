@@ -26,6 +26,7 @@ type Msg
 type Event
     = Send EditUserConfig
     | SetLang String
+    | Return
 
 init : Data.UserConfig -> Model
 init config =
@@ -36,7 +37,14 @@ init config =
 view : Language -> Dict String String -> Model -> String -> Html Msg
 view lang flags model selLang =
     div [ class "theme-editor" ]
-        [ div [ class "pane" ]
+        [ div [ class "pane", class "return" ]
+            [ Html.button
+                [ HE.onClick <| DoEvent Return ]
+                [ Html.text <| Language.getTextOrPath lang
+                    [ "modals", "theme-editor", "go-back" ]
+                ]
+            ]
+        , div [ class "pane" ]
             [ div [ class "group" ]
                 <| List.singleton
                 <| Html.map SetPicker

@@ -47,6 +47,7 @@ type Msg
     = Response NetworkResponse
     | SetTime Posix
     | Noop
+    | Return
     | WrapUser Views.ViewUserList.Msg
     | WrapEditor Views.ViewRoomEditor.Msg
     | WrapPhase Views.ViewGamePhase.Msg
@@ -215,6 +216,7 @@ view_internal model lang =
             (\() -> tryViewGameFrame model lang)
         |> Maybe.Extra.orElseLazy
             (\() -> Just
+                <| Html.map (always Return)
                 <| Views.ViewNoGame.view lang
                 <| model.state == Nothing || model.roles == Nothing
             )
@@ -296,8 +298,7 @@ view_internal model lang =
     , case model.closeReason of
         Nothing -> text ""
         Just info ->
-            Html.map (always Noop)
-            <| Views.ViewCloseReason.view lang info
+            Views.ViewCloseReason.view lang info Noop Return
     ]
 
 tryViewGameFrame : Model -> Language -> Maybe (Html Msg)
@@ -390,6 +391,7 @@ update_internal msg model =
                 )
             <| Model.applyResponse resp model
         Noop -> (model, Cmd.none)
+        Return -> (model, Cmd.none)
         SetTime now ->
             Tuple.pair
                 { model | now = now }
@@ -477,7 +479,14 @@ update_internal msg model =
                         sendEvents = List.filterMap
                             (\event ->
                                 case event of
-                                    Views.ViewThemeEditor.Send req -> Just req
+                                    Views.ViewThemeEditor.Send req -> 
+                                        Just
+                                            <| Network.wsSend
+                                            <| Network.SetUserConfig req
+                                    Views.ViewThemeEditor.Return ->
+                                        Just
+                                            <| Task.perform identity
+                                            <| Task.succeed Return
                                     _ -> Nothing
                             )
                             newEvent
@@ -502,12 +511,10 @@ update_internal msg model =
                         , lang = newLang
                         }
                         <| Cmd.batch
-                        <| (++) (List.map (Network.execute Response << Network.NetReq) langEvents)
-                        <| List.map 
-                            (Network.wsSend 
-                                << Network.SetUserConfig
-                            )
-                            sendEvents
+                        <| (++) sendEvents
+                        <| List.map
+                            (Network.execute Response << Network.NetReq)
+                            langEvents
                 _ -> (model, Cmd.none)
         WrapChat (Views.ViewChat.SetInput input) ->
             Tuple.pair

@@ -6,6 +6,9 @@
         , "view-layout-main-content", "view-layout-banner", "view-layout-banner-content"
         , "view-layout-banner-closer", "view-layout-left-close", "view-layout-left-open"
         , "view-layout-left-show", "view-layout-left-auto", "view-layout-hide"
+        ],
+        [ "modal-background", "modal-window", "modal-background-closer", "modal-title-box"
+        , "modal-title", "modal-close", "modal-button", "modal-button-container"
         ]
     ]
 }

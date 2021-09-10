@@ -68,9 +68,10 @@
         "phase": {
             "end": "Spiel beenden",
             "next": "Nächste Runde"
-        },
+        },  
         "loading": {
-            "not-found": "Spiel nicht gefunden."
+            "not-found": "Spiel nicht gefunden.",
+            "go-back": "Zurück zur Lobbyauswahl"
         }
     },
     "banner": {
@@ -79,7 +80,8 @@
     "modals": {
         "theme-editor": {
             "title": "Theme Einstellungen",
-            "background-url": "Hintergrundbild (URL)"
+            "background-url": "Hintergrundbild (URL)",
+            "go-back": "Zurück zur Lobbyauswahl"
         },
         "winner": {
             "title": "Sieger"
@@ -104,7 +106,8 @@
                 "1012": {
                     "": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu können."
                 }
-            }
+            },
+            "go-back": "Zurück zur Lobbyauswahl"
         }
     },
     "theme": {
