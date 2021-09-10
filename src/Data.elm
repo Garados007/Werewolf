@@ -130,7 +130,6 @@ type alias GameUserStats =
 type alias UserConfig =
     { theme: String
     , background: String
-    , language: String
     }
 
 decodeGameGlobalState : Decoder GameGlobalState
@@ -226,7 +225,6 @@ decodeGameGlobalState =
             ( JD.succeed UserConfig
                 |> required "theme" JD.string
                 |> required "background" JD.string
-                |> required "language" JD.string
             )
 
 type alias Error = Maybe String

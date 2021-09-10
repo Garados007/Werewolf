@@ -29,14 +29,12 @@ init =
     { oldConfig =
         { theme = "#333333"
         , background = ""
-        , language = ""
         }
     , lastChange = Time.millisToPosix 0
     , hasOld = False
     , newConfig = 
         { theme = "#333333"
         , background = ""
-        , language = ""
         }
     }
 

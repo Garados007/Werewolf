@@ -171,8 +171,7 @@ decodeEventData =
                 "SetUserConfig" ->
                     JD.succeed UserConfig
                     |> required "theme" JD.string
-                    |> required "background" JD.string 
-                    |> required "language" JD.string
+                    |> required "background" JD.string
                     |> JD.field "user-config"
                     |> JD.map SetUserConfig
                 "SetVotingTimeout" ->

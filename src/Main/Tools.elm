@@ -1,18 +1,10 @@
 module Main.Tools exposing (..)
 import Url exposing (Url)
-import Dict exposing (Dict)
-import Language
+import Dict
 import Url.Parser.Query
 import Http
 import Browser.Navigation exposing (Key)
-import Html exposing (a)
 import Url.Parser
-
-type alias LangContainer =
-    { lang: String
-    , root: Dict String Language.Language
-    , info: Language.LanguageInfo
-    }
 
 redirectUri : NavOpts -> Url
 redirectUri nav =

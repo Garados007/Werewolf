@@ -12,7 +12,8 @@ import Html.Attributes as HA exposing (class)
 import Html.Events as HE
 import Dict exposing (Dict)
 import Maybe.Extra
-import Language exposing (Language, LanguageInfo)
+import Language exposing (Language)
+import Language.Config exposing (LangConfig)
 import Json.Decode as JD
 import Json.Encode as JE
 
@@ -43,11 +44,10 @@ viewPageSelector lang page =
             , (PageOptions, "options")
             ]
 
-view : Language -> LanguageInfo -> Data.RoleTemplates
-    -> Data.GameGlobalState
+view : Language -> LangConfig -> Data.RoleTemplates
     -> Maybe Language.ThemeRawKey -> Data.Game -> Bool
     -> EditorPage -> Dict String Int -> Html Msg
-view lang langInfo roles gameResult theme game editable page buffer =
+view lang langConfig roles theme game editable page buffer =
     let
 
         handleNewRoleCount : String -> Maybe Int -> Msg
@@ -184,9 +184,6 @@ view lang langInfo roles gameResult theme game editable page buffer =
                 , Html.span [] [ text title ]
                 ]
 
-        userLang : String
-        userLang = Model.getSelectedLanguage gameResult
-
         viewThemeSelector : Bool -> Html Msg
         viewThemeSelector enabled =
             div [ class "theme-selector" ]
@@ -229,7 +226,7 @@ view lang langInfo roles gameResult theme game editable page buffer =
                         (Tuple.mapFirst <| Tuple.pair k1)
                     <| List.filterMap
                         (\(k2, d2) ->
-                            Dict.get userLang d2
+                            Dict.get langConfig.lang d2
                             |> Maybe.Extra.orElseLazy
                                 (\() -> Dict.get "de" d2)
                             |> Maybe.Extra.orElseLazy
@@ -239,7 +236,7 @@ view lang langInfo roles gameResult theme game editable page buffer =
                         )
                     <| Dict.toList d1
                 )
-            <| Dict.toList langInfo.themes
+            <| Dict.toList langConfig.info.themes
 
     in div [ class "editor" ]
         [ viewPageSelector lang page

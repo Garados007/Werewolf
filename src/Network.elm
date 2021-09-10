@@ -128,9 +128,6 @@ wsSend request =
                         , Maybe.map
                             (\x -> ("background", JE.string x))
                             conf.newBackground
-                        , Maybe.map
-                            (\x -> ("language", JE.string x))
-                            conf.newLanguage
                         ]
                     GameStart ->
                         [ ("$type", JE.string "GameStart") ]
@@ -267,13 +264,11 @@ editUserConfig : EditUserConfig
 editUserConfig =
     { newTheme = Nothing
     , newBackground = Nothing
-    , newLanguage = Nothing
     }
 
 type alias EditUserConfig =
     { newTheme: Maybe String
     , newBackground: Maybe String
-    , newLanguage: Maybe String
     }
 
 versionUrl : String -> String

@@ -26,6 +26,7 @@ import LobbyInput
 import Iso8601
 import Pronto
 import Language
+import Language.Config as LangConfig exposing (LangConfig)
 import Network
 import Styles
 import Storage exposing (Storage)
@@ -93,7 +94,7 @@ main =
             { title = 
                 Maybe.withDefault "Werewolf"
                 <| Language.getText
-                    (getRootLang <| getLang model)
+                    (LangConfig.getRootLang <| getLang model)
                     [ "init", "title" ]
             , body = view model
             }
@@ -109,7 +110,7 @@ main =
 type alias SelectUserData = 
     -- common data
     { nav: NavOpts
-    , lang: LangContainer
+    , lang: LangConfig
     , storage: Storage
     -- actual data
     , guest: GuestInput.Model
@@ -118,7 +119,7 @@ type alias SelectUserData =
 type alias OAuthLoginData =
     -- common data
     { nav: NavOpts
-    , lang: LangContainer
+    , lang: LangConfig
     , storage: Storage
     -- actual data
     , token: Maybe Auth.AuthenticationSuccess
@@ -127,7 +128,7 @@ type alias OAuthLoginData =
 type alias SelectLobbyData =
     -- common data
     { nav: NavOpts
-    , lang: LangContainer
+    , lang: LangConfig
     , storage: Storage
     -- actual data
     , token: Maybe AuthToken
@@ -146,7 +147,7 @@ type alias GameData =
     }
 
 type alias InitGameData =
-    { lang: LangContainer
+    { lang: LangConfig
     , serverId: String
     , lobbyId: String
     , lobbyUser: Maybe (UserInfo, Maybe AuthToken)
@@ -180,25 +181,16 @@ type Msg
     | RemoveLostToken
     | Navigate Url
 
-getLang : Model -> LangContainer
+getLang : Model -> LangConfig
 getLang model =
     case model of
         SelectUser { lang } -> lang
         OAuthLogin { lang } -> lang
         SelectLobby { lang } -> lang
-        Game { game } ->
-            { lang = game.selLang
-            , info = game.langInfo
-            , root = game.rootLang
-            }
+        Game { game } -> game.lang
         InitGame { lang } -> lang
 
-getRootLang : LangContainer -> Language.Language
-getRootLang lang =
-    Dict.get lang.lang lang.root
-    |> Maybe.withDefault Language.LanguageUnknown
-
-setLang : LangContainer -> Model -> Model
+setLang : LangConfig -> Model -> Model
 setLang lang model =
     case model of
         SelectUser data -> SelectUser { data | lang = lang }
@@ -207,11 +199,7 @@ setLang lang model =
         Game data -> Game 
             { data 
             | game = data.game |> \game ->
-                { game
-                | selLang = lang.lang
-                , langInfo = lang.info
-                , rootLang = lang.root
-                }
+                { game | lang = lang }
             }
         InitGame data -> InitGame { data | lang = lang }
 
@@ -245,16 +233,8 @@ init () url key =
         nav : NavOpts
         nav = parseNavOpts url key
 
-        lang : LangContainer
-        lang = 
-            { lang = nav.lang
-            , info =
-                { languages = Dict.empty
-                , icons = Dict.empty
-                , themes = Dict.empty
-                }
-            , root = Dict.empty
-            }
+        lang : LangConfig
+        lang = LangConfig.init nav.lang
         
         (storage, storageCmd) = Storage.init
     in 
@@ -381,7 +361,7 @@ initGame serverId lobbyId =
 urlChange : Model -> Url -> (Model, Cmd Msg)
 urlChange model url =
     let
-        lang : LangContainer
+        lang : LangConfig
         lang = getLang model
 
         nav_old : NavOpts
@@ -506,7 +486,7 @@ singleLang : Model -> List String -> (Html msg)
 singleLang model = 
     Html.text
     << Language.getTextOrPath
-        (getRootLang <| getLang model)
+        (LangConfig.getRootLang <| getLang model)
 
 viewUserButtons : Maybe Bool -> List (Layout.LayoutButton Msg)
 viewUserButtons viewUsers =
@@ -564,7 +544,7 @@ view model =
     <| case model of
         SelectUser data ->
             List.singleton
-            <| Layout.view (getRootLang <| getLang model)
+            <| Layout.view (LangConfig.getRootLang <| getLang model)
                 { titleButtonsLeft = []
                 , titleButtonsRight = []
                 , titleText = Layout.LangLayoutText
@@ -588,7 +568,7 @@ view model =
                             [ "init", "user-mode", "play-guest" ]
                     , Html.map WrapGuestInput
                         <| GuestInput.view data.guest 
-                        <| getRootLang data.lang
+                        <| LangConfig.getRootLang data.lang
                     , Views.ViewVersion.view
                     ]
                 , bottomRightButton = Nothing
@@ -599,7 +579,7 @@ view model =
                 [ Html.div [ HA.class "lds-heart" ]
                     [ Html.div [] [] ]
                 ]
-            else Layout.view (getRootLang data.lang)
+            else Layout.view (LangConfig.getRootLang data.lang)
                 { titleButtonsLeft = viewUserButtons data.viewUser
                 , titleButtonsRight = []
                 , titleText = Layout.LangLayoutText
@@ -607,7 +587,7 @@ view model =
                 , leftSection =
                     Html.map (always ResetUser)
                     <| Views.ViewUserPreview.view
-                        (getRootLang data.lang)
+                        (LangConfig.getRootLang data.lang)
                         (data.token == Nothing)
                         data.user
                 , showLeftSection = data.viewUser
@@ -617,7 +597,7 @@ view model =
                             { closeable = Just RemoveLostToken
                             , content = Html.text
                                 <| Language.getTextOrPath
-                                    (getRootLang data.lang)
+                                    (LangConfig.getRootLang data.lang)
                                     [ "init", "lost-token" ]
                             }
                         else []
@@ -629,7 +609,7 @@ view model =
                     [ Html.map WrapLobbyInput
                         <| LobbyInput.view data.model
                             (Maybe.map .lost data.token /= Just True)
-                        <| getRootLang data.lang
+                        <| LangConfig.getRootLang data.lang
                     , Views.ViewVersion.view
                     ]
                 , bottomRightButton = Nothing
@@ -640,7 +620,8 @@ view model =
                 [ Html.div [ HA.class "lds-heart" ]
                     [ Html.div [] [] ]
                 ]
-            else Layout.view (Model.getLanguage data.game)
+            else Layout.view
+                (Model.getLang data.game)
                 { titleButtonsLeft =
                     (\x -> x ++ viewUserButtons data.viewUser)
                     <| List.map (Layout.mapButton WrapGame)
@@ -860,9 +841,7 @@ update msg model =
             GameMain.init
                 token.userToken
                 info.api
-                data.lang.lang
-                data.lang.info
-                data.lang.root
+                data.lang
                 token.joinToken
                 data.storage
             |> \(new, cmd) ->
@@ -896,19 +875,37 @@ update msg model =
             <| GameMain.init
                 token.userToken
                 info.api
-                data.lang.lang
-                data.lang.info
-                data.lang.root
+                data.lang
                 token.joinToken
                 data.storage
         (ReceiveLobbyToken _ _, _) -> (model, Cmd.none)
         (WrapGame sub, Game data) ->
-            Tuple.mapBoth
-                (\new ->
-                    Game
+            (\(new, cmd) ->
+                if new.lang.lang /= data.game.lang.lang
+                then data.nav 
+                    |> \old_nav -> navigateTo
+                        { old_nav 
+                        | lang = new.lang.lang
+                        , langFallback = Nothing
+                        }
+                        old_nav.url.path
+                    |> \(nav, ncmd) ->
+                        ( Game
+                            { data 
+                            | game = new
+                            , nav = nav
+                            }
+                        , Cmd.batch
+                            [ Cmd.map WrapGame cmd
+                            , ncmd
+                            ]
+                        )
+                else
+                    ( Game
                         { data | game = new }
-                )
-                (Cmd.map WrapGame)
+                    , Cmd.map WrapGame cmd
+                    )
+            )
             <| GameMain.update sub data.game
         (WrapGame _, _) -> (model, Cmd.none)
         (ReceiveLangInfo (Ok info), _) ->

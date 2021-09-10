@@ -5,6 +5,7 @@ import EventData exposing (EventData)
 import Model exposing (Model)
 import Network exposing (NetworkResponse)
 import Language exposing (Language)
+import Language.Config as LangConfig exposing (LangConfig)
 
 import Views.ViewUserList
 import Views.ViewRoomEditor
@@ -28,7 +29,6 @@ import Time exposing (Posix)
 import Maybe.Extra
 import Dict
 import Views.ViewGamePhase
-import Maybe.Extra
 import Level
 import Styles
 import Ports
@@ -39,18 +39,14 @@ import WebSocket
 import Maybe
 import Level
 import Styles
-import Styles
 import Views.ViewModal
 import Model
-import Language exposing (LanguageInfo)
-import Dict exposing (Dict)
 import Storage exposing (Storage)
 
 type Msg
     = Response NetworkResponse
     | SetTime Posix
     | Noop
-    | Init
     | WrapUser Views.ViewUserList.Msg
     | WrapEditor Views.ViewRoomEditor.Msg
     | WrapPhase Views.ViewGamePhase.Msg
@@ -64,14 +60,12 @@ type Msg
     | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
     | WsClose (Result JD.Error Network.SocketClose)
 
-init : String -> String -> String -> LanguageInfo -> Dict String Language 
+init : String -> String -> LangConfig 
     -> Maybe Data.LobbyJoinToken -> Storage -> (Model, Cmd Msg)
-init token api selLang langInfo rootLang joinToken storage =
-    ( Model.init token selLang langInfo rootLang joinToken storage
+init token api lang joinToken storage =
+    ( Model.init token lang joinToken storage
     , Cmd.batch
-        [ Task.perform identity
-            <| Task.succeed Init
-        , Network.wsSend Network.FetchRoles
+        [ Network.wsSend Network.FetchRoles
         , Network.wsConnect api token
         ]
     )
@@ -145,7 +139,7 @@ viewBanner model =
                         { closeable = Nothing
                         , content = text
                             <| Language.getTextFormatOrPath
-                                (Model.getLanguage model)
+                                (Model.getLang model)
                                 [ "banner", "maintenance" ]
                             <| Dict.fromList
                                 [ Tuple.pair "minute" 
@@ -175,7 +169,7 @@ viewLeftSection model =
         Just state ->
             Html.map WrapUser
                 <| Views.ViewUserList.view
-                    (Model.getLanguage model)
+                    (Model.getLang model)
                     model.now model.levels
                     state.game 
                     state.user
@@ -201,7 +195,7 @@ viewTitle model =
     <| model.state
 
 view : Model -> List (Html Msg)
-view model = view_internal model <| Model.getLanguage model
+view model = view_internal model <| Model.getLang model
 
 isLoading : Model -> Bool
 isLoading model =
@@ -240,8 +234,9 @@ view_internal model lang =
                 <| List.singleton
                 <| Views.ViewThemeEditor.view
                     lang
-                    model.langInfo.icons
+                    model.lang.info.icons
                     conf
+                    model.lang.lang
         Model.WinnerModal game list ->
             Html.map (always CloseModal)
                 <| Views.ViewModal.viewOnlyClose 
@@ -321,9 +316,8 @@ viewGameFrame model lang roles state =
     Html.map WrapEditor
         <| Views.ViewRoomEditor.view
             lang
-            model.langInfo
+            model.lang
             roles
-            state
             (Just state.game.theme)
             state.game
             (state.user == state.game.leader)
@@ -373,7 +367,6 @@ update msg model =
                             else Just
                                 { theme = stage.theme
                                 , background = stage.backgroundId
-                                , language = ""
                                 }   
                         )
                 )
@@ -397,15 +390,6 @@ update_internal msg model =
                 )
             <| Model.applyResponse resp model
         Noop -> (model, Cmd.none)
-        Init ->
-            Tuple.pair model
-                <| Cmd.map Response
-                <| Cmd.batch []
-                    -- [ Network.executeRequest
-                    --     <| Network.GetGame model.token
-                    -- , Network.executeRequest
-                    --     <| Network.GetRoles
-                    -- ]
         SetTime now ->
             Tuple.pair
                 { model | now = now }
@@ -494,11 +478,31 @@ update_internal msg model =
                             (\event ->
                                 case event of
                                     Views.ViewThemeEditor.Send req -> Just req
+                                    _ -> Nothing
                             )
                             newEvent
+                        
+                        (newLang, langEvents) = 
+                            LangConfig.setCurrent
+                                (Maybe.withDefault model.lang.lang
+                                    <| List.head
+                                    <| List.filterMap
+                                        (\event -> case event of
+                                            Views.ViewThemeEditor.SetLang lang -> Just lang
+                                            _ -> Nothing
+                                        )
+                                        newEvent
+                                )
+                                (Maybe.map (\x -> x.game.theme) model.state)
+                                model.lang
+
                     in Tuple.pair
-                        { model | modal = Model.SettingsModal newEditor }
+                        { model 
+                        | modal = Model.SettingsModal newEditor
+                        , lang = newLang
+                        }
                         <| Cmd.batch
+                        <| (++) (List.map (Network.execute Response << Network.NetReq) langEvents)
                         <| List.map 
                             (Network.wsSend 
                                 << Network.SetUserConfig
