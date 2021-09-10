@@ -1,0 +1,15 @@
+.version-notice {
+  font-size: 0.8em;
+  margin: 4em auto 1em;
+  text-align: center;
+  color: #666;
+}
+.version-notice a {
+  color: inherit;
+}
+.version-notice a:before {
+  content: "Version: ";
+}
+.version-notice > * {
+  margin: 0.25em 0;
+}

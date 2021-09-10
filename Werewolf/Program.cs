@@ -14,6 +14,10 @@ namespace Werewolf
 {
     internal class Program
     {
+        public static bool MaintenanceMode { get; set; }
+
+        public static DateTime ForcedShutdown { get; set; }
+
         private static async Task Main(string[] args)
         {
             var config = new IniParser().Parse("config.ini");
@@ -41,6 +45,7 @@ namespace Werewolf
             pronto.OnBeforeSendUpdate += _ =>
             {
                 GameController.Current.UpdatePronto(prontoServer, prontoGame);
+                prontoServer.Maintenance = MaintenanceMode;
             };
             pronto.EndEdit();
 
@@ -75,6 +80,10 @@ namespace Werewolf
 
             var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
             ws.Add(new GameWebSocketEndpoint(userController));
+            ws.CloseEndpoint = new MaxLib.WebServer.WebSocket.WebSocketCloserEndpoint(
+                MaxLib.WebServer.WebSocket.CloseReason.NormalClose,
+                "lobby not found"
+            );
             server.AddWebService(ws);
 
             var searcher = new LocalIOMapper();
@@ -88,24 +97,43 @@ namespace Werewolf
 
             server.Start();
 
-            if (System.IO.File.Exists("/.dockerenv"))
+            try
             {
-                Console.WriteLine("Inside docker. Use docker to quit.");
-                await Task.Delay(-1).CAF();
+                await Task.WhenAny(
+                    Task.Delay(-1, serverCloser.Token),
+                    Task.Run(async () =>
+                    {
+                        if (System.IO.File.Exists("/.dockerenv"))
+                        {
+                            Console.WriteLine("Inside docker. Use docker to quit.");
+                            await Task.Delay(-1).CAF();
+                        }
+                        else if (Console.IsInputRedirected)
+                        {
+                            Console.WriteLine("Enter to quit");
+                            Console.ReadLine();
+                        }
+                        else 
+                        {
+                            Console.WriteLine("Press Q Key to quit");
+                            while (Console.ReadKey().Key != ConsoleKey.Q) ;
+                            Console.Write('\b');
+                        }
+                    })
+                ).CAF();
             }
-            else if (Console.IsInputRedirected)
-            {
-                Console.WriteLine("Enter to quit");
-                Console.ReadLine();
-            }
-            else 
-            {
-                Console.WriteLine("Press Q Key to quit");
-                while (Console.ReadKey().Key != ConsoleKey.Q) ;
-                Console.Write('\b');
-            }
+            catch (TaskCanceledException) {}
+            serverCloser.Dispose();
 
             server.Stop();
+        }
+
+        private static System.Threading.CancellationTokenSource serverCloser
+            = new System.Threading.CancellationTokenSource();
+
+        public static void CloseServer()
+        {
+            serverCloser.Cancel();
         }
 
         private static readonly Regex urlRegex = new Regex(

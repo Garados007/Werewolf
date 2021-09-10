@@ -1,25 +1,30 @@
 module Views.ViewNoGame exposing (..)
 
 import Html exposing (Html, div, text)
-import Html.Attributes as HA exposing (class)
+import Html.Attributes exposing (class)
+import Html.Events as HE
 import Language exposing (Language)
 
-view : Language -> Bool -> Html msg
+view : Language -> Bool -> Html ()
 view lang isLoading =
     if isLoading
-    then 
-        div [ HA.id "elm" ]
-            [ div [ class "lds-heart" ]
-                [ div [] [] ]
-            ]
+    then text ""
     else
     div [ class "frame-status-box" ]
         <| List.singleton
         <| div [ class "frame-status" ]
-        <| List.singleton
-        <| text
-        <| Language.getTextOrPath lang
-            [ "game"
-            , "loading"
-            , "not-found"
+        [ text
+            <| Language.getTextOrPath lang
+                [ "game"
+                , "loading"
+                , "not-found"
+                ]
+        , Html.button
+            [ class "frame-go-back" 
+            , HE.onClick ()
             ]
+            [ text <| Language.getTextOrPath lang
+                [ "game", "loading", "go-back" ]
+
+            ]
+        ]

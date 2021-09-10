@@ -30,7 +30,10 @@ oauthUserInfoEndpoint : String
 oauthUserInfoEndpoint = "/auth/realms/2complex/protocol/openid-connect/userinfo"
 
 oauthUsernameMap : String
-oauthUsernameMap = "preferred_username"
+oauthUsernameMap = "game_username"
+
+oauthUsernameDefaultMap : String
+oauthUsernameDefaultMap = "preferred_username"
 
 oauthPictureMap : String
 oauthPictureMap = "picture"
@@ -46,3 +49,6 @@ oauthClientId = "werewolf"
 
 prontoHost : String
 prontoHost = "https://pronto.2complex.de"
+
+version : String
+version = "debug"

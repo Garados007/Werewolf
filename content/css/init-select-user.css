@@ -1,53 +1,23 @@
-.init-select-user h1,
-.guest-input-box h1,
-.lobby-selection-box h1 {
-  text-align: center;
-  font-size: 5vw;
+.init-select-user h3 {
+  font-size: 1.4em;
+  margin: 1em 2em;
+  border-bottom: 0.1em solid var(--color-medium);
+  padding: 0 0 0.5em;
 }
-.init-select-user h2,
-.guest-input-box h2,
-.lobby-selection-box h2 {
-  text-align: center;
-  font-size: 3vw;
-}
-.init-select-user .options,
 .lobby-selection-box .options {
   margin: 3em 0 0;
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
 }
-.init-select-user .option,
 .lobby-selection-box .option {
-  max-width: 50%;
-  width: 25em;
+  flex: 1 1 15em;
   border: 1px solid;
-  cursor: pointer;
-  background-color: #b7b1fd;
   border-radius: 1em;
   padding: 1em;
   box-sizing: border-box;
-}
-.init-select-user .option:hover {
-  background-color: #8b81ff;
-}
-.lobby-selection-box .option {
-    cursor: default;
-    background-color: rgb(133, 249, 133);
-}
-.init-select-user .option:first-child {
-  background-color: #ffeb9f;
-}
-.init-select-user .option:first-child:hover {
-  background-color: #f9dc6f;
-}
-.init-select-user .option .play-as {
-  text-align: center;
-  font-size: 1.2em;
-}
-.init-select-user .option ul {
-  font-size: 0.9em;
-  margin: 0.5em 0 0;
-  padding: 0 0 0 1.5em;
+  margin: 0.5em;
+  background-color: var(--color-medium);
 }
 .guest-input-box .input {
   display: flex;
@@ -90,25 +60,41 @@
   border-radius: 5em;
   width: 5em;
 }
-.guest-input-box .button {
+.init-select-user button,
+.lobby-selection-box button,
+.user-container .reset-user button {
+  font-family: inherit;
+  padding: 0.25em 0.5em;
+  border-radius: 0.5em;
+  cursor: pointer;
+  background-color: var(--color-light);
+  color: var(--text-color);
+  border: 0.1em solid var(--color-medium);
+}
+.init-select-user button:hover,
+.lobby-selection-box button:hover,
+.user-container .reset-user button:hover {
+  background-color: var(--color-light-transparent);
+}
+.init-select-user button:disabled {
+  cursor: default;
+  background-color: var(--color-dark);
+  color: var(--text-color-light);
+}
+.guest-input-box .button,
+.init-select-user .login-button,
+.user-container .reset-user {
   display: flex;
   justify-content: space-around;
   margin: 1em 0;
 }
-.guest-input-box .button button {
+.guest-input-box .button button,
+.init-select-user .login-button button {
   font-size: 1.5em;
-  font-family: inherit;
-  padding: 0.25em 0.5em;
-  border-radius: 0.5em;
-  border: 1px solid black;
-  cursor: pointer;
-}
-.guest-input-box .button button:disabled {
-  cursor: default;
 }
 .lobby-selection-box .option {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
   position: relative;
 }
 .lobby-selection-box .option .title {

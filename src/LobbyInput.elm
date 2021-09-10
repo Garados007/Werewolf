@@ -7,6 +7,7 @@ import Pronto
 import Triple
 import Config
 import Language exposing (Language)
+import Views.ViewLayout as Layout
 
 type alias Model =
     { lobbyToken: String
@@ -21,6 +22,7 @@ type Msg
     | GotJoinToken (Maybe Pronto.JoinTokenInfo)
     | SelectCreate
     | GotCreateServer (Maybe Pronto.TargetHost)
+    | RemoveError
 
 type alias ConnectInfo =
     { server: String
@@ -50,23 +52,34 @@ singleLang lang =
     Html.text
     << Language.getTextOrPath lang
 
-view : Model -> Language -> Html Msg
-view model lang =
+viewBanner : Model -> List (Layout.LayoutBanner Msg)
+viewBanner model =
+    case model.error of
+        Nothing -> []
+        Just InvalidLobbyToken ->
+            List.singleton
+                { closeable = Just RemoveError
+                , content = text "Invalid Lobby token"
+                }
+        Just NoServerFound ->
+            List.singleton
+                { closeable = Just RemoveError
+                , content = text "No Server found"
+                }
+
+view : Model -> Bool -> Language -> Html Msg
+view model canContinue lang =
     div [ class "lobby-selection-box" ]
-        [ Html.h1 [ HA.class "welcomer"]
-            <| singleLangBlock lang
-                [ "init", "title" ]
-        , Html.h2 []
-            <| singleLangBlock lang
-                [ "init", "description" ]
-        , div [ class "options" ]
+        [ div [ class "options" ]
             [ div [ class "option" ]
                 [ div [ class "title" ]
                     <| singleLangBlock lang
                         [ "init", "lobby-input", "create" ]
                 , div [ class "space" ] []
                 , Html.button
-                    [ HE.onClick SelectCreate ]
+                    [ HE.onClick SelectCreate 
+                    , HA.disabled <| not canContinue
+                    ]
                     <| singleLangBlock lang
                         [ "init", "lobby-input", "start" ]
                 ]
@@ -83,19 +96,13 @@ view model lang =
                     , HE.onInput Input
                     ] []
                 , Html.button
-                    [ HE.onClick SelectJoin ]
+                    [ HE.onClick SelectJoin
+                    , HA.disabled <| not canContinue
+                    ]
                     <| singleLangBlock lang
                         [ "init", "lobby-input", "start" ]
                 ]
             ]
-        , case model.error of
-            Nothing -> text ""
-            Just InvalidLobbyToken ->
-                div [ class "error" ]
-                    [ text "Invalid Lobby token" ]
-            Just NoServerFound ->
-                div [ class "error" ]
-                    [ text "No Server found" ]
         ]
 
 update : Msg -> Model -> (Model, Cmd Msg, Maybe ConnectInfo)
@@ -104,7 +111,7 @@ update msg model =
         Input code ->
             Triple.triple
                 { model 
-                | lobbyToken = code
+                | lobbyToken = String.left 4 code
                 , error = Nothing
                 }
                 Cmd.none
@@ -164,6 +171,11 @@ update msg model =
                 | error = Just NoServerFound
                 , loading = False
                 }
+                Cmd.none
+                Nothing
+        RemoveError ->
+            Triple.triple
+                { model | error = Nothing }
                 Cmd.none
                 Nothing
 

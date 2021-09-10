@@ -21,10 +21,12 @@ type alias Model =
 type Msg
     = UpdateBgUrl String
     | SetPicker ColorPicker.Msg
-    | SetLang String
+    | DoEvent Event
 
 type Event
     = Send EditUserConfig
+    | SetLang String
+    | Return
 
 init : Data.UserConfig -> Model
 init config =
@@ -32,10 +34,17 @@ init config =
     , picker = ColorPicker.empty
     }
 
-view : Language -> Dict String String -> Model -> Html Msg
-view lang flags model =
+view : Language -> Dict String String -> Model -> String -> Html Msg
+view lang flags model selLang =
     div [ class "theme-editor" ]
-        [ div [ class "pane" ]
+        [ div [ class "pane", class "return" ]
+            [ Html.button
+                [ HE.onClick <| DoEvent Return ]
+                [ Html.text <| Language.getTextOrPath lang
+                    [ "modals", "theme-editor", "go-back" ]
+                ]
+            ]
+        , div [ class "pane" ]
             [ div [ class "group" ]
                 <| List.singleton
                 <| Html.map SetPicker
@@ -66,13 +75,13 @@ view lang flags model =
                         [ HA.classList
                             <| List.singleton
                             <| Tuple.pair "selected"
-                            <| id == model.config.language
+                            <| id == selLang
                         ]
                         <| List.singleton
                         <| Html.span
                             [ class "flag-icon"
                             , class <| "flag-icon-" ++ css
-                            , HE.onClick <| SetLang id
+                            , HE.onClick <| DoEvent <| SetLang id
                             ]
                             []
                 )
@@ -111,14 +120,7 @@ update msg model =
                     , picker = newState
                     }
             in (newModel, getChanges model newModel)
-        SetLang id ->
-            (\new -> (new, getChanges model new))
-            <|  { model
-                | config = model.config |> \config ->
-                    { config
-                    | language = id
-                    }
-                }
+        DoEvent event -> (model, [ event ])
 
 getChanges : Model -> Model -> List Event
 getChanges old new =
@@ -131,9 +133,5 @@ getChanges old new =
         if new.config.background == old.config.background
         then Nothing
         else Just new.config.background
-    , newLanguage =
-        if new.config.language == old.config.language
-        then Nothing
-        else Just new.config.language
     }
     |> (\conf -> if conf == editUserConfig then [] else [ Send conf ])

@@ -1,10 +1,13 @@
 {
+    "fallback": "Die Übersetzung für die Sprache \"{lang}\" konnte leider nicht gefunden werden. Von daher siehst du nun alles auf Deutsch.",
     "init": {
         "title": "Werwölfe von Düsterwald",
-        "description": "Spiele hier das beliebte Spiel mit deinen Freunden",
+        "reset-user": "Nutzer zurücksetzen",
+        "lost-token": "Der Nutzertoken konnte leider nicht aktualisiert werden. Es ist eine erneute Anmeldung erforderlich oder man spielt als Gast weiter.",
         "user-mode": {
             "play-login": "Mit Account spielen",
             "play-guest": "Als Gast spielen",
+            "continue-login": "Anmelden oder Registrieren",
             "login": {
                 "1": "Erhalte Statistiken",
                 "2": "Steige im Level auf",
@@ -19,7 +22,6 @@
             "name": "Name",
             "image-code": "Bildcode",
             "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
-            "back": "Zurück",
             "continue": "Als Gast fortfahren"
         },
         "lobby-input": {
@@ -39,6 +41,14 @@
             "votings-timeout": "Votings automatisch nach einen Timeout beenden",
             "auto-finish-rounds": "Runden automatisch beenden wenn kein Voting mehr existiert",
             "start": "Start"
+        },
+        "page": {
+            "theme": "Thema",
+            "roles": "Rollen",
+            "options": "Optionen"
+        },
+        "bar": {
+            "stats": "Rollen: {roles}/{player}"
         }
     },
     "game": {
@@ -59,21 +69,46 @@
         "phase": {
             "end": "Spiel beenden",
             "next": "Nächste Runde"
-        },
+        },  
         "loading": {
-            "not-found": "Spiel nicht gefunden."
+            "not-found": "Spiel nicht gefunden.",
+            "go-back": "Zurück zur Lobbyauswahl"
         }
+    },
+    "banner": {
+        "maintenance": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet."
     },
     "modals": {
         "theme-editor": {
             "title": "Theme Einstellungen",
-            "background-url": "Hintergrundbild (URL)"
+            "background-url": "Hintergrundbild (URL)",
+            "go-back": "Zurück zur Lobbyauswahl"
         },
         "winner": {
             "title": "Sieger"
         },
         "player-notification": {
             "title": "Spielerbenachrichtigung"
+        },
+        "maintenance": {
+            "title": "Serverwartung",
+            "desc": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
+            "reason": "Grund:"
+        },
+        "connection": {
+            "close": {
+                "title": "Keine Verbindung zum Server",
+                "desc": "Es konnte keine Verbindung zum Spieleserver hergestellt werden. Das kann daran liegen, dass der Server derzeit Offline ist oder dass die Lobby nicht mehr existiert. Bitte versuche eine neue Lobby zu erstellen."
+            },
+            "code": {
+                "1000": {
+                    "lobby not found": "Die Lobby existiert nicht mehr auf dem Server. Bitte erstelle eine Neue."
+                },
+                "1012": {
+                    "": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu können."
+                }
+            },
+            "go-back": "Zurück zur Lobbyauswahl"
         }
     },
     "theme": {
@@ -100,7 +135,9 @@
         "refetch": "Neu anfordern",
         "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
         "copied": "Kopiert!",
-        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren"
+        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren",
+        "streamer-mode": "Streamer Mode",
+        "stream-replacement": "Klicken!"
     },
     "chat": {
         "not-allowed": "Die Nachricht durfte nicht gesendet werden."

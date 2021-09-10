@@ -149,7 +149,7 @@ namespace Werewolf.Game.Events
             var userConfig = UserFactory.GetCachedUser(User.Id) ?? User;
             writer.WriteStartObject("user-config");
             writer.WriteString("theme", 
-                string.IsNullOrEmpty(userConfig.Config.ThemeColor) ? "#ffffff"
+                string.IsNullOrEmpty(userConfig.Config.ThemeColor) ? "#333333"
                     : userConfig.Config.ThemeColor);
             writer.WriteString("background", 
                 string.IsNullOrEmpty(userConfig.Config.BackgroundImage) ? ""

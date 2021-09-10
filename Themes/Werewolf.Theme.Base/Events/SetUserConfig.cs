@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Events
             if (userConfig != null)
             {
                 writer.WriteStartObject("user-config");
-                writer.WriteString("theme", userConfig.Config.ThemeColor ?? "#ffffff");
+                writer.WriteString("theme", userConfig.Config.ThemeColor ?? "#333333");
                 writer.WriteString("background", userConfig.Config.BackgroundImage ?? "");
                 writer.WriteString("language", string.IsNullOrEmpty(userConfig.Config.Language) ? "de" : userConfig.Config.Language);
                 writer.WriteEndObject();

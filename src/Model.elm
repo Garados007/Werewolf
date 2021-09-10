@@ -1,10 +1,10 @@
 module Model exposing
     ( Model
     , Modal (..)
+    , EditorPage(..)
     , applyResponse
     , applyEventData
-    , getLanguage
-    , getSelectedLanguage
+    , getLang
     , init
     )
 
@@ -14,10 +14,13 @@ import Dict exposing (Dict)
 import Network exposing (NetworkResponse(..))
 import Time exposing (Posix)
 import Level exposing (Level)
-import Language exposing (Language, LanguageInfo)
+import Language
+import Language.Config as LangConfig exposing (LangConfig)
 import Styles exposing (Styles)
+import Storage exposing (Storage)
 
 import Views.ViewThemeEditor
+import Set exposing (Set)
 
 type alias Model =
     { state: Maybe Data.GameGlobalState
@@ -29,21 +32,29 @@ type alias Model =
     , modal: Modal
     -- local editor
     , editor: Dict String Int
+    , editorPage: EditorPage
     -- buffer
     , oldBufferedConfig: (Posix, Data.UserConfig)
     , bufferedConfig: Data.UserConfig
     , levels: Dict String Level
-    , selLang: String
-    , langInfo: LanguageInfo
-    , rootLang: Dict String Language
-    , themeLangs: Dict Language.ThemeKey Language
+    , lang: LangConfig
     , events: List (Bool,String)
     , styles: Styles
     , chats: List Data.ChatMessage
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
+    , streamerMode: Bool
+    , closeReason: Maybe Network.SocketClose
+    , maintenance: Maybe Posix
+    , storage: Storage
+    , missingImg: Set String
     }
+
+type EditorPage
+    = PageTheme
+    | PageRole
+    | PageOptions
 
 type Modal
     = NoModal
@@ -51,9 +62,11 @@ type Modal
     | WinnerModal Data.Game (List String)
     | PlayerNotification (Dict String (List String))
     | RoleInfo String
+    | Maintenance (Maybe String)
 
-init : String -> String -> LanguageInfo -> Dict String Language -> Maybe Data.LobbyJoinToken -> Model
-init token selLang langInfo rootLang joinToken =
+init : String -> LangConfig -> Maybe Data.LobbyJoinToken 
+    -> Storage -> Model
+init token lang joinToken storage =
     { state = Nothing
     , roles = Nothing
     , removedUser = Dict.empty
@@ -62,61 +75,39 @@ init token selLang langInfo rootLang joinToken =
     , now = Time.millisToPosix 0
     , modal = NoModal
     , editor = Dict.empty
+    , editorPage = PageTheme
     , oldBufferedConfig = Tuple.pair
         (Time.millisToPosix 0)
         { theme = ""
         , background = ""
-        , language = ""
         }
     , bufferedConfig =
         { theme = ""
         , background = ""
-        , language = ""
         }
     , levels = Dict.empty
-    , selLang = selLang
-    , langInfo = langInfo
-    , rootLang = rootLang
-    , themeLangs = Dict.empty
+    , lang = lang
     , events = []
     , styles = Styles.init
     , chats = []
     , chatView = Nothing
     , joinToken = joinToken
     , codeCopied = Nothing
+    , streamerMode = Storage.get .streamerMode storage
+        |> Maybe.withDefault False
+    , closeReason = Nothing
+    , maintenance = Nothing
+    , storage = storage
+    , missingImg = Set.empty
     }
 
-getSelectedLanguage : Data.GameGlobalState -> String
-getSelectedLanguage state =
-    state.userConfig.language
-        |> 
-            (\key ->
-                if key == ""
-                then Nothing
-                else Just key
-            )
-        |> Maybe.withDefault "de"
-
-getLanguage : Model -> Language
-getLanguage model =
-    let
-        lang : Maybe String
-        lang = model.state
-            |> Maybe.map getSelectedLanguage
-
-        rootLang : Language
-        rootLang =
-            Language.getLanguage model.rootLang lang
-        
-        themeLang : Language
-        themeLang =
-            Language.getLanguage 
-                model.themeLangs
-            <| Maybe.andThen
-                (\x -> Maybe.map (Language.toThemeKey x) lang)
-            <| Maybe.map (.game  >> .theme)
-            <| model.state
-    in Language.alternate themeLang rootLang
+getLang : Model -> Language.Language
+getLang model =
+    LangConfig.getLang
+        model.lang
+    <| Maybe.map
+        (\state -> state.game.theme)
+        model.state
     
 applyResponse : NetworkResponse -> Model -> (Model, List Network.NetworkRequest)
 applyResponse response model =
@@ -133,13 +124,13 @@ applyResponse response model =
         RespRootLang lang info ->
             Tuple.pair
                 { model
-                | rootLang = Dict.insert lang info model.rootLang
+                | lang = LangConfig.setRoot lang info model.lang
                 }
                 []
         RespLang key info ->
             Tuple.pair
                 { model
-                | themeLangs = Dict.insert key info model.themeLangs
+                | lang = LangConfig.setTheme key info model.lang
                 }
                 []
 
@@ -165,12 +156,27 @@ applyEventData event model =
         EventData.SendGameData state -> Tuple.pair
             { model
             | state = Just state
+            , levels = Dict.merge
+                -- remove old level entries that are no longer used
+                (\_ _ -> identity)
+                -- update existing level entries
+                (\k old new -> Dict.insert k
+                    <| Level.updateData model.now new old
+                )
+                -- add new level entries
+                (\k -> Dict.insert k << Level.init model.now)
+                model.levels
+                (Dict.map
+                    (\_ x -> x.user.level)
+                    state.game.user
+                )
+                Dict.empty
             }
             [ Network.NetReq
                 <| Network.GetLang
                 <| Language.toThemeKey
                     state.game.theme
-                    model.selLang
+                    model.lang.lang
             ]
         EventData.AddParticipant id user -> Tuple.pair 
             { model
@@ -186,6 +192,15 @@ applyEventData event model =
                     }
                     game.user
                 }
+            , levels = Dict.update id
+                (\x -> Just <| case x of
+                    Just level -> Level.updateData
+                        model.now
+                        user.level
+                        level
+                    Nothing -> Level.init model.now user.level
+                )
+                model.levels
             }
             []
         EventData.AddVoting voting -> Tuple.pair 
@@ -359,7 +374,7 @@ applyEventData event model =
                     Just { user } ->
                         Dict.insert id user model.removedUser
                     Nothing -> model.removedUser
-
+            , levels = Dict.remove id model.levels
             }
             []
         EventData.RemoveVoting id -> Tuple.pair 
@@ -435,29 +450,9 @@ applyEventData event model =
                 }
             }
             <| List.map Network.NetReq
-            <| Maybe.withDefault []
-            <| Maybe.map
-                (\game ->
-                    let
-                        l : String
-                        l = game.userConfig.language
-                    in
-                        List.filterMap identity
-                            [ if Dict.member l model.rootLang
-                                then Nothing
-                                else Just <| Network.GetRootLang l
-                            , Maybe.andThen
-                                (\key ->
-                                    if Dict.member key model.themeLangs
-                                    then Nothing
-                                    else Just <| Network.GetLang key
-                                )
-                                <| Maybe.map
-                                    (\x -> Language.toThemeKey x l)
-                                <| Just newConfig.theme
-                            ]
-                )
-            <| model.state
+            <| LangConfig.verifyHasTheme
+                newConfig.theme
+                model.lang
         EventData.SetUserConfig newConfig -> Tuple.pair
             { model
             | state = Maybe.map
@@ -473,18 +468,7 @@ applyEventData event model =
                 else model.bufferedConfig
             , bufferedConfig = newConfig
             }
-            <| List.map Network.NetReq
-            <| 
-                if Dict.member newConfig.language model.rootLang
-                then []
-                else List.filterMap identity
-                    [ Just <| Network.GetRootLang newConfig.language
-                    , Maybe.map Network.GetLang
-                        <| Maybe.map
-                            (\x -> Language.toThemeKey x newConfig.language)
-                        <| Maybe.map (.game >> .theme)
-                        <| model.state
-                    ]
+            []
         EventData.SetVotingTimeout vid timeout -> Tuple.pair 
             { model
             | state = editGame model <| \game ->
@@ -568,5 +552,53 @@ applyEventData event model =
                     }
                 )
                 model.state
+            }
+            []
+        EventData.Maintenance reason shutdown -> Tuple.pair
+            { model
+            | modal = Maintenance reason
+            , maintenance = Just shutdown
+            }
+            []
+        EventData.SendStats stats -> Tuple.pair
+            { model
+            | state = Maybe.map
+                (\state ->
+                    { state
+                    | game = state.game |> \game ->
+                        { game
+                        | user = Dict.merge
+                            Dict.insert
+                            (\k gameUser (stat, level) ->
+                                Dict.insert k
+                                { gameUser
+                                | user = gameUser.user |> \user ->
+                                    { user
+                                    | stats = stat
+                                    , level = level
+                                    }
+                                }
+                            )
+                            (\_ _ -> identity)
+                            game.user
+                            stats
+                            Dict.empty
+                        }
+                    }
+                )
+                model.state
+            , levels = Dict.merge
+                Dict.insert
+                (\k old (_, new) ->
+                    Dict.insert k
+                        <| Level.updateData model.now new old
+                )
+                (\k (_, new) ->
+                    Dict.insert k
+                        <| Level.init model.now new
+                )
+                model.levels
+                stats
+                Dict.empty
             }
             []

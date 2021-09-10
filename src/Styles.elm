@@ -27,16 +27,14 @@ type alias Styles =
 init : Styles
 init =
     { oldConfig =
-        { theme = ""
+        { theme = "#333333"
         , background = ""
-        , language = ""
         }
     , lastChange = Time.millisToPosix 0
     , hasOld = False
     , newConfig = 
-        { theme = ""
+        { theme = "#333333"
         , background = ""
-        , language = ""
         }
     }
 
@@ -61,15 +59,18 @@ view now styles =
 viewConfig : Data.UserConfig -> Data.UserConfig -> Float -> Html msg
 viewConfig oldConfig config weight =
     let
+        default : Color
+        default = Color.rgb255 51 51 51 -- #333333
+
         colorBase : Color
         colorBase = CM.weightedMix
             (CC.hexToColor config.theme
                 |> Result.toMaybe
-                |> Maybe.withDefault Color.white
+                |> Maybe.withDefault default
             )
             (CC.hexToColor oldConfig.theme
                 |> Result.toMaybe
-                |> Maybe.withDefault Color.white
+                |> Maybe.withDefault default
             )
             weight
         

@@ -5,7 +5,7 @@
         public override string LanguageId => "morning";
 
         public override string BackgroundId =>
-            $"/content/img/{typeof(DefaultTheme).FullName}/background-sunrising.png";
+            $"/content/img/stage/{typeof(DefaultTheme).FullName}/background-sunrising.png";
 
         public override string ColorTheme => "#34a3fe";
     }

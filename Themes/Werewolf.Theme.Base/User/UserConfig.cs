@@ -6,7 +6,11 @@ namespace Werewolf.User
     {
         public abstract string Username { get; }
 
+        public abstract ValueTask SetUsernameAsync(string username);
+
         public abstract string Image { get; }
+
+        public abstract ValueTask SetImageAsync(string image);
 
         public abstract string ThemeColor { get; }
 

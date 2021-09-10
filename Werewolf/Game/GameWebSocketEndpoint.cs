@@ -34,6 +34,8 @@ namespace Werewolf.Game
 
         protected override GameWebSocketConnection? CreateConnection(Stream stream, HttpRequestHeader header)
         {
+            if (Program.MaintenanceMode)
+                return null;
             if (header.Location.DocumentPathTiles.Length != 2)
                 return null;
             if (header.Location.DocumentPathTiles[0].ToLowerInvariant() != "ws")

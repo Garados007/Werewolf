@@ -16,10 +16,11 @@ import Time exposing (Posix)
 type Msg
     = Send Request
     | CopyToClipboard String
+    | SetStreamerMode Bool
 
 view : Language -> Posix -> Dict String Level -> Data.Game -> String -> Maybe Data.LobbyJoinToken
-    -> Maybe Posix -> Html Msg
-view lang now levels game myId joinToken codeCopyTimestamp =
+    -> Maybe Posix -> Bool -> Html Msg
+view lang now levels game myId joinToken codeCopyTimestamp streamerMode =
     let
         getLeaderSpecText : String -> (() -> String) -> String
         getLeaderSpecText id func =
@@ -227,7 +228,12 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                                     [ "join-token", "copy-hint" ]
                             ]
                             [ div [ class "code" ]
-                                [ text code.token ]
+                                [ text <|
+                                    if streamerMode
+                                    then Language.getTextOrPath lang
+                                        [ "join-token", "stream-replacement" ]
+                                    else code.token 
+                                ]
                             , div [ class "hint" ]
                                 <| List.singleton
                                 <| text
@@ -254,7 +260,18 @@ view lang now levels game myId joinToken codeCopyTimestamp =
                                 <| Language.getTextOrPath lang
                                     [ "join-token", "refetch" ]
                             ]
-
+                , Html.label []
+                    [ Html.input
+                        [ HA.type_ "checkbox"
+                        , HA.checked streamerMode
+                        , HE.onCheck SetStreamerMode
+                        ] []
+                    , Html.span []
+                        <| List.singleton
+                        <| text
+                        <| Language.getTextOrPath lang
+                            [ "join-token", "streamer-mode" ]
+                    ]
                 , case joinTokenValidTime of
                     Nothing -> text ""
                     Just time ->

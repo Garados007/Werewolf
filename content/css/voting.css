@@ -1,0 +1,56 @@
+.voting-box {
+  margin: 1em;
+  border: 0.3em solid var(--color-dark);
+  width: 25em;
+  max-width: 100%;
+}
+.voting-box .voting-header {
+  border-bottom: 0.1em solid var(--color-dark);
+}
+.voting-header .title {
+  font-size: 1.5em;
+  padding: 0.5em 0.8em;
+  text-align: center;
+}
+.voting-header .status {
+  display: flex;
+}
+.voting-header .status > div {
+  flex-grow: 1;
+  padding: 0.2em;
+  background-color: var(--text-inv-color);
+  color: red;
+}
+.voting-header .can-vote-state {
+  text-align: right;
+}
+.voting-header .started-state.started,
+.voting-header .can-vote-state.can-vote {
+  color: green;
+}
+.voting-box .button {
+  margin: 0.5em;
+  padding: 0.5em 0.8em;
+  text-align: center;
+  border: 0.1em solid var(--color-dark);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  position: relative;
+}
+.voting-box .voting-option .bar {
+  position: absolute;
+  background-color: var(--color-light-transparent);
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+.voting-box .voting-option span {
+  position: relative;
+}
+.voting-box .button:hover,
+.voting-options .voted {
+  background-color: var(--color-medium);
+}
+.voting-controls {
+  border-top: 0.1em solid var(--color-dark);
+}

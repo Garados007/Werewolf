@@ -3,23 +3,37 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Werewolfes of Millers Hill</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/content/Werwolf_Bild.ico">
+    <!-- <link rel="icon" type="image/svg+xml" href="/content/icon.svg" sizes="any"> -->
     <script>
       var mySockets = {};
   
       function sendSocketCommand(wat) {
-        console.log( "ssc: " +  JSON.stringify(wat, null, 4));
+        // console.log( "ssc: " +  JSON.stringify(wat, null, 4));
         if (wat.cmd == "connect")
         {
           // console.log("connecting!");
-          let socket = new WebSocket(wat.address);
+          let socket;
+          try { socket = new WebSocket(wat.address); }
+          catch (e) {
+            console.error("open ws", e);
+            // app.ports.receiveSocketClose.send(
+            //   { name : wat.name
+            //   , code : 0
+            //   , reason : "cannot create socket"
+            //   }
+            // );
+            // return;
+          }
           socket.onmessage = function (event) {
             // console.log( "onmessage: " +  JSON.stringify(event.data, null, 4));
-            app.ports.receiveSocketMsg.send({ name : wat.name
-                                            , msg : "data"
-                                            , data : event.data} );
-          }
-          socket.onerror = function (event) {
-            console.log(event);
+            socket.errorCounter = 0;
+            app.ports.receiveSocketMsg.send(
+              { name : wat.name
+              , msg : "data"
+              , data : event.data
+              }
+            );
           }
           socket.onopen = function () {
             if (socket.buffer) {
@@ -28,8 +42,21 @@
               delete socket.buffer;
             }
           }
-          socket.onclose = function () {
-            console.log(`ws closed: ${wat.name}`);
+          socket.onclose = function (data) {
+            console.log(`ws closed: ${data.code}, ${data.reason}, counter=${socket.errorCounter||0}`);
+            if (data.code == 1006 && data.reason == "") {
+              if (!socket.errorCounter || socket.errorCounter < 3) {
+                socket.errorCounter = 1 + (socket.errorCounter || 0);
+                return;
+              }
+            }
+            app.ports.receiveSocketClose.send(
+              { name : wat.name
+              , code : data.code
+              , reason : data.reason
+              }
+            );
+            delete mySockets[wat.name];
           }
           if (mySockets[wat.name]) {
             mySockets[wat.name].close();
@@ -50,7 +77,8 @@
         else if (wat.cmd == "close")
         {
           // console.log("closing socket: " + wat.name);
-          mySockets[wat.name].close();
+          if (mySockets[wat.name])
+            mySockets[wat.name].close();
           delete mySockets[wat.name];
         }
       }
@@ -60,6 +88,7 @@
         const param = new URLSearchParams(window.location.search);
         if (!param.has("lang")) {
           var lang = navigator.language || navigator.userLanguage;
+          lang = /^(\w+)[$\W]/.exec(lang)[1];
           param.set("lang", lang);
           window.location.search = param.toString();
         }
@@ -136,6 +165,10 @@ body > div#elm {
   left: 50vw;
   transform: translate(-50%, -50%);
 }
+body {
+  background-color: #333333;
+  color: #ffffff;
+}
     </style>
 </head>
 <body>
@@ -143,6 +176,7 @@ body > div#elm {
     <div class="lds-heart"><div></div></div>
   </div>
   <script src="/content/index.js"></script>
+  <script src="/content/js/local-storage.js"></script>
   <script>
       var app = Elm.Main.init( { 
           node: document.getElementById("elm") 
@@ -154,6 +188,7 @@ body > div#elm {
       // Add this line!
       app.ports.sendSocketCommand.subscribe(sendSocketCommand);
       app.ports.sendToClipboard.subscribe(copyToClipboard);
+      new ElmLocalStoragePorts().subscribe(app, "settingGetItem", "settingSetItem", "settingClear", "settingListKeys", "settingResponse");
   </script>
 </body>
 </html>

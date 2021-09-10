@@ -1,0 +1,21 @@
+
+.frame-status-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+.frame-status {
+  margin: 1em;
+  font-size: 2em;
+  border: 0.3em solid var(--color-dark);
+  border-radius: 0.8em;
+  padding: 0.5em 0.8em;
+}
+
+@media (max-width: 900px) {
+  .user-container {
+    flex: 0 1 20em;
+  }
+}

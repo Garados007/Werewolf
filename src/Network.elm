@@ -4,6 +4,7 @@ module Network exposing
     , NetworkRequest (..)
     , NetworkResponse (..)
     , SocketRequest (..)
+    , SocketClose
     , Request (..)
     , editGameConfig
     , editUserConfig
@@ -12,8 +13,11 @@ module Network exposing
     , getRootLang
     , wsReceive
     , wsConnect
+    , wsClose
+    , wsExit
     , wsSend
     , execute
+    , versionUrl
     )
 
 import Http
@@ -24,6 +28,8 @@ import Json.Encode as JE
 import WebSocket
 import EventData exposing (EventData(..))
 import Ports exposing (..)
+import Config
+import Url
 
 wsReceive : (Result JD.Error WebSocket.WebSocketMsg -> msg) -> Sub msg
 wsReceive tagger =
@@ -42,6 +48,22 @@ wsConnect api token =
                 else "wss://" ++ api ++ "/ws/" ++ token
             , protocol = ""
             }
+
+wsExit : Cmd msg
+wsExit =
+    WebSocket.send sendSocketCommand
+        <| WebSocket.Close
+            { name = "wss" }
+
+wsClose : (Result JD.Error SocketClose -> msg) -> Sub msg
+wsClose tagger =
+    receiveSocketClose
+        <| tagger
+        << JD.decodeValue
+            (JD.map2 SocketClose
+                (JD.field "code" JD.int)
+                (JD.field "reason" JD.string)
+            )
 
 wsSend : SocketRequest -> Cmd msg
 wsSend request =
@@ -106,9 +128,6 @@ wsSend request =
                         , Maybe.map
                             (\x -> ("background", JE.string x))
                             conf.newBackground
-                        , Maybe.map
-                            (\x -> ("language", JE.string x))
-                            conf.newLanguage
                         ]
                     GameStart ->
                         [ ("$type", JE.string "GameStart") ]
@@ -155,6 +174,11 @@ execute tagger request =
         SockReq req -> wsSend req
         NetReq req -> executeRequest req
             |> Cmd.map tagger
+
+type alias SocketClose =
+    { code: Int
+    , reason: String
+    }
 
 type Request
     = SockReq SocketRequest
@@ -240,33 +264,37 @@ editUserConfig : EditUserConfig
 editUserConfig =
     { newTheme = Nothing
     , newBackground = Nothing
-    , newLanguage = Nothing
     }
 
 type alias EditUserConfig =
     { newTheme: Maybe String
     , newBackground: Maybe String
-    , newLanguage: Maybe String
     }
+
+versionUrl : String -> String
+versionUrl url =
+    if Config.version == "debug"
+    then url
+    else url ++ "?_v=" ++ Url.percentEncode Config.version
 
 getLangInfo : Cmd (Response LanguageInfo)
 getLangInfo =
     Http.get
-        { url = "/content/lang/index.json"
+        { url = versionUrl "/content/lang/index.json"
         , expect = Http.expectJson identity Language.decodeLanguageInfo
         }
 
 getRootLang : String -> Cmd (Response Language)
 getRootLang lang =
     Http.get
-        { url = "/content/lang/root/" ++ lang ++ ".json"
+        { url = versionUrl <| "/content/lang/root/" ++ lang ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }
 
 getLang : Language.ThemeKey -> Cmd (Response Language)
 getLang (k1, k2, k3) =
     Http.get
-        { url = "/content/lang/" ++ k1 ++ "/" ++ k2 ++
+        { url = versionUrl <| "/content/lang/" ++ k1 ++ "/" ++ k2 ++
             "/" ++ k3 ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }

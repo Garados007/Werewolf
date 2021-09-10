@@ -1,6 +1,7 @@
 module Views.ViewModal exposing
     ( Msg (..)
     , view
+    , viewCondClose
     , viewOnlyClose
     , viewExtracted
     )
@@ -13,24 +14,33 @@ type Msg msg
     = Close
     | Wrap msg
 
-view : String -> List (Html msg) -> Html (Msg msg)
-view title content =
+viewCondClose : Bool -> String -> List (Html msg) -> Html (Msg msg)
+viewCondClose close title content =
     div [ class "modal-background" ]
-        <| List.singleton
-        <| div [ class "modal-window" ]
+        [ div 
+            [ class "modal-background-closer" 
+            , HE.onClick Close
+            ] []
+        , div [ class "modal-window" ]
             [ div [ class "modal-title-box" ]
                 [ div [ class "modal-title" ]
                     [ text title ]
-                , div 
-                    [ class "modal-close" 
-                    , HE.onClick Close
-                    ]
-                    [ text "X" ]
+                , if close
+                    then div 
+                        [ class "modal-close" 
+                        , HE.onClick Close
+                        ]
+                        [ text "X" ]
+                    else text ""
                 ]
             , Html.map Wrap
                 <| div [ class "modal-content" ]
                     content
             ]
+        ]
+
+view : String -> List (Html msg) -> Html (Msg msg)
+view = viewCondClose True
 
 viewOnlyClose : String -> List (Html Never) -> Html ()
 viewOnlyClose title content =

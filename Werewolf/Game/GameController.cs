@@ -34,7 +34,7 @@ namespace Werewolf.Game
 
         private RSA rsa;
 
-        private GameController() 
+        private GameController()
         {
             var rsa = this.rsa = RSA.Create();
             if (System.IO.File.Exists("keys/game-controller.xml"))
@@ -82,7 +82,7 @@ namespace Werewolf.Game
         {
             game.Rooms = rooms.Count;
             game.Clients = wsConnections.Count;
-            server.Full = 
+            server.Full =
                 (server.MaxClients is not null && game.Clients >= server.MaxClients.Value) ||
                 (game.MaxRooms is not null && game.Rooms >= game.MaxRooms.Value);
         }
@@ -98,7 +98,14 @@ namespace Werewolf.Game
             // this is a magic value that results in a "Test_" url
             id = unchecked((int)0xfb_2d_eb_4d);
 #endif
-            var room = new GameRoom(id, leader);
+            var room = new GameRoom(id, leader)
+            {
+                LeaderIsPlayer = true,
+                DeadCanSeeAllRoles = true,
+                AutostartVotings = true,
+                UseVotingTimeouts = true,
+                AutoFinishRounds = true,
+            };
             room.Theme = new Theme.Default.DefaultTheme(room, UserFactory);
             rooms.TryAdd(id, new GameRoomEntry(room));
             room.OnEvent += OnGameEvent;
@@ -133,7 +140,7 @@ namespace Werewolf.Game
 
             if (!Verify(bytes, 12))
                 return null;
-            
+
             return new UserId(bytes[..12]);
         }
 
@@ -199,7 +206,7 @@ namespace Werewolf.Game
         protected ReadOnlyMemory<byte> Sign(ReadOnlySpan<byte> data)
         {
             Span<byte> signature = rsa.SignData(
-                data.ToArray(), 
+                data.ToArray(),
                 HashAlgorithmName.SHA256,
                 RSASignaturePadding.Pkcs1
             );
@@ -256,7 +263,7 @@ namespace Werewolf.Game
             lockWsConnections.EnterReadLock();
             foreach (var connection in wsConnections)
                 if (connection.Game == sender && @event.CanSendTo(
-                    connection.Game, 
+                    connection.Game,
                     connection.UserEntry.User
                 ))
                 {
@@ -276,6 +283,7 @@ namespace Werewolf.Game
         {
             lockWsConnections.EnterWriteLock();
             var removed = wsConnections.Remove(connection);
+            var empty = wsConnections.Count == 0;
             lockWsConnections.ExitWriteLock();
             if (removed)
             {
@@ -313,7 +321,36 @@ namespace Werewolf.Game
                     }
                 });
             }
+            if (empty && Program.MaintenanceMode)
+                Program.CloseServer();
             return removed;
+        }
+
+        public async Task CloseAllWsConnectionsBecauseOfRestart()
+        {
+            lockWsConnections.EnterReadLock();
+            var tasks = Task.WhenAll(
+                wsConnections
+                    .Select(x => x.Close((MaxLib.WebServer.WebSocket.CloseReason)1012))
+            );
+            lockWsConnections.ExitReadLock();
+            await tasks.CAF();
+        }
+
+        public void BroadcastEvent(MaxLib.WebServer.WebSocket.EventBase @event)
+        {
+            lockWsConnections.EnterReadLock();
+            foreach (var connection in wsConnections)
+                _ = connection.SendEvent(@event);
+            if (@event is Events.EnterMaintenance && wsConnections.Count == 0 && Program.MaintenanceMode)
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(500).CAF(); // give the server some time to send response
+                    Program.CloseServer();
+                });
+            }
+            lockWsConnections.ExitReadLock();
         }
 
         public void Dispose()
