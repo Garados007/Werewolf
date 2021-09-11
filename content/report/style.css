@@ -1,0 +1,83 @@
+table.report th,
+table.result th {
+  text-align: left;
+}
+table.report > tbody > tr,
+table.result tbody > tr {
+  background-color: #e6eff7;
+}
+table.report > tbody > tr.even,
+table.result tbody > tr.even {
+  background-color: #cde1f2;
+}
+table.report tbody > tr > td:first-child {
+  width: 0;
+}
+table.report tbody > tr > td:first-child > div {
+  width: 1.1em;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+}
+table.report tbody > tr > td:first-child > div:hover {
+  background-color: #add5f7;
+}
+table.report tbody > tr > td:first-child > div:before {
+  content: "";
+  border-color: black;
+  border-width: 0.2em;
+  border-left-style: solid;
+  border-top-style: solid;
+  position: absolute;
+  width: 0.5em;
+  height: 0.5em;
+  top: 50%;
+  left: 50%;
+  transition: transform 0.3s;
+  transform: translate(-75%, -50%) rotate(135deg);
+}
+table.report tbody > tr > td:first-child > div.open:before {
+  transform: translate(-50%, -75%) rotate(225deg);
+}
+table.report,
+table.report-info,
+table.result {
+  border-spacing: 0;
+  width: 100%;
+}
+table.report-info {
+  margin: 0.1em 0;
+  font-size: 0.8em;
+}
+table.report-info th {
+  vertical-align: top;
+  width: 0;
+  padding: 0 0.5em 0 0;
+}
+table.report-info td {
+  white-space: pre-line;
+}
+table.result td:not(:first-child) {
+  text-align: right;
+}
+p.actions {
+  margin: 0 0 1em;
+}
+p.actions span {
+  cursor: pointer;
+  color: #00a;
+  text-decoration: underline;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+body > h1 { 
+  order: 0; 
+}
+div.results {
+  order: 1;
+}
+body > * {
+  order: 2;
+}

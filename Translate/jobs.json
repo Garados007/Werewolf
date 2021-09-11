@@ -1,0 +1,8 @@
+[
+    { "type": "lang-file"
+    , "source": "de"
+    , "target": "en"
+    , "report": "../content/lang-info/"
+    , "root": "../content/lang/"
+    }
+]

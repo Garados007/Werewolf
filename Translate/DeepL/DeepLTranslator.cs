@@ -3,16 +3,26 @@ using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Serilog;
+using System.Collections.Generic;
 
-namespace Translate
+namespace Translate.DeepL
 {
-    public class DeepL
+    public class DeepLTranslator : ITranslator
     {
+        public string Key => "deepl";
+
         public string AuthKey { get; }
 
         private readonly WebClient client;
 
-        public DeepL(string authKey)
+        private readonly Dictionary<string, string> LanguageMapping
+            = new Dictionary<string, string>
+            {
+                { "de", "DE" },
+                { "en", "EN-GB" },
+            };
+
+        public DeepLTranslator(string authKey)
         {
             AuthKey = authKey;
             client = new WebClient();
@@ -46,6 +56,8 @@ namespace Translate
 
         public async Task<string?> GetTranslationAsync(string source, string target, string text)
         {
+            source = LanguageMapping[source];
+            target = LanguageMapping[target];
             client.Headers.Set("Authorization", $"DeepL-Auth-Key: {AuthKey}");
             byte[] response;
             var col = new System.Collections.Specialized.NameValueCollection();
@@ -70,6 +82,11 @@ namespace Translate
                 || !node[0].TryGetProperty("text", out node))
                 return null;
             return node.GetString();
+        }
+
+        public bool CanTranslate(string value)
+        {
+            return true;
         }
     }
 }

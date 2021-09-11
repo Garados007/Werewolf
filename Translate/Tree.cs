@@ -11,7 +11,7 @@ namespace Translate
     {
         private OneOf<None, Nodes, (string text, bool visited)> content;
 
-        private static readonly None None = new None();
+        private static readonly None None;
 
         public Tree()
         {
@@ -27,6 +27,18 @@ namespace Translate
                 d => d.TryGetValue(path[0], out Tree? tree) && 
                     tree.Contains(path[1..]),
                 _ => false
+            );
+        }
+
+        public string? Get(Path path)
+        {
+            if (path.Parts.Length == 0)
+                return content.TryPickT2(out (string text, bool) x, out _) ? x.text : null;
+            return content.Match(
+                _ => null,
+                d => d.TryGetValue(path[0], out Tree? tree) ?
+                    tree.Get(path[1..]) : null,
+                _ => null
             );
         }
 
@@ -54,7 +66,7 @@ namespace Translate
             );
         }
 
-        private void Set(Nodes nodes, Path path, string value, bool visited)
+        private static void Set(Nodes nodes, Path path, string value, bool visited)
         {
             if (!nodes.TryGetValue(path[0], out Tree? tree))
             {

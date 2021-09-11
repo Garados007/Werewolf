@@ -11,6 +11,7 @@ content/index.js
 *.service.cs
 elm-stuff
 TestResults
+node_modules
 # runtime stuff
 .litedb
 .env

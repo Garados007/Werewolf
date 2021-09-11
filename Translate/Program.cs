@@ -15,15 +15,28 @@ namespace Translate
                     outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
             
-            var tr = new LangFileTranslator(
-                new DeepL(""),
-                "de",
-                "en",
-                "DE",
-                "EN-GB",
-                "../content/lang/root"
+            var translator = new Priority();
+            translator.AddTranslator(10, new Bing.BingTranslator());
+            translator.AddTranslator(15, new Libre.LibreTranslator());
+            
+            // var report = new Report.ReportStatus("../content/lang-info/root/en.json");
+            // var tr = new LangFileTranslator(
+            //     translator,
+            //     "de",
+            //     "en",
+            //     "../content/lang/root",
+            //     report
+            // );
+            // await tr.TranslateAsync().ConfigureAwait(false);
+            // await report.Save("../content/lang-info/root/en.json");
+            using var reportGenerator = new Report.ReportGenerator(
+                "../content/report/translation.html", 
+                "Translation Status",
+                ".."
             );
-            await tr.TranslateAsync().ConfigureAwait(false);
+            foreach (var job in Job.GetJobs("jobs.json"))
+                await job.Execute(translator, reportGenerator).ConfigureAwait(false);
+            reportGenerator.WriteFinalReport(translator);
         }
     }
 }
