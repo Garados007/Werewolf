@@ -1,0 +1,105 @@
+{
+  "#date": "2021-09-12 09:52:08Z",
+  "#hint": "This language file is automaticly translated from de to en",
+  "theme": {
+    "event": {
+      "player-notification": {
+        "hunter-kill": "The hunter shot.\n",
+        "killed-by-major": "The captain has decided to kill the player.\n",
+        "KilledByLove": "The love smoke was too strong and you died of broken heart.\n",
+        "new-major": "The captain was inherited.\n",
+        "new-voted-major": "A new captain was determined!\n",
+        "night-kills": "Unfortunately not all survived the night.\n",
+        "old-man-and-idiot-killed": "The village had lost his reason and gently smelled the village depth.\n",
+        "scapegoat-kill": "The sinning buff had to die since you will not decide.\n",
+        "scapegoat-vote": "The scapegoat has decided which players may vote next day.\n",
+        "village-kill": "The village has decided to kill the players.\n"
+      }
+    },
+    "names": {
+      "game-leader": "Game director",
+      "member": "Teammate",
+      "player": "Players"
+    },
+    "phases": {
+      "AmorPhase": "Amor is looking for the loving couple\n",
+      "DailyVictimElectionPhase": "Tag: village election\n",
+      "ElectMajorPhase": "Mayoral election\n",
+      "FlutistPhase": "Flute player collects younger\n",
+      "HealerPhase": "Healer uses practices\n",
+      "HunterPhase": "Revenge of the hunter\n",
+      "InheritMajorPhase": "Inheritance of the mayor\n",
+      "OraclePhase": "Old seer\n",
+      "ScapeGoatPhase": "Selection of voters\n",
+      "ThreeBrotherDiscussionPhase": "Men\u0027s evening\n",
+      "TwoSisterDiscussionPhase": "Woman\u0027s evening\n",
+      "WerwolfPhase": "Night: werewolves\n",
+      "WitchPhase": "Brands of the witch\n"
+    },
+    "role-info": {
+      "Amor": "Amor can determine two in love at the beginning of the game, whose fate is connected by now.If one of the lovers die, the other dies immediately at grief.\n",
+      "Angel": "The aim of the angel is to die in the first round (1 day and night phase).If this arrives, then the angel wins immediately.\nIf you are played with angels, the game starts with a day instead of the night phase.\nIf the angel does not manage to die in the first round, this will automatically become a normal villager.\n",
+      "Flutist": "The flute player was sold by the village long ago and now wants to practice revenge.He puts his own party and determines two every night.The flute player and all the enchanted know all enchanted, but the enchanted do not know who the flute player is.\nThe game is finished immediately if only enchanted or the flute player live.Then the flute player wins.\nIf there are 7 or fewer players, the flute player may only determine an enchanted per night.\nTip for the other teammates: tries to get rid of the flute player as soon as possible.\n",
+      "Girl": "The little girl is allowed during the phase of the motivals try to easily open the eyes to see the motivals.At the same time, she also starts the risk that the werewolves catch her.\nWith a certain probability, the girl can see individual werewolves.With a certain probability, the girl is caught by individual werewolves.\n",
+      "Healer": "The healer is called at the night before the werewolves and determines a player who can not be killed by the motivals.But this does not know the motivities.\nThe healer can not protect one and the same player in two consecutive nights before the werewolves.\n",
+      "Hunter": "The hunter can give away before he dies a last shot and so possibly bring one of the drafts to the route.\n",
+      "Idiot": "The village depth can not be killed by the village directly.If the village depth is selected from the village, this covers his role and the village awards him.At the same time, however, the village deposits loses its right to vote for future votes.\nIf the village depicted was mayor before, the function of the mayor is finally lost and can not be passed on.\nWhen played with the old man, the following comes into force: As soon as the old man died, the village deputy is automatically gently smelled by the village as soon as his role is open.\n",
+      "OldMan": "The old man has collected so much life experience that this can not be killed by a single attack of the werewolves.Instead, these have to run twice.For all others (witch, hunter, village, etc.), his life experience does not make any special advantage.\nIs played with the village depth: As soon as the old man dies, the wisdom is lost to the village and can no longer hold back when the role of the village depot is revealed and brings him immediately.\n",
+      "Oracle": "The seer is one of the group of villagers.She can look at the identity of a teammate per night.\n",
+      "PureSoul": "The pure soul is a normal villagers and all can see who is the pure soul.\n",
+      "ScapeGoat": "The scapegoat is automatically proclaimed as a destination if a draw is drawing in a village tuning.Of course, the scapegoat wants to avoid this.\nIf the scapegoat is proclaimed by a draw as a target and thereby killed by the village, then the scapegoat gets the right to determine the coming village election who may vote and who is not.If only one determines one and this is killed directly by the werewolves, the next village selection is eliminated.\n",
+      "ThreeBrothers": "The three brothers are normal villagers.You can carry out a strategic meeting in an extra phase at night.\n",
+      "TwoSisters": "The two sister are normal villagers.You can carry out a strategic meeting in an extra phase at night.\n",
+      "Villager": "A normal villagers without special skills.\n",
+      "Werwolf": "A WERWOLF whose goal is to eradicate all villagers.\nThe motivals are called every night once to vote for their victim.\n",
+      "Witch": "The witch has two special potions in the game, which you can only use once.\nOne is the life strank.With these, she can protect the current victim of the werewolves before death.\nThe other is the death pen.With these you can kill another game.\nShe can use one, both or none of the potions at night.\n"
+    },
+    "roles": {
+      "Amor": "Cupid",
+      "Angel": "Angel",
+      "Flutist": "Flute player",
+      "Girl": "Little girl",
+      "Healer": "healer\n",
+      "Hunter": "Hunter\n",
+      "Idiot": "Village\n",
+      "OldMan": "Old man\n",
+      "Oracle": "Seer\n",
+      "PureSoul": "Pure\n",
+      "ScapeGoat": "scapegoat\n",
+      "ThreeBrothers": "Three brothers\n",
+      "TwoSisters": "Two sisters\n",
+      "Unknown": "???\n",
+      "Villager": "Villager\n",
+      "Werwolf": "werewolf\n",
+      "Witch": "witch\n"
+    },
+    "tags": {
+      "enchant-flutist": "(Enchanted)\n",
+      "loved": "(in love)\n",
+      "major": "(Mayor)\n",
+      "not-alive": "(dead)\n",
+      "werwolf-select": "(Werwolfopfer)\n"
+    },
+    "voting-options": {
+      "default": {
+        "do-nothing": "Do nothing\n",
+        "player": "{player}"
+      },
+      "ScapeGoatPhase\u002BScapeGoatSelect": {
+        "stop-voting": "Exit vote\n"
+      },
+      "WerwolfPhase\u002BGirlVote": {
+        "spy": "Spine\n"
+      },
+      "WitchPhase\u002BWitchSafe": {
+        "player": "Save {player}"
+      }
+    },
+    "voting-title": {
+      "default": "Choose an option\n",
+      "ScapeGoatPhase\u002BScapeGoatSelect": "Distribute voting rights\n",
+      "WitchPhase\u002BWitchKill": "Use dead potion\n",
+      "WitchPhase\u002BWitchSafe": "Use lifestyle\n"
+    }
+  }
+}

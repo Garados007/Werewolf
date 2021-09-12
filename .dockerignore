@@ -10,5 +10,6 @@ content/index.js
 *.g.cs
 *.service.cs
 elm-stuff
+node_modules
 # runtime stuff
 .litedb

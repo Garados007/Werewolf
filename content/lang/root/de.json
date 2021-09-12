@@ -34,7 +34,7 @@
     "settings": {
         "game-room": {
             "leader-is-player": "Spielleiter ist auch ein Mitspieler",
-            "dead-can-see-all-roles": "Tote können alle Rollen sehen",
+            "dead-can-see-all-roles": "Gestorbene können alle Rollen sehen",
             "all-can-see-role-of-dead": "Alle können die Rolle der Toten sehen",
             "auto-start-votings": "Votings automatisch starten",
             "auto-finish-votings": "Votings automatisch beenden",

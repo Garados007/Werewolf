@@ -92,7 +92,11 @@ main =
         { init = init
         , view = \model ->
             { title = 
-                Maybe.withDefault "Werewolf"
+                (if getNav model |> .dev
+                    then (++) "(Dev) "
+                    else identity
+                )
+                <| Maybe.withDefault "Werewolf"
                 <| Language.getText
                     (LangConfig.getRootLang <| getLang model)
                     [ "init", "title" ]
