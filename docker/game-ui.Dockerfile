@@ -63,6 +63,23 @@ WORKDIR /src
 COPY . .
 RUN git submodule update --init --recursive
 
+FROM mcr.microsoft.com/dotnet/sdk:5.0 as report
+# RUN apt-get update && \
+#     apt-get install -y python3-pip nodejs npm && \
+#     ln /usr/bin/pip3 /usr/bin/pip && \
+#     pip install translators --upgrade
+WORKDIR /src
+COPY ./Translate ./Translate
+# RUN cd /src/Translate/Bing && \
+#     npm install
+COPY ./Themes ./Themes
+COPY ./Werewolf ./Werewolf
+COPY ./Test ./Test
+COPY ./Werewolf.sln ./Werewolf.sln
+COPY ./content ./content
+RUN cd /src/Translate && \
+    dotnet run --report-only
+
 FROM httpd:2.4
 COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
 COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
@@ -70,6 +87,7 @@ COPY --from=css-compressor /content/bin /usr/local/apache2/htdocs/content/css
 COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY --from=version /src/version /usr/local/apache2/htdocs/content/version
+COPY --from=report /src/content/report /usr/local/apache2/htdocs/content/report
 RUN ver="$(cat /usr/local/apache2/htdocs/content/version)" && \
     sed -i "s@/content/index.js@/content/index.js?_v=$ver@" \
         /usr/local/apache2/htdocs/content/index.html

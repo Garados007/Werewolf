@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ./Themes ./Themes
 COPY ./Werewolf ./Werewolf
 COPY ./Test ./Test
+COPY ./Translate ./Translate
 COPY ./Werewolf.sln ./Werewolf.sln
 COPY ./version.txt ./version-prefix
 COPY --from=version /src/version-suffix ./version-suffix
