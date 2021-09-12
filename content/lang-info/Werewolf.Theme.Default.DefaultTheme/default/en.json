@@ -1,0 +1,440 @@
+[
+  {
+    "path": "theme.names.game-leader",
+    "translator": "deepl-free",
+    "source-value": "Spielleiter",
+    "target-value": "Game director"
+  },
+  {
+    "path": "theme.names.member",
+    "translator": "deepl-free",
+    "source-value": "Mitspieler",
+    "target-value": "Teammate"
+  },
+  {
+    "path": "theme.names.player",
+    "translator": "deepl-free",
+    "source-value": "Spieler",
+    "target-value": "Players"
+  },
+  {
+    "path": "theme.roles.Amor",
+    "translator": "deepl-free",
+    "source-value": "Amor",
+    "target-value": "Cupid"
+  },
+  {
+    "path": "theme.roles.Angel",
+    "translator": "deepl-free",
+    "source-value": "Engel",
+    "target-value": "Angel"
+  },
+  {
+    "path": "theme.roles.Flutist",
+    "translator": "deepl-free",
+    "source-value": "Fl\u00F6tenspieler",
+    "target-value": "Flute player"
+  },
+  {
+    "path": "theme.roles.Girl",
+    "translator": "deepl-free",
+    "source-value": "Kleines M\u00E4dchen",
+    "target-value": "Little girl"
+  },
+  {
+    "path": "theme.roles.Healer",
+    "translator": "google-free",
+    "source-value": "Heiler",
+    "target-value": "healer\n"
+  },
+  {
+    "path": "theme.roles.Hunter",
+    "translator": "google-free",
+    "source-value": "J\u00E4ger",
+    "target-value": "Hunter\n"
+  },
+  {
+    "path": "theme.roles.Idiot",
+    "translator": "google-free",
+    "source-value": "Dorfdepp",
+    "target-value": "Village\n"
+  },
+  {
+    "path": "theme.roles.OldMan",
+    "translator": "google-free",
+    "source-value": "Alte Mann",
+    "target-value": "Old man\n"
+  },
+  {
+    "path": "theme.roles.Oracle",
+    "translator": "google-free",
+    "source-value": "Seherin",
+    "target-value": "Seer\n"
+  },
+  {
+    "path": "theme.roles.PureSoul",
+    "translator": "google-free",
+    "source-value": "Reiner",
+    "target-value": "Pure\n"
+  },
+  {
+    "path": "theme.roles.ScapeGoat",
+    "translator": "google-free",
+    "source-value": "S\u00FCndenbock",
+    "target-value": "scapegoat\n"
+  },
+  {
+    "path": "theme.roles.TwoSisters",
+    "translator": "google-free",
+    "source-value": "Zwei Schwestern",
+    "target-value": "Two sisters\n"
+  },
+  {
+    "path": "theme.roles.ThreeBrothers",
+    "translator": "google-free",
+    "source-value": "Drei Br\u00FCder",
+    "target-value": "Three brothers\n"
+  },
+  {
+    "path": "theme.roles.Villager",
+    "translator": "google-free",
+    "source-value": "Dorfbewohner",
+    "target-value": "Villager\n"
+  },
+  {
+    "path": "theme.roles.Werwolf",
+    "translator": "google-free",
+    "source-value": "Werwolf",
+    "target-value": "werewolf\n"
+  },
+  {
+    "path": "theme.roles.Witch",
+    "translator": "google-free",
+    "source-value": "Hexe",
+    "target-value": "witch\n"
+  },
+  {
+    "path": "theme.roles.Unknown",
+    "translator": "google-free",
+    "source-value": "???",
+    "target-value": "???\n"
+  },
+  {
+    "path": "theme.role-info.Amor",
+    "translator": "google-free",
+    "source-value": "Amor kann am Anfang des Spiels zwei Verliebte bestimmen, dessen Schicksal von nun an verbunden ist. Sollte einer der Verliebten sterben, so stirbt der andere sofort an Kummer.",
+    "target-value": "Amor can determine two in love at the beginning of the game, whose fate is connected by now.If one of the lovers die, the other dies immediately at grief.\n"
+  },
+  {
+    "path": "theme.role-info.Angel",
+    "translator": "google-free",
+    "source-value": "Das Ziel des Engels ist es in der ersten Runde (1 Tag- und Nachtphase) zu sterben. Sollte dies eintreffen, dann gewinnt der Engel sofort.\nSollte mit Engel gespielt werden, so f\u00E4ngt das Spiel mit einer Tag- statt Nachtphase an.\nSollte der Engel es nicht schaffen in der ersten Runde zu sterben, so wird dieser automatisch zu einen normalen Dorfbewohner.",
+    "target-value": "The aim of the angel is to die in the first round (1 day and night phase).If this arrives, then the angel wins immediately.\nIf you are played with angels, the game starts with a day instead of the night phase.\nIf the angel does not manage to die in the first round, this will automatically become a normal villager.\n"
+  },
+  {
+    "path": "theme.role-info.Flutist",
+    "translator": "google-free",
+    "source-value": "Der Fl\u00F6tenspieler ist vor langer Zeit vom Dorf vertrieben wurden und will nun Rache aus\u00FCben. Er stellt eine eigene Partei und bestimmt jede Nacht zwei Verzauberte. Der Fl\u00F6tenspieler und alle Verzauberten kennen alle Verzauberten, aber die Verzauberten wissen nicht, wer der Fl\u00F6tenspieler ist.\nDas Spiel ist sofort beendet, wenn nur noch Verzauberte oder der Fl\u00F6tenspieler leben. Dann gewinnt der Fl\u00F6tenspieler.\nGibt es 7 oder weniger Mitspieler, so darf der Fl\u00F6tenspieler nur einen Verzauberten pro Nacht bestimmen.\nTipp f\u00FCr die anderen Mitspieler: Versucht den Fl\u00F6tenspieler m\u00F6glichst fr\u00FCh loszuwerden.",
+    "target-value": "The flute player was sold by the village long ago and now wants to practice revenge.He puts his own party and determines two every night.The flute player and all the enchanted know all enchanted, but the enchanted do not know who the flute player is.\nThe game is finished immediately if only enchanted or the flute player live.Then the flute player wins.\nIf there are 7 or fewer players, the flute player may only determine an enchanted per night.\nTip for the other teammates: tries to get rid of the flute player as soon as possible.\n"
+  },
+  {
+    "path": "theme.role-info.Girl",
+    "translator": "google-free",
+    "source-value": "Das kleine M\u00E4dchen darf w\u00E4hrend der Phase der Werw\u00F6lfe versuchen die Augen leicht aufzumachen, um die Werw\u00F6lfe zu sehen. Gleichzeitig geht sie auch das Risiko ein, dass die Werw\u00F6lfe sie dabei erwischen.\nMit einer gewissen Wahrscheinlichkeit kann das M\u00E4dchen einzelne Werw\u00F6lfe sehen. Mit einer gewissen Wahrscheinlichkeit wird das M\u00E4dchen von einzelnen Werw\u00F6lfen erwischt.",
+    "target-value": "The little girl is allowed during the phase of the motivals try to easily open the eyes to see the motivals.At the same time, she also starts the risk that the werewolves catch her.\nWith a certain probability, the girl can see individual werewolves.With a certain probability, the girl is caught by individual werewolves.\n"
+  },
+  {
+    "path": "theme.role-info.Healer",
+    "translator": "google-free",
+    "source-value": "Der Heiler wird in der Nacht vor den Werw\u00F6lfen aufgerufen und bestimmt einen Spieler, welche diese Runde nicht von den Werw\u00F6lfen umgebracht werden kann. Dies wissen aber die Werw\u00F6lfe nicht.\nDer Heiler kann nicht ein und denselben Spieler in zwei aufeinander folgenden N\u00E4chten vor den Werw\u00F6lfen sch\u00FCtzen.",
+    "target-value": "The healer is called at the night before the werewolves and determines a player who can not be killed by the motivals.But this does not know the motivities.\nThe healer can not protect one and the same player in two consecutive nights before the werewolves.\n"
+  },
+  {
+    "path": "theme.role-info.Hunter",
+    "translator": "google-free",
+    "source-value": "Der J\u00E4ger kann bevor er stirbt noch einen letzten Schuss abgeben und so eventuell einen der Werw\u00F6lfe zur Strecke bringen.",
+    "target-value": "The hunter can give away before he dies a last shot and so possibly bring one of the drafts to the route.\n"
+  },
+  {
+    "path": "theme.role-info.Idiot",
+    "translator": "google-free",
+    "source-value": "Der Dorfdepp kann nicht vom Dorf direkt umgebracht werden. Sollte der Dorfdepp vom Dorf ausgew\u00E4hlt werden, so deckt dieser seine Rolle auf und das Dorf vergibt ihn. Gleichzeitig verliert der Dorfdepp aber sein Wahlrecht bei zuk\u00FCnftigen Abstimmungen.\nWar der Dorfdepp vorher B\u00FCrgermeister, so ist die Funktion des B\u00FCrgermeisters endg\u00FCltig verloren und kann nicht weitergegeben werden.\nWird mit den alten Mann gespielt, so tritt folgendes in Kraft: Sobald der alte Mann verstorben ist, wird der Dorfdepp automatisch vom Dorf gelyncht, sobald seine Rolle offen liegt.",
+    "target-value": "The village depth can not be killed by the village directly.If the village depth is selected from the village, this covers his role and the village awards him.At the same time, however, the village deposits loses its right to vote for future votes.\nIf the village depicted was mayor before, the function of the mayor is finally lost and can not be passed on.\nWhen played with the old man, the following comes into force: As soon as the old man died, the village deputy is automatically gently smelled by the village as soon as his role is open.\n"
+  },
+  {
+    "path": "theme.role-info.OldMan",
+    "translator": "google-free",
+    "source-value": "Der alte Mann hat so viel Lebenserfahrung gesammelt, dass dieser sich nicht von einer einzelnen Attacke der Werw\u00F6lfe umbringen l\u00E4sst. Stattdessen m\u00FCssen diese zweimal ran. Bei allen anderen (Hexe, J\u00E4ger, Dorf, etc.) bringt seine Lebenserfahrung keinen besonderen Vorteil.\nWird mit den Dorfdepp gespielt: Sobald der alte Mann stirbt, geht auch die Weisheit dem Dorf verloren und kann sich nicht mehr zur\u00FCckhalten, wenn die Rolle des Dorfdepps aufgedeckt wird und bringt ihn sofort um.",
+    "target-value": "The old man has collected so much life experience that this can not be killed by a single attack of the werewolves.Instead, these have to run twice.For all others (witch, hunter, village, etc.), his life experience does not make any special advantage.\nIs played with the village depth: As soon as the old man dies, the wisdom is lost to the village and can no longer hold back when the role of the village depot is revealed and brings him immediately.\n"
+  },
+  {
+    "path": "theme.role-info.Oracle",
+    "translator": "google-free",
+    "source-value": "Die Seherin geh\u00F6rt zu der Gruppe der Dorfbewohner. Sie kann pro Nacht sich die Identit\u00E4t eines Mitspielers anschauen.",
+    "target-value": "The seer is one of the group of villagers.She can look at the identity of a teammate per night.\n"
+  },
+  {
+    "path": "theme.role-info.PureSoul",
+    "translator": "google-free",
+    "source-value": "Die reine Seele ist ein normaler Dorfbewohner und alle k\u00F6nnen sehen wer die reine Seele ist.",
+    "target-value": "The pure soul is a normal villagers and all can see who is the pure soul.\n"
+  },
+  {
+    "path": "theme.role-info.ScapeGoat",
+    "translator": "google-free",
+    "source-value": "Der S\u00FCndenbock wird automatisch als Ziel ausgerufen, wenn bei einer Dorfabstimmung ein Unentschieden entsteht. Dies will der S\u00FCndenbock nat\u00FCrlich vermeiden.\nWird der S\u00FCndenbock durch ein Unentschieden als Ziel ausgerufen und dadurch vom Dorf umgebracht, dann bekommt der S\u00FCndenbock das Recht bei der kommenden Dorfwahl zu bestimmen wer abstimmen darf und wer nicht. Wenn er nur einen bestimmt und dieser direkt von den Werw\u00F6lfen umgebracht wird, so entf\u00E4llt die n\u00E4chste Dorfauswahl.",
+    "target-value": "The scapegoat is automatically proclaimed as a destination if a draw is drawing in a village tuning.Of course, the scapegoat wants to avoid this.\nIf the scapegoat is proclaimed by a draw as a target and thereby killed by the village, then the scapegoat gets the right to determine the coming village election who may vote and who is not.If only one determines one and this is killed directly by the werewolves, the next village selection is eliminated.\n"
+  },
+  {
+    "path": "theme.role-info.ThreeBrothers",
+    "translator": "google-free",
+    "source-value": "Die drei Br\u00FCder sind normale Dorfbewohner. Sie k\u00F6nnen in der Nacht eine strategische Besprechung in einer extra Phase durchf\u00FChren.",
+    "target-value": "The three brothers are normal villagers.You can carry out a strategic meeting in an extra phase at night.\n"
+  },
+  {
+    "path": "theme.role-info.TwoSisters",
+    "translator": "google-free",
+    "source-value": "Die zwei Schwester sind normale Dorfbewohner. Sie k\u00F6nnen in der Nacht eine strategische Besprechung in einer extra Phase durchf\u00FChren.",
+    "target-value": "The two sister are normal villagers.You can carry out a strategic meeting in an extra phase at night.\n"
+  },
+  {
+    "path": "theme.role-info.Villager",
+    "translator": "google-free",
+    "source-value": "Ein normaler Dorfbewohner ohne besonderen F\u00E4higkeiten.",
+    "target-value": "A normal villagers without special skills.\n"
+  },
+  {
+    "path": "theme.role-info.Werwolf",
+    "translator": "google-free",
+    "source-value": "Ein Werwolf dessen Ziel es ist alle Dorfbewohner auszurotten.\nDie Werw\u00F6lfe werden jede Nacht einmal aufgerufen um f\u00FCr ihr Opfer zu stimmen.",
+    "target-value": "A WERWOLF whose goal is to eradicate all villagers.\nThe motivals are called every night once to vote for their victim.\n"
+  },
+  {
+    "path": "theme.role-info.Witch",
+    "translator": "google-free",
+    "source-value": "Die Hexe hat zwei besondere Tr\u00E4nke im Spiel, welche sie jeweils nur einmal benutzen darf.\nDer eine ist der Lebenstrank. Mit diesen kann sie das aktuelle Opfer der Werw\u00F6lfe vor dem Tod besch\u00FCtzen.\nDer andere ist der Todestrank. Mit diesen kann sie einen anderen Spiel umbringen.\nSie kann in der Nacht einen, beide oder keinen der Tr\u00E4nke nutzen.",
+    "target-value": "The witch has two special potions in the game, which you can only use once.\nOne is the life strank.With these, she can protect the current victim of the werewolves before death.\nThe other is the death pen.With these you can kill another game.\nShe can use one, both or none of the potions at night.\n"
+  },
+  {
+    "path": "theme.phases.AmorPhase",
+    "translator": "google-free",
+    "source-value": "Amor sucht das Liebespaar",
+    "target-value": "Amor is looking for the loving couple\n"
+  },
+  {
+    "path": "theme.phases.DailyVictimElectionPhase",
+    "translator": "google-free",
+    "source-value": "Tag: Dorfwahl",
+    "target-value": "Tag: village election\n"
+  },
+  {
+    "path": "theme.phases.ElectMajorPhase",
+    "translator": "google-free",
+    "source-value": "B\u00FCrgermeisterwahl",
+    "target-value": "Mayoral election\n"
+  },
+  {
+    "path": "theme.phases.FlutistPhase",
+    "translator": "google-free",
+    "source-value": "Fl\u00F6tenspieler sammelt J\u00FCnger",
+    "target-value": "Flute player collects younger\n"
+  },
+  {
+    "path": "theme.phases.HealerPhase",
+    "translator": "google-free",
+    "source-value": "Heiler wendet Praktiken an",
+    "target-value": "Healer uses practices\n"
+  },
+  {
+    "path": "theme.phases.HunterPhase",
+    "translator": "google-free",
+    "source-value": "Rache des J\u00E4gers",
+    "target-value": "Revenge of the hunter\n"
+  },
+  {
+    "path": "theme.phases.InheritMajorPhase",
+    "translator": "google-free",
+    "source-value": "Vererbung des B\u00FCrgermeisters",
+    "target-value": "Inheritance of the mayor\n"
+  },
+  {
+    "path": "theme.phases.OraclePhase",
+    "translator": "google-free",
+    "source-value": "Alte Seherin",
+    "target-value": "Old seer\n"
+  },
+  {
+    "path": "theme.phases.ScapeGoatPhase",
+    "translator": "google-free",
+    "source-value": "Auswahl der Stimmberechtigten",
+    "target-value": "Selection of voters\n"
+  },
+  {
+    "path": "theme.phases.ThreeBrotherDiscussionPhase",
+    "translator": "google-free",
+    "source-value": "M\u00E4nnerabend",
+    "target-value": "Men\u0027s evening\n"
+  },
+  {
+    "path": "theme.phases.TwoSisterDiscussionPhase",
+    "translator": "google-free",
+    "source-value": "Frauenabend",
+    "target-value": "Woman\u0027s evening\n"
+  },
+  {
+    "path": "theme.phases.WerwolfPhase",
+    "translator": "google-free",
+    "source-value": "Nacht: Werw\u00F6lfe",
+    "target-value": "Night: werewolves\n"
+  },
+  {
+    "path": "theme.phases.WitchPhase",
+    "translator": "google-free",
+    "source-value": "Braustunde der Hexe",
+    "target-value": "Brands of the witch\n"
+  },
+  {
+    "path": "theme.tags.not-alive",
+    "translator": "google-free",
+    "source-value": "(tot)",
+    "target-value": "(dead)\n"
+  },
+  {
+    "path": "theme.tags.loved",
+    "translator": "google-free",
+    "source-value": "(verliebt)",
+    "target-value": "(in love)\n"
+  },
+  {
+    "path": "theme.tags.werwolf-select",
+    "translator": "google-free",
+    "source-value": "(Werwolfopfer)",
+    "target-value": "(Werwolfopfer)\n"
+  },
+  {
+    "path": "theme.tags.enchant-flutist",
+    "translator": "google-free",
+    "source-value": "(verzaubert)",
+    "target-value": "(Enchanted)\n"
+  },
+  {
+    "path": "theme.tags.major",
+    "translator": "google-free",
+    "source-value": "(B\u00FCrgermeister)",
+    "target-value": "(Mayor)\n"
+  },
+  {
+    "path": "theme.voting-title.default",
+    "translator": "google-free",
+    "source-value": "W\u00E4hle eine Option",
+    "target-value": "Choose an option\n"
+  },
+  {
+    "path": "theme.voting-title.ScapeGoatPhase\u002BScapeGoatSelect",
+    "translator": "google-free",
+    "source-value": "Verteile Stimmrechte",
+    "target-value": "Distribute voting rights\n"
+  },
+  {
+    "path": "theme.voting-title.WitchPhase\u002BWitchSafe",
+    "translator": "google-free",
+    "source-value": "Lebenstrank nutzen",
+    "target-value": "Use lifestyle\n"
+  },
+  {
+    "path": "theme.voting-title.WitchPhase\u002BWitchKill",
+    "translator": "google-free",
+    "source-value": "Todestrank nutzen",
+    "target-value": "Use dead potion\n"
+  },
+  {
+    "path": "theme.voting-options.default.do-nothing",
+    "translator": "google-free",
+    "source-value": "Nichts tun",
+    "target-value": "Do nothing\n"
+  },
+  {
+    "path": "theme.voting-options.default.player",
+    "translator": "bing",
+    "source-value": "{player}",
+    "target-value": "{player}"
+  },
+  {
+    "path": "theme.voting-options.ScapeGoatPhase\u002BScapeGoatSelect.stop-voting",
+    "translator": "google-free",
+    "source-value": "Abstimmung beenden",
+    "target-value": "Exit vote\n"
+  },
+  {
+    "path": "theme.voting-options.WitchPhase\u002BWitchSafe.player",
+    "translator": "bing",
+    "source-value": "{player} retten",
+    "target-value": "Save {player}"
+  },
+  {
+    "path": "theme.voting-options.WerwolfPhase\u002BGirlVote.spy",
+    "translator": "google-free",
+    "source-value": "Ausspionieren",
+    "target-value": "Spine\n"
+  },
+  {
+    "path": "theme.event.player-notification.village-kill",
+    "translator": "google-free",
+    "source-value": "Das Dorf hat entschieden den/die Spieler zu t\u00F6ten.",
+    "target-value": "The village has decided to kill the players.\n"
+  },
+  {
+    "path": "theme.event.player-notification.killed-by-major",
+    "translator": "google-free",
+    "source-value": "Der Hauptmann hat entschieden den Spieler zu t\u00F6ten.",
+    "target-value": "The captain has decided to kill the player.\n"
+  },
+  {
+    "path": "theme.event.player-notification.scapegoat-kill",
+    "translator": "google-free",
+    "source-value": "Der S\u00FCndebock musste sterben da ihr euch nicht entscheiden konntet.",
+    "target-value": "The sinning buff had to die since you will not decide.\n"
+  },
+  {
+    "path": "theme.event.player-notification.new-voted-major",
+    "translator": "google-free",
+    "source-value": "Ein neuer Hauptmann wurde bestimmt!",
+    "target-value": "A new captain was determined!\n"
+  },
+  {
+    "path": "theme.event.player-notification.hunter-kill",
+    "translator": "google-free",
+    "source-value": "Der J\u00E4ger hat geschossen.",
+    "target-value": "The hunter shot.\n"
+  },
+  {
+    "path": "theme.event.player-notification.new-major",
+    "translator": "google-free",
+    "source-value": "Der Hauptmann wurde vererbt.",
+    "target-value": "The captain was inherited.\n"
+  },
+  {
+    "path": "theme.event.player-notification.night-kills",
+    "translator": "google-free",
+    "source-value": "Leider haben nicht alle die Nacht \u00FCberlebt.",
+    "target-value": "Unfortunately not all survived the night.\n"
+  },
+  {
+    "path": "theme.event.player-notification.scapegoat-vote",
+    "translator": "google-free",
+    "source-value": "Der S\u00FCndenbock hat entschieden welche Spieler am kommenden Tag abstimmen d\u00FCrfen.",
+    "target-value": "The scapegoat has decided which players may vote next day.\n"
+  },
+  {
+    "path": "theme.event.player-notification.old-man-and-idiot-killed",
+    "translator": "google-free",
+    "source-value": "Das Dorf hatte seine Vernunft verloren und den Dorfdepp gelyncht.",
+    "target-value": "The village had lost his reason and gently smelled the village depth.\n"
+  },
+  {
+    "path": "theme.event.player-notification.KilledByLove",
+    "translator": "google-free",
+    "source-value": "Der Liebeskummer war zu stark und man ist an gebrochenen Herzen gestorben.",
+    "target-value": "The love smoke was too strong and you died of broken heart.\n"
+  }
+]

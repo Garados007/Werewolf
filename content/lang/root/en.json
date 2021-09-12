@@ -1,0 +1,147 @@
+{
+  "#date": "2021-09-12 09:52:31Z",
+  "#hint": "This language file is automaticly translated from de to en",
+  "banner": {
+    "maintenance": "The current server is restarted in {minute}: {sec-prefix} {sec}."
+  },
+  "chat": {
+    "not-allowed": "The message was not allowed to be sent."
+  },
+  "fallback": "Unfortunately, the translation for the language \u0022{lang}\u0022 could not be found. Therefore, you can now see everything on German.",
+  "game": {
+    "loading": {
+      "go-back": "Back to the lobby selection",
+      "not-found": "Game not found."
+    },
+    "phase": {
+      "end": "exit game",
+      "next": "Next round"
+    },
+    "voting": {
+      "button": {
+        "add-time": "Time of time ({time-left})",
+        "add-time-hint": "In {time-left} seconds, the voting is automatically terminated. Click here to reset seconds to {max-time}.",
+        "end": "End",
+        "start": "Start"
+      },
+      "can-vote": "May vote",
+      "cannot-vote": "Must not vote",
+      "has-voted-list": "So far, have been coordinated: {list}",
+      "nobody-has-voted": "Nobody has so far coordinated",
+      "not-started": "Not started",
+      "started": "Stared"
+    }
+  },
+  "init": {
+    "guest-input": {
+      "continue": "Continue as a guest",
+      "image-code": "Picture code",
+      "image-hint": "Here you can insert any text from which your profile picture is generated.If you do not enter anything, so we use your username.If you are users of Gravatar.com and have deposited your profile picture there, please enter your email address here.",
+      "name": "Surname"
+    },
+    "lobby-input": {
+      "create": "Create a lobby",
+      "hint": "Please enter code",
+      "join": "Join the lobby",
+      "start": "start Game"
+    },
+    "lost-token": "Unfortunately, the user knob could not be updated.There is a renewed registration required or you play as a guest.",
+    "reset-user": "Reset users",
+    "title": "Werew\u00F6lfe of Sch\u00FCsterwald",
+    "user-mode": {
+      "continue-login": "Login or Register",
+      "guest": {
+        "1": "Games immediately and directly",
+        "2": "Your data will be deleted after the game"
+      },
+      "login": {
+        "1": "Get statistics",
+        "2": "Start in the level",
+        "3": "Save your settings unpleasant"
+      },
+      "play-guest": "Play as a guest",
+      "play-login": "Play with Account"
+    }
+  },
+  "join-token": {
+    "copied": "Copied!",
+    "copy-hint": "Click to copy to the clipboard",
+    "description": "Give the code to your teammates:",
+    "hint": "Demonstrate",
+    "refetch": "Reward",
+    "stream-replacement": "Click!",
+    "streamer-mode": "Streamer fashion",
+    "time": "The code is still valid {minute}:{second-leading}{second}.",
+    "title": "Add player"
+  },
+  "modals": {
+    "connection": {
+      "close": {
+        "desc": "No connection to the Game Server could be established.This may be because the server is currently offline or that the lobby no longer exists.Please try to create a new lobby.",
+        "title": "no connection to the server"
+      },
+      "code": {
+        "1000": {
+          "lobby not found": "The lobby no longer exists on the server.Please create a new one."
+        },
+        "1012": {
+          "": "The server is currently restarted.Please create a new lobby to continue playing."
+        }
+      },
+      "go-back": "Back to the lobby selection"
+    },
+    "maintenance": {
+      "desc": "The server must be serviced and will be restarted soon.Please now ends your game and then creates a new lobby.",
+      "reason": "Reason:",
+      "title": "Server maintenance"
+    },
+    "player-notification": {
+      "title": "Estimation"
+    },
+    "theme-editor": {
+      "background-url": "Wallpaper (URL)",
+      "go-back": "Back to the lobby selection",
+      "title": "Theme settings"
+    },
+    "winner": {
+      "title": "winner"
+    }
+  },
+  "settings": {
+    "bar": {
+      "stats": "Roles: {roles}/{player}"
+    },
+    "game-room": {
+      "all-can-see-role-of-dead": "All can see the role of the dead",
+      "auto-finish-rounds": "Finally finish round if no voting exists",
+      "auto-finish-votings": "End voting automatically",
+      "auto-start-votings": "Start voting automatically",
+      "dead-can-see-all-roles": "Tote can see all rolls",
+      "leader-is-player": "Spieller is also a teammate",
+      "start": "begin",
+      "votings-timeout": "Automatically stop voting after a timeout"
+    },
+    "page": {
+      "options": "Options",
+      "roles": "roll",
+      "theme": "topic"
+    }
+  },
+  "theme": {
+    "event": {
+      "player-notification": {
+        "offline-player-left": "A player was automatically kicked out of the game, which he is offline for 30 seconds."
+      }
+    }
+  },
+  "user-stats": {
+    "died": "died",
+    "guest": "guest",
+    "leader": "Game master",
+    "level": "Level",
+    "offline": "(offline)",
+    "played-games": "played games",
+    "player-kick": "Player kick",
+    "won-games": "gained games"
+  }
+}

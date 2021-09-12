@@ -1,0 +1,404 @@
+[
+  {
+    "path": "theme.names.game-leader",
+    "translator": "google-free",
+    "source-value": "Spielleiter",
+    "target-value": "Game master\n"
+  },
+  {
+    "path": "theme.names.member",
+    "translator": "google-free",
+    "source-value": "Mitspieler",
+    "target-value": "Player\n"
+  },
+  {
+    "path": "theme.names.player",
+    "translator": "google-free",
+    "source-value": "Spieler",
+    "target-value": "player\n"
+  },
+  {
+    "path": "theme.roles.Amor",
+    "translator": "google-free",
+    "source-value": "Kellner",
+    "target-value": "waiter\n"
+  },
+  {
+    "path": "theme.roles.Angel",
+    "translator": "google-free",
+    "source-value": "Bruder Thomas",
+    "target-value": "Brother Thomas\n"
+  },
+  {
+    "path": "theme.roles.Flutist",
+    "translator": "google-free",
+    "source-value": "Musiker",
+    "target-value": "Musician\n"
+  },
+  {
+    "path": "theme.roles.Girl",
+    "translator": "google-free",
+    "source-value": "Tochter vom Wirt",
+    "target-value": "Daughter from the host\n"
+  },
+  {
+    "path": "theme.roles.Healer",
+    "translator": "google-free",
+    "source-value": "Wirt",
+    "target-value": "host\n"
+  },
+  {
+    "path": "theme.roles.Hunter",
+    "translator": "google-free",
+    "source-value": "J\u00E4ger",
+    "target-value": "Hunter\n"
+  },
+  {
+    "path": "theme.roles.Idiot",
+    "translator": "google-free",
+    "source-value": "Besoffener",
+    "target-value": "Drunken\n"
+  },
+  {
+    "path": "theme.roles.OldMan",
+    "translator": "google-free",
+    "source-value": "trinkfester Mann",
+    "target-value": "Trinking man\n"
+  },
+  {
+    "path": "theme.roles.Oracle",
+    "translator": "google-free",
+    "source-value": "Bierleiche",
+    "target-value": "Beerleich\n"
+  },
+  {
+    "path": "theme.roles.PureSoul",
+    "translator": "google-free",
+    "source-value": "Schnapskobold",
+    "target-value": "Snap\n"
+  },
+  {
+    "path": "theme.roles.ScapeGoat",
+    "translator": "google-free",
+    "source-value": "Komiker",
+    "target-value": "comedian\n"
+  },
+  {
+    "path": "theme.roles.Villager",
+    "translator": "google-free",
+    "source-value": "Kneipenbesucher",
+    "target-value": "Pub visitors\n"
+  },
+  {
+    "path": "theme.roles.Werwolf",
+    "translator": "google-free",
+    "source-value": "Bierpanscher",
+    "target-value": "Beerpanscher\n"
+  },
+  {
+    "path": "theme.roles.Witch",
+    "translator": "google-free",
+    "source-value": "Drogendieler",
+    "target-value": "Drug dealer\n"
+  },
+  {
+    "path": "theme.roles.Unknown",
+    "translator": "google-free",
+    "source-value": "???",
+    "target-value": "???\n"
+  },
+  {
+    "path": "theme.role-info.Amor",
+    "translator": "google-free",
+    "source-value": "Im Krieg gibt es viele Tote, viele einsame Seelne und viele die einfach nicht einsam sterben wollen. Beim Essen hat ein Kamerad seinem Besten zu einer Liebe verholfen die St\u00E4rker ist als er zu erst dachte. Beide sind gl\u00FCcklich und Ihr Schicksal ist von nun an verbunden. Sollte einer der Verliebten sterben, so stirbt der andere sofort an Kummer.",
+    "target-value": "In the war there are many dead, many lonely pastels and many who just do not want to die lonely.During the food, a comrade has helped his best to a love that is stronger than he thought.Both are happy and their fate is connected from now on.If one of the lovers die, the other dies immediately at grief.\n"
+  },
+  {
+    "path": "theme.role-info.Angel",
+    "translator": "google-free",
+    "source-value": "Das Ziel von Bruder Thomas ist es in der ersten Runde (1 Tag- und Nachtphase) die Kneipe zu verlassen. Sollte dies eintreffen, dann gewinnt Bruder Thomas sofort.\nSollte mit Bruder Thomas gespielt werden, so f\u00E4ngt das Spiel mit einer Tag- statt Nachtphase an.\nSollte Bruder Thomas es nicht schaffen in der ersten Runde die Kneipe zu verlassen, so wird dieser automatisch zu einem der anderen betrunkenen Kneipenbesucher.",
+    "target-value": "The goal of Brother Thomas is to leave the pub in the first round (1 day and night phase).If this arrives, then Brother Thomas wins immediately.\nShould be played with brother Thomas, the game starts with a day instead of the night phase.\nIf Brother Thomas do not manage to leave the pub in the first round, it will automatically become one of the other drunk pub visitors.\n"
+  },
+  {
+    "path": "theme.role-info.Flutist",
+    "translator": "google-free",
+    "source-value": "Der Spion hat sich eingeschmuggelt, um Infos f\u00FCr die gegnerische Seite zu sammeln. Es stellt sich heraus, dass es auch hier Leute gibt, die sich ihm anschlie\u00DFen m\u00F6chten. Jede Nacht findet er einen neuen Anh\u00E4nger. Der Spion und alle Deserteure k\u00E4mpfen von nun an f\u00FCr die Gegner.\nDas Spiel ist sofort beendet, wenn nur noch Deserteure oder der Spion leben. Dann gewinnt der Spion.\nGibt es 7 oder weniger Mitspieler, so darf der Spion nur einen Deserteur pro Nacht bestimmen.\nTipp f\u00FCr die anderen Mitspieler: Versucht den Spion m\u00F6glichst fr\u00FCh loszuwerden.",
+    "target-value": "The spy has come in gathered to collect information for the opposing side.It turns out that there are people here too, who want to join him.Every night he finds a new trailer.The spy and all deserters are fighting for the opponents from now on.\nThe game is finished immediately if only deserters or the spy live.Then the spy wins.\nIf there are 7 or fewer teammates, the spy may only determine one deserter per night.\nTip for the other teammates: tries to get rid of the spy as early as possible.\n"
+  },
+  {
+    "path": "theme.role-info.Girl",
+    "translator": "google-free",
+    "source-value": "Die Geheimpolizei kann w\u00E4hrend der Phase der Saboteure ihnen f\u00FCr eine kurze Zeit folgen, um ihre Identit\u00E4t zu erfahren. Aufgrund mangelhaften Trainings besteht dabei die M\u00F6glichkeit, dass sie von den Saboteuren erwischt werden. \nBei diesem Katz-und-Maus-Spiel kann die Geheimpolizei die Saboteure entlarven oder von ihnen bemerkt werden.",
+    "target-value": "The secret police can follow them for a short time during the phase of the saboteurs to find out their identity.Due to poor workouts, there is the possibility that they are caught by the saboteurs.\nWith this cat and mouse game, the secret police can expose the saboters or noticed by them.\n"
+  },
+  {
+    "path": "theme.role-info.Healer",
+    "translator": "google-free",
+    "source-value": "Der Sanit\u00E4ter wird in der Nacht zu einem Notfall gerufen und verzucht das Leben dieses Kameraden zu bewahren, dieser kann diese Nacht nicht von den Saboteuren get\u00F6tet werden.\nDer Sanit\u00E4ter kann nicht jede Nacht denselben Kameraden sch\u00FCtzen, so kommt es das in zwei aufeinander folgenden N\u00E4chten nie die selbe Person sicher ist.",
+    "target-value": "The paramedic will be called at night to an emergency and kept the life of this comrade to preserve, this can not be killed this night by the sabers.\nThe paramedic can not protect the same comrades every night, so the same person is never sure in two consecutive nights.\n"
+  },
+  {
+    "path": "theme.role-info.Hunter",
+    "translator": "google-free",
+    "source-value": "Der Schwarfsch\u00FCtze kann bevor er stirbt noch einen letzten Schuss abgeben und so, dank seiner treffsicherheit, einen der anwesenden Personen zur Strecke bringen. Er wei\u00DF jedoch nicht ob er mit seinem Verdacht einen der Saboteure zu erwischen richtig liegt, also ist auf eine gute Beobachtungsgabe zu hoffen.",
+    "target-value": "The blackout can give away before he dies a last shot and so, thanks to its accuracy, bring one of the persons present to the route.He does not know if he lies right with his suspicion one of the saboters properly, so hope for a good observation.\n"
+  },
+  {
+    "path": "theme.role-info.Idiot",
+    "translator": "google-free",
+    "source-value": "Der Trottel vom Dienst kann nicht direkt von der Mannschaft umgebracht werden. Sollte der Trottel von ihr ausgew\u00E4hlt werden, so wird allen klar, dass er einfach nur nicht sofort eine Lehre anfangen wollte und vergibt ihm. \nDamit verliert er aber auch sein Wahlrecht bei den zuk\u00FCnftigen Appellen. War dieser Depp vorher Spie\u00DF, so ist die Funktion von ihm v\u00F6llig verloren und die Truppe hat keinen Kommandeur mehr. \nWenn ein Veteran anwesend ist tritt folgendes in Kraft: Sobald dieser stirbt, wird der Trottel automatisch von der Mannschaft gelyncht, sobald er als dieser erkannt wurde.",
+    "target-value": "The dripping from the service can not be killed directly from the team.If the jerk will be selected by her, all it becomes clear that he just did not want to start an apprenticeship immediately and forgives him.\nBut he also loses his right to vote in the future appeals.If this Depp was in advance, the function of him is completely lost and the troupe has no commander anymore.\nWhen a veteran is present, the following comes into force: as soon as it dies, the jerk is automatically gently smelled by the team as soon as he was recognized.\n"
+  },
+  {
+    "path": "theme.role-info.Oracle",
+    "translator": "google-free",
+    "source-value": "Der Aufkl\u00E4rungstrupp ist mal wieder unterwegs, um die Gegend zu erkunden. Dabei entdecken sie oft wie ihre Kameraden wirklich sind. In Stressmomenten wie solchen, sieht man den richtigen Character der Menschen zum Vorschein kommen.",
+    "target-value": "The reconnaissance team is traveling again to explore the area.They often discover like their comrades really.In stress moments like such, you can see the right character of people to appear.\n"
+  },
+  {
+    "path": "theme.role-info.OldMan",
+    "translator": "google-free",
+    "source-value": "Der Veteran hat so lange gedient und Kampferfahrung gesammelt, dass dieser sich nicht von einem einzelnen feigen Hinterhalt der Saboteure umbringen l\u00E4sst. Stattdessen m\u00FCssen diese zweimal ran. Bei allen anderen (Oberfeldarzt, Scharfsch\u00FCtze, Mannschaft, etc.) bringt ihm seine Kampferfahrung nichts. \nWird mit dem Trottel vom Dienst gespielt: Sobald der Veteran stirbt, geht auch die Weisheit von der Mannschaft verloren. Diese kann sich dann nicht mehr zur\u00FCckhalten und bringt den Trottel um, wenn dieser als das, was er ist, ertappt wurde",
+    "target-value": "The veteran has served so long and briefly gained camphor experience that it can not be killed by a single fig of the saboteurs.Instead, these have to run twice.With all the others (Oberfeldarzt, sniper, team, etc.), his camphor experience brings him nothing.\nIf the jerk is played by the service: As soon as the veteran dies, the wisdom is lost from the team.This can then no longer hold back and brings the jerk when he was caught as what he is\n"
+  },
+  {
+    "path": "theme.role-info.PureSoul",
+    "translator": "google-free",
+    "source-value": "Der Schnapskobold ist Stammgast der Kneipe. Seine allt\u00E4glichen Besuche sind jedem bekannt. Unbekannt ist es jedoch, wenn er mal n\u00FCchtern ist",
+    "target-value": "The Schnapskobold is austerity guest of the pub.His everyday visits are known to everyone.However, it is unknown unknown when he\u0027s sober\n"
+  },
+  {
+    "path": "theme.role-info.ScapeGoat",
+    "translator": "google-free",
+    "source-value": "Der Unteroffizier wird automatisch als Schuldiger ausgerufen, wenn bei einem Apell kein eindeutiger Schuldiger gefunden wird. Dies will der Unteroffizier nat\u00FCrlich vermeiden.\nWird der Unteroffizier durch ein Unentschieden als Schuldiger ausgerufen und dadurch von der Mannschaft umgebracht, dann bekommt der Unteroffizier das Recht bei dem kommendem Apell zu bestimmen wer abstimmen darf und wer nicht. Wenn er nur einen bestimmt und dieser direkt von den Saboteuren umgebracht wird, so entf\u00E4llt der n\u00E4chste Apell.",
+    "target-value": "The Unofficor is automatically proclaimed as guilty if no clear guilty person is found in an Apell.Of course, this wants to avoid this.\nIf the Unofficier is proclaimed by a draw as a guilty and thereby killed by the team, then the Unofficor gets the right to determine the coming Apell who may vote and who is not.If only one determines one and he is killed directly by the sabeles, the next apell is eliminated.\n"
+  },
+  {
+    "path": "theme.role-info.Villager",
+    "translator": "google-free",
+    "source-value": "Keine F\u00E4higkeiten, kein Talent und erstrecht keine Besonderheiten! \nDie neuen Gefreiten sind bekannterma\u00DFen nur als Kanonenfutter zu gebrauchen.",
+    "target-value": "No skills, no talent and do not have any special features!\nThe new ones are known to use only as a cannon feed.\n"
+  },
+  {
+    "path": "theme.role-info.Werwolf",
+    "translator": "google-free",
+    "source-value": "Ein Saboteur dessen Ziel es ist, alle Gefreiten zu t\u00F6ten, um den bevorstehenden Gegenangriff zu verhindern. \nDie Saboteure schlagen jede Nacht zu und suchen sich ein schlafendes Opfer.",
+    "target-value": "A saboteur whose goal is to kill everyone in order to prevent the upcoming counterattack.\nThe saboters hit every night and seek a sleeping victim.\n"
+  },
+  {
+    "path": "theme.role-info.Witch",
+    "translator": "google-free",
+    "source-value": "Der Oberfeldarzt hat Medizin, aber nicht besonders viel. Im Krieg muss er oft entscheiden, ob jemand an seinen Wunden erliegt oder die Heimat wieder sehen wird.\nEr hat einmal Medizin um einen zu retten, f\u00FCr wen wird er es nutzen? Aber auch er kann t\u00F6ten, und das mit den fiesesten Mitteln. Er hat ein Ass im \u00C4rmel und kann mit diesem einen in den Tot rei\u00DFen, ohne das man direkt wei\u00DF, dass er es war.\nEr kann in der Nacht eines, beide oder keins der Medikamente nutzen.",
+    "target-value": "The Oberfeldalk has medicine, but not much.In the war he often has to decide if someone suits his wounds or will see the home again.\nHe once has medicine to save one, for whom will he use it?But he too can kill, and with the saestest funds.He has an ace in the sleeve and with this one can tear into the dead, without the one knows that he was.\nHe can use in the night one, both or none of the drugs.\n"
+  },
+  {
+    "path": "theme.phases.AmorPhase",
+    "translator": "google-free",
+    "source-value": "Kellner serviert das Essen",
+    "target-value": "Waiter serves the food\n"
+  },
+  {
+    "path": "theme.phases.DailyVictimElectionPhase",
+    "translator": "google-free",
+    "source-value": "Noch ne Runde Bier",
+    "target-value": "Still a round of beer\n"
+  },
+  {
+    "path": "theme.phases.ElectMajorPhase",
+    "translator": "google-free",
+    "source-value": "B\u00FCrgermeisterwahl",
+    "target-value": "Mayoral election\n"
+  },
+  {
+    "path": "theme.phases.FlutistPhase",
+    "translator": "google-free",
+    "source-value": "Musiker verzaubert mit seiner Musik",
+    "target-value": "Musicians enchanted with his music\n"
+  },
+  {
+    "path": "theme.phases.HealerPhase",
+    "translator": "google-free",
+    "source-value": "Wirt gibt einen aus!",
+    "target-value": "Wirt gives one!\n"
+  },
+  {
+    "path": "theme.phases.HunterPhase",
+    "translator": "google-free",
+    "source-value": "Der J\u00E4ger will dicht werden",
+    "target-value": "The hunter wants to be dense\n"
+  },
+  {
+    "path": "theme.phases.InheritMajorPhase",
+    "translator": "google-free",
+    "source-value": "Vererbung des B\u00FCrgermeisters",
+    "target-value": "Inheritance of the mayor\n"
+  },
+  {
+    "path": "theme.phases.OraclePhase",
+    "translator": "google-free",
+    "source-value": "Im Suff neue Freunde finden!",
+    "target-value": "Find new friends in the Suff!\n"
+  },
+  {
+    "path": "theme.phases.ScapeGoatPhase",
+    "translator": "google-free",
+    "source-value": "Ein guter Witz",
+    "target-value": "A good joke\n"
+  },
+  {
+    "path": "theme.phases.WerwolfPhase",
+    "translator": "google-free",
+    "source-value": "panschen des Bieres",
+    "target-value": "Pans of the beer\n"
+  },
+  {
+    "path": "theme.phases.WitchPhase",
+    "translator": "google-free",
+    "source-value": "Kleines Gesch\u00E4ft unter \u0027Freunden\u0027",
+    "target-value": "Small business under \u0027Friends\u0027\n"
+  },
+  {
+    "path": "theme.tags.not-alive",
+    "translator": "google-free",
+    "source-value": "(n\u00FCchtern)",
+    "target-value": "(sober)\n"
+  },
+  {
+    "path": "theme.tags.loved",
+    "translator": "google-free",
+    "source-value": "(vollgefuttert)",
+    "target-value": "(full food)\n"
+  },
+  {
+    "path": "theme.tags.werwolf-select",
+    "translator": "google-free",
+    "source-value": "(N\u00FCchterner)",
+    "target-value": "(Sober)\n"
+  },
+  {
+    "path": "theme.tags.enchant-flutist",
+    "translator": "google-free",
+    "source-value": "(tanzend)",
+    "target-value": "(Dancing)\n"
+  },
+  {
+    "path": "theme.tags.major",
+    "translator": "google-free",
+    "source-value": "(B\u00FCrgermeister)",
+    "target-value": "(Mayor)\n"
+  },
+  {
+    "path": "theme.voting-title.default",
+    "translator": "google-free",
+    "source-value": "W\u00E4hle eine Option",
+    "target-value": "Choose an option\n"
+  },
+  {
+    "path": "theme.voting-title.ScapeGoatPhase\u002BScapeGoatSelect",
+    "translator": "google-free",
+    "source-value": "Verteile Stimmrechte",
+    "target-value": "Distribute voting rights\n"
+  },
+  {
+    "path": "theme.voting-title.WitchPhase\u002BWitchSafe",
+    "translator": "google-free",
+    "source-value": "Lebensdroge nutzen",
+    "target-value": "Use life drug\n"
+  },
+  {
+    "path": "theme.voting-title.WitchPhase\u002BWitchKill",
+    "translator": "google-free",
+    "source-value": "Todesdroge nutzen",
+    "target-value": "Use death drug\n"
+  },
+  {
+    "path": "theme.voting-options.default.do-nothing",
+    "translator": "google-free",
+    "source-value": "Weiter saufen",
+    "target-value": "Continue drinking\n"
+  },
+  {
+    "path": "theme.voting-options.default.player",
+    "translator": "bing",
+    "source-value": "{player}",
+    "target-value": "{player}"
+  },
+  {
+    "path": "theme.voting-options.ScapeGoatPhase\u002BScapeGoatSelect.stop-voting",
+    "translator": "google-free",
+    "source-value": "Alle Gl\u00E4ser leer",
+    "target-value": "All glasses empty\n"
+  },
+  {
+    "path": "theme.voting-options.WitchPhase\u002BWitchSafe.player",
+    "translator": "bing",
+    "source-value": "{player} abf\u00FCllen",
+    "target-value": "Fill {player}"
+  },
+  {
+    "path": "theme.voting-options.WerwolfPhase\u002BGirlVote.spy",
+    "translator": "google-free",
+    "source-value": "Beobachten",
+    "target-value": "Watch\n"
+  },
+  {
+    "path": "theme.event.player-notification.village-kill",
+    "translator": "google-free",
+    "source-value": "Die Kneipenbesucher haben jemanden rausgeschmissen.",
+    "target-value": "The pub visitors have made someone out.\n"
+  },
+  {
+    "path": "theme.event.player-notification.killed-by-major",
+    "translator": "google-free",
+    "source-value": "Der B\u00FCrgermeister hat entschieden den N\u00FCchternen rauszuwerfen.",
+    "target-value": "The mayor has decided to throw out the sober.\n"
+  },
+  {
+    "path": "theme.event.player-notification.scapegoat-kill",
+    "translator": "google-free",
+    "source-value": "Der Komiker wurde wegen Erregung \u00F6ffentlichen Ergernisses rausgeworfen.",
+    "target-value": "The comedian was thrown out because of excitement of public annoyance.\n"
+  },
+  {
+    "path": "theme.event.player-notification.new-voted-major",
+    "translator": "google-free",
+    "source-value": "Ein neuer B\u00FCrgermeister wurde bestimmt!",
+    "target-value": "A new mayor was determined!\n"
+  },
+  {
+    "path": "theme.event.player-notification.hunter-kill",
+    "translator": "google-free",
+    "source-value": "Der J\u00E4ger hat geschossen.",
+    "target-value": "The hunter shot.\n"
+  },
+  {
+    "path": "theme.event.player-notification.new-major",
+    "translator": "google-free",
+    "source-value": "Der B\u00FCrgermeistertitel wurde vererbt.",
+    "target-value": "The mayor\u0027s title was inherited.\n"
+  },
+  {
+    "path": "theme.event.player-notification.night-kills",
+    "translator": "google-free",
+    "source-value": "Leider haben nicht alle ihre Gl\u00E4ser geleert.",
+    "target-value": "Unfortunately, not all your glasses have emptied.\n"
+  },
+  {
+    "path": "theme.event.player-notification.scapegoat-vote",
+    "translator": "google-free",
+    "source-value": "Der Komiker hat seinen letzen Sketch.",
+    "target-value": "The comedian has his last sketch.\n"
+  },
+  {
+    "path": "theme.event.player-notification.old-man-and-idiot-killed",
+    "translator": "google-free",
+    "source-value": "Die Kneipenbesucher waren zu besoffen und konnten nicht mehr klar denken",
+    "target-value": "The pub visitors were drunk and could not think of clear\n"
+  },
+  {
+    "path": "theme.event.player-notification.KilledByLove",
+    "translator": "google-free",
+    "source-value": "Der Hunger wurde wieder zu gro\u00DF.",
+    "target-value": "The hunger became too big again.\n"
+  }
+]

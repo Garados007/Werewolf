@@ -1,0 +1,476 @@
+[
+  {
+    "path": "fallback",
+    "translator": "bing",
+    "source-value": "Die \u00DCbersetzung f\u00FCr die Sprache \u0022{lang}\u0022 konnte leider nicht gefunden werden. Von daher siehst du nun alles auf Deutsch.",
+    "target-value": "Unfortunately, the translation for the language \u0022{lang}\u0022 could not be found. Therefore, you can now see everything on German."
+  },
+  {
+    "path": "init.title",
+    "translator": "google-free",
+    "source-value": "Werw\u00F6lfe von D\u00FCsterwald",
+    "target-value": "Werew\u00F6lfe of Sch\u00FCsterwald"
+  },
+  {
+    "path": "init.reset-user",
+    "translator": "google-free",
+    "source-value": "Nutzer zur\u00FCcksetzen",
+    "target-value": "Reset users"
+  },
+  {
+    "path": "init.lost-token",
+    "translator": "google-free",
+    "source-value": "Der Nutzertoken konnte leider nicht aktualisiert werden. Es ist eine erneute Anmeldung erforderlich oder man spielt als Gast weiter.",
+    "target-value": "Unfortunately, the user knob could not be updated.There is a renewed registration required or you play as a guest."
+  },
+  {
+    "path": "init.user-mode.play-login",
+    "translator": "google-free",
+    "source-value": "Mit Account spielen",
+    "target-value": "Play with Account"
+  },
+  {
+    "path": "init.user-mode.play-guest",
+    "translator": "google-free",
+    "source-value": "Als Gast spielen",
+    "target-value": "Play as a guest"
+  },
+  {
+    "path": "init.user-mode.continue-login",
+    "translator": "google-free",
+    "source-value": "Anmelden oder Registrieren",
+    "target-value": "Login or Register"
+  },
+  {
+    "path": "init.user-mode.login.1",
+    "translator": "google-free",
+    "source-value": "Erhalte Statistiken",
+    "target-value": "Get statistics"
+  },
+  {
+    "path": "init.user-mode.login.2",
+    "translator": "google-free",
+    "source-value": "Steige im Level auf",
+    "target-value": "Start in the level"
+  },
+  {
+    "path": "init.user-mode.login.3",
+    "translator": "google-free",
+    "source-value": "Speichere deine Einstellungen Ger\u00E4te \u00FCbergreifend",
+    "target-value": "Save your settings unpleasant"
+  },
+  {
+    "path": "init.user-mode.guest.1",
+    "translator": "google-free",
+    "source-value": "Spiele sofort und direkt",
+    "target-value": "Games immediately and directly"
+  },
+  {
+    "path": "init.user-mode.guest.2",
+    "translator": "google-free",
+    "source-value": "Deine Daten werden nach dem Spiel gel\u00F6scht",
+    "target-value": "Your data will be deleted after the game"
+  },
+  {
+    "path": "init.guest-input.name",
+    "translator": "google-free",
+    "source-value": "Name",
+    "target-value": "Surname"
+  },
+  {
+    "path": "init.guest-input.image-code",
+    "translator": "google-free",
+    "source-value": "Bildcode",
+    "target-value": "Picture code"
+  },
+  {
+    "path": "init.guest-input.image-hint",
+    "translator": "google-free",
+    "source-value": "Hier kannst du einen beliebigen Text einf\u00FCgen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
+    "target-value": "Here you can insert any text from which your profile picture is generated.If you do not enter anything, so we use your username.If you are users of Gravatar.com and have deposited your profile picture there, please enter your email address here."
+  },
+  {
+    "path": "init.guest-input.continue",
+    "translator": "google-free",
+    "source-value": "Als Gast fortfahren",
+    "target-value": "Continue as a guest"
+  },
+  {
+    "path": "init.lobby-input.create",
+    "translator": "google-free",
+    "source-value": "Lobby erstellen",
+    "target-value": "Create a lobby"
+  },
+  {
+    "path": "init.lobby-input.join",
+    "translator": "google-free",
+    "source-value": "Lobby beitreten",
+    "target-value": "Join the lobby"
+  },
+  {
+    "path": "init.lobby-input.start",
+    "translator": "google-free",
+    "source-value": "Spiel starten",
+    "target-value": "start Game"
+  },
+  {
+    "path": "init.lobby-input.hint",
+    "translator": "google-free",
+    "source-value": "Bitte Code eingeben",
+    "target-value": "Please enter code"
+  },
+  {
+    "path": "settings.game-room.leader-is-player",
+    "translator": "google-free",
+    "source-value": "Spielleiter ist auch ein Mitspieler",
+    "target-value": "Spieller is also a teammate"
+  },
+  {
+    "path": "settings.game-room.dead-can-see-all-roles",
+    "translator": "google-free",
+    "source-value": "Tote k\u00F6nnen alle Rollen sehen",
+    "target-value": "Tote can see all rolls"
+  },
+  {
+    "path": "settings.game-room.all-can-see-role-of-dead",
+    "translator": "google-free",
+    "source-value": "Alle k\u00F6nnen die Rolle der Toten sehen",
+    "target-value": "All can see the role of the dead"
+  },
+  {
+    "path": "settings.game-room.auto-start-votings",
+    "translator": "google-free",
+    "source-value": "Votings automatisch starten",
+    "target-value": "Start voting automatically"
+  },
+  {
+    "path": "settings.game-room.auto-finish-votings",
+    "translator": "google-free",
+    "source-value": "Votings automatisch beenden",
+    "target-value": "End voting automatically"
+  },
+  {
+    "path": "settings.game-room.votings-timeout",
+    "translator": "google-free",
+    "source-value": "Votings automatisch nach einen Timeout beenden",
+    "target-value": "Automatically stop voting after a timeout"
+  },
+  {
+    "path": "settings.game-room.auto-finish-rounds",
+    "translator": "google-free",
+    "source-value": "Runden automatisch beenden wenn kein Voting mehr existiert",
+    "target-value": "Finally finish round if no voting exists"
+  },
+  {
+    "path": "settings.game-room.start",
+    "translator": "google-free",
+    "source-value": "Start",
+    "target-value": "begin"
+  },
+  {
+    "path": "settings.page.theme",
+    "translator": "google-free",
+    "source-value": "Thema",
+    "target-value": "topic"
+  },
+  {
+    "path": "settings.page.roles",
+    "translator": "google-free",
+    "source-value": "Rollen",
+    "target-value": "roll"
+  },
+  {
+    "path": "settings.page.options",
+    "translator": "google-free",
+    "source-value": "Optionen",
+    "target-value": "Options"
+  },
+  {
+    "path": "settings.bar.stats",
+    "translator": "bing",
+    "source-value": "Rollen: {roles}/{player}",
+    "target-value": "Roles: {roles}/{player}"
+  },
+  {
+    "path": "game.voting.started",
+    "translator": "google-free",
+    "source-value": "Gestarted",
+    "target-value": "Stared"
+  },
+  {
+    "path": "game.voting.not-started",
+    "translator": "google-free",
+    "source-value": "Nicht gestarted",
+    "target-value": "Not started"
+  },
+  {
+    "path": "game.voting.can-vote",
+    "translator": "google-free",
+    "source-value": "Darf abstimmen",
+    "target-value": "May vote"
+  },
+  {
+    "path": "game.voting.cannot-vote",
+    "translator": "google-free",
+    "source-value": "Darf nicht abstimmen",
+    "target-value": "Must not vote"
+  },
+  {
+    "path": "game.voting.nobody-has-voted",
+    "translator": "google-free",
+    "source-value": "Niemand hat bisher so abgestimmt",
+    "target-value": "Nobody has so far coordinated"
+  },
+  {
+    "path": "game.voting.has-voted-list",
+    "translator": "google-free",
+    "source-value": "Bisher so abgestimmt haben: {list}",
+    "target-value": "So far, have been coordinated: {list}"
+  },
+  {
+    "path": "game.voting.button.start",
+    "translator": "google-free",
+    "source-value": "Starten",
+    "target-value": "Start"
+  },
+  {
+    "path": "game.voting.button.end",
+    "translator": "google-free",
+    "source-value": "Beenden",
+    "target-value": "End"
+  },
+  {
+    "path": "game.voting.button.add-time-hint",
+    "translator": "bing",
+    "source-value": "In {time-left} Sekunden wird das Voting automatisch beendet. Hier klicken um auf {max-time} Sekunden zur\u00FCckzusetzen.",
+    "target-value": "In {time-left} seconds, the voting is automatically terminated. Click here to reset seconds to {max-time}."
+  },
+  {
+    "path": "game.voting.button.add-time",
+    "translator": "google-free",
+    "source-value": "Zeitzugabe ({time-left})",
+    "target-value": "Time of time ({time-left})"
+  },
+  {
+    "path": "game.phase.end",
+    "translator": "google-free",
+    "source-value": "Spiel beenden",
+    "target-value": "exit game"
+  },
+  {
+    "path": "game.phase.next",
+    "translator": "google-free",
+    "source-value": "N\u00E4chste Runde",
+    "target-value": "Next round"
+  },
+  {
+    "path": "game.loading.not-found",
+    "translator": "google-free",
+    "source-value": "Spiel nicht gefunden.",
+    "target-value": "Game not found."
+  },
+  {
+    "path": "game.loading.go-back",
+    "translator": "google-free",
+    "source-value": "Zur\u00FCck zur Lobbyauswahl",
+    "target-value": "Back to the lobby selection"
+  },
+  {
+    "path": "banner.maintenance",
+    "translator": "google-free",
+    "source-value": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet.",
+    "target-value": "The current server is restarted in {minute}: {sec-prefix} {sec}."
+  },
+  {
+    "path": "modals.theme-editor.title",
+    "translator": "google-free",
+    "source-value": "Theme Einstellungen",
+    "target-value": "Theme settings"
+  },
+  {
+    "path": "modals.theme-editor.background-url",
+    "translator": "google-free",
+    "source-value": "Hintergrundbild (URL)",
+    "target-value": "Wallpaper (URL)"
+  },
+  {
+    "path": "modals.theme-editor.go-back",
+    "translator": "google-free",
+    "source-value": "Zur\u00FCck zur Lobbyauswahl",
+    "target-value": "Back to the lobby selection"
+  },
+  {
+    "path": "modals.winner.title",
+    "translator": "google-free",
+    "source-value": "Sieger",
+    "target-value": "winner"
+  },
+  {
+    "path": "modals.player-notification.title",
+    "translator": "google-free",
+    "source-value": "Spielerbenachrichtigung",
+    "target-value": "Estimation"
+  },
+  {
+    "path": "modals.maintenance.title",
+    "translator": "google-free",
+    "source-value": "Serverwartung",
+    "target-value": "Server maintenance"
+  },
+  {
+    "path": "modals.maintenance.desc",
+    "translator": "google-free",
+    "source-value": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
+    "target-value": "The server must be serviced and will be restarted soon.Please now ends your game and then creates a new lobby."
+  },
+  {
+    "path": "modals.maintenance.reason",
+    "translator": "google-free",
+    "source-value": "Grund:",
+    "target-value": "Reason:"
+  },
+  {
+    "path": "modals.connection.close.title",
+    "translator": "google-free",
+    "source-value": "Keine Verbindung zum Server",
+    "target-value": "no connection to the server"
+  },
+  {
+    "path": "modals.connection.close.desc",
+    "translator": "google-free",
+    "source-value": "Es konnte keine Verbindung zum Spieleserver hergestellt werden. Das kann daran liegen, dass der Server derzeit Offline ist oder dass die Lobby nicht mehr existiert. Bitte versuche eine neue Lobby zu erstellen.",
+    "target-value": "No connection to the Game Server could be established.This may be because the server is currently offline or that the lobby no longer exists.Please try to create a new lobby."
+  },
+  {
+    "path": "modals.connection.code.1000.lobby not found",
+    "translator": "google-free",
+    "source-value": "Die Lobby existiert nicht mehr auf dem Server. Bitte erstelle eine Neue.",
+    "target-value": "The lobby no longer exists on the server.Please create a new one."
+  },
+  {
+    "path": "modals.connection.code.1012.",
+    "translator": "google-free",
+    "source-value": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu k\u00F6nnen.",
+    "target-value": "The server is currently restarted.Please create a new lobby to continue playing."
+  },
+  {
+    "path": "modals.connection.go-back",
+    "translator": "google-free",
+    "source-value": "Zur\u00FCck zur Lobbyauswahl",
+    "target-value": "Back to the lobby selection"
+  },
+  {
+    "path": "theme.event.player-notification.offline-player-left",
+    "translator": "google-free",
+    "source-value": "Ein Spieler wurde automatisch aus dem Spiel gekickt, der er 30 Sekunden offline ist.",
+    "target-value": "A player was automatically kicked out of the game, which he is offline for 30 seconds."
+  },
+  {
+    "path": "user-stats.won-games",
+    "translator": "google-free",
+    "source-value": "gewonnene Spiele",
+    "target-value": "gained games"
+  },
+  {
+    "path": "user-stats.died",
+    "translator": "google-free",
+    "source-value": "gestorben",
+    "target-value": "died"
+  },
+  {
+    "path": "user-stats.played-games",
+    "translator": "google-free",
+    "source-value": "gespielte Spiele",
+    "target-value": "played games"
+  },
+  {
+    "path": "user-stats.leader",
+    "translator": "google-free",
+    "source-value": "Spielleiter",
+    "target-value": "Game master"
+  },
+  {
+    "path": "user-stats.level",
+    "translator": "google-free",
+    "source-value": "Level",
+    "target-value": "Level"
+  },
+  {
+    "path": "user-stats.player-kick",
+    "translator": "google-free",
+    "source-value": "Spieler kicken",
+    "target-value": "Player kick"
+  },
+  {
+    "path": "user-stats.guest",
+    "translator": "google-free",
+    "source-value": "Gast",
+    "target-value": "guest"
+  },
+  {
+    "path": "user-stats.offline",
+    "translator": "google-free",
+    "source-value": "(offline)",
+    "target-value": "(offline)"
+  },
+  {
+    "path": "join-token.title",
+    "translator": "google-free",
+    "source-value": "Spieler hinzuf\u00FCgen",
+    "target-value": "Add player"
+  },
+  {
+    "path": "join-token.description",
+    "translator": "google-free",
+    "source-value": "Gib den Code deinen Mitspielern weiter:",
+    "target-value": "Give the code to your teammates:"
+  },
+  {
+    "path": "join-token.hint",
+    "translator": "google-free",
+    "source-value": "Zeigen",
+    "target-value": "Demonstrate"
+  },
+  {
+    "path": "join-token.refetch",
+    "translator": "google-free",
+    "source-value": "Neu anfordern",
+    "target-value": "Reward"
+  },
+  {
+    "path": "join-token.time",
+    "translator": "bing",
+    "source-value": "Der Code ist noch {minute}:{second-leading}{second} g\u00FCltig.",
+    "target-value": "The code is still valid {minute}:{second-leading}{second}."
+  },
+  {
+    "path": "join-token.copied",
+    "translator": "google-free",
+    "source-value": "Kopiert!",
+    "target-value": "Copied!"
+  },
+  {
+    "path": "join-token.copy-hint",
+    "translator": "google-free",
+    "source-value": "Klicken, um in die Zwischenablage zu kopieren",
+    "target-value": "Click to copy to the clipboard"
+  },
+  {
+    "path": "join-token.streamer-mode",
+    "translator": "google-free",
+    "source-value": "Streamer Mode",
+    "target-value": "Streamer fashion"
+  },
+  {
+    "path": "join-token.stream-replacement",
+    "translator": "google-free",
+    "source-value": "Klicken!",
+    "target-value": "Click!"
+  },
+  {
+    "path": "chat.not-allowed",
+    "translator": "google-free",
+    "source-value": "Die Nachricht durfte nicht gesendet werden.",
+    "target-value": "The message was not allowed to be sent."
+  }
+]
