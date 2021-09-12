@@ -10,23 +10,26 @@ namespace Translate
         {
         }
 
-        public override async Task Execute(Priority priority, Report.ReportGenerator reportGenerator)
+        public override async Task Execute(Priority priority, Report.ReportGenerator reportGenerator,
+            bool reportOnly
+        )
         {
             await Execute(
                 priority,
                 new DirectoryInfo(LanguageRoot),
                 ReportRoot,
-                reportGenerator
+                reportGenerator,
+                reportOnly
             ).ConfigureAwait(false);
         }
 
         private async Task Execute(Priority priority, DirectoryInfo workDir, string reportDir, 
-            Report.ReportGenerator reportGenerator)
+            Report.ReportGenerator reportGenerator, bool reportOnly)
         {
             foreach (var subDir in workDir.EnumerateDirectories())
             {
                 await Execute(priority, subDir, System.IO.Path.Combine(reportDir, subDir.Name),
-                    reportGenerator)
+                    reportGenerator, reportOnly)
                     .ConfigureAwait(false);
             }
             var sourcePath = System.IO.Path.Combine(workDir.FullName, $"{SourceLanguage}.json");
@@ -35,15 +38,18 @@ namespace Translate
             var reportPath = System.IO.Path.Combine(reportDir, $"{TargetLanguage}.json");
 
             var report = new Report.ReportStatus(reportPath);
-            var translator = new LangFileTranslator(
-                priority, 
-                SourceLanguage, 
-                TargetLanguage,
-                workDir.FullName,
-                report
-            );
-            await translator.TranslateAsync().ConfigureAwait(false);
-            await report.Save(reportPath).ConfigureAwait(false);
+            if (!reportOnly)
+            {
+                var translator = new LangFileTranslator(
+                    priority, 
+                    SourceLanguage, 
+                    TargetLanguage,
+                    workDir.FullName,
+                    report
+                );
+                await translator.TranslateAsync().ConfigureAwait(false);
+                await report.Save(reportPath).ConfigureAwait(false);
+            }
             reportGenerator.AddReport(report, System.IO.Path.Combine(workDir.FullName, $"{TargetLanguage}.json"));
         }
     }

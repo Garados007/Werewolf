@@ -1,24 +1,24 @@
-using System.Threading.Tasks;
 using System.Diagnostics;
-using System.Text.Json;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace Translate.Bing
+namespace Translate.GoogleFree
 {
-    public class BingTranslator : ITranslator
+    public class GoogleTranslator : ITranslator
     {
-        public string Key => "bing";
+        public string Key => "google-free";
 
         private int errorCounter;
         /// <summary>
         /// if <see cref="errorCounter" /> reaches this limit this translator will no longer be
-        /// available. This is required because bing.com is rate limited.
+        /// available.
         /// </summary>
         private const int ErrorLimit = 5;
 
         public bool CanTranslate(string value)
         {
-            return value.Length <= 1000 && value.Length > 0 && errorCounter < ErrorLimit;
+            return errorCounter < ErrorLimit;
         }
 
         public Task<(long max, long current)?> GetLimitsAsync()
@@ -26,48 +26,52 @@ namespace Translate.Bing
             return Task.FromResult<(long, long)?>(null);
         }
 
+        static Regex filterNonError = new Regex("Using .* server backend.", RegexOptions.Compiled);
+
         public async Task<string?> GetTranslationAsync(string source, string target, string text)
         {
             if (errorCounter >= ErrorLimit)
                 return null;
-            // // only for debug
-            // if (source == "de" && target == "en" && text == "Nutzer zurücksetzen")
-            //     return "reset user";
-            // if (source == "de" && target == "en" && text == "Mit Account spielen")
-            //     return "play with Account";
-            // return null;
-            // #pragma warning disable CS0162
+            
             var startInfo = new ProcessStartInfo
-            // #pragma warning restore CS0162
             {
                 ArgumentList =
-                    {
-                        "Bing/translator.js",
-                        text,
-                        source,
-                        target
-                    },
-                FileName = "node",
+                {
+                    "GoogleFree/translator.py",
+                    text,
+                    source,
+                    target
+                },
+                FileName = "python",
                 RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 StandardOutputEncoding = System.Text.Encoding.UTF8,
+                StandardErrorEncoding = System.Text.Encoding.UTF8,
             };
             using var process = Process.Start(startInfo);
             if (process is null)
                 return null;
             await process.WaitForExitAsync().ConfigureAwait(false);
-            var result = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
-            var json = JsonDocument.Parse(result);
-            if (json.RootElement.TryGetProperty("result", out JsonElement node))
+            // check for errors
+            var sb = new StringBuilder();
+            string? line;
+            while ((line = await process.StandardError.ReadLineAsync().ConfigureAwait(false)) is not null)
             {
-                errorCounter = 0;
-                return Verify(text, node.GetString());
+                if (filterNonError.IsMatch(line) || string.IsNullOrWhiteSpace(line))
+                    continue;
+                sb.AppendLine(line);
             }
-            if (json.RootElement.TryGetProperty("err", out node))
+            if (sb.Length > 0)
             {
-                Serilog.Log.Error("Bing: translation error {err}", node);
+                Serilog.Log.Error("Google: translation error {err}", sb);
                 errorCounter++;
+                return null;
             }
-            return null;
+            // the plain output is what we want
+            var result = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
+            if (result is not null)
+                errorCounter = 0;
+            return Verify(text, result);
         }
 
         static Regex matcher = new Regex("(\\{[^\\}]+\\})", RegexOptions.Compiled);

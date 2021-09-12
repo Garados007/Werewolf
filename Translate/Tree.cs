@@ -11,7 +11,9 @@ namespace Translate
     {
         private OneOf<None, Nodes, (string text, bool visited)> content;
 
+#pragma warning disable CS0649
         private static readonly None None;
+#pragma warning restore CS0649
 
         public Tree()
         {

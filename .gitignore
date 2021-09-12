@@ -12,6 +12,7 @@ content/index.js
 elm-stuff
 TestResults
 node_modules
+content/report/**/*.html
 # runtime stuff
 .litedb
 .env

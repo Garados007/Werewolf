@@ -18,6 +18,8 @@ namespace Translate
             var translator = new Priority();
             translator.AddTranslator(10, new Bing.BingTranslator());
             translator.AddTranslator(15, new Libre.LibreTranslator());
+            translator.AddTranslator(8, new GoogleFree.GoogleTranslator());
+            translator.AddTranslator(5, new DeepLFree.DeepLTranslator(!ContainsFlag(args, "--no-wait")));
             
             // var report = new Report.ReportStatus("../content/lang-info/root/en.json");
             // var tr = new LangFileTranslator(
@@ -35,8 +37,17 @@ namespace Translate
                 ".."
             );
             foreach (var job in Job.GetJobs("jobs.json"))
-                await job.Execute(translator, reportGenerator).ConfigureAwait(false);
+                await job.Execute(translator, reportGenerator, ContainsFlag(args, "--report-only"))
+                    .ConfigureAwait(false);
             reportGenerator.WriteFinalReport(translator);
+        }
+
+        static bool ContainsFlag(string[] args, string flag)
+        {
+            foreach (var arg in args)
+                if (arg == flag)
+                    return true;
+            return false;
         }
     }
 }

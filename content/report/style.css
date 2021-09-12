@@ -7,7 +7,7 @@ table.result tbody > tr {
   background-color: #e6eff7;
 }
 table.report > tbody > tr.even,
-table.result tbody > tr.even {
+table.result tbody > tr:nth-child(2n) {
   background-color: #cde1f2;
 }
 table.report tbody > tr > td:first-child {

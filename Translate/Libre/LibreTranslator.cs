@@ -51,7 +51,7 @@ namespace Translate.Libre
             }
         }
 
-        private LanguageCode? GetCode(string lang)
+        private static LanguageCode? GetCode(string lang)
         {
             switch (lang)
             {

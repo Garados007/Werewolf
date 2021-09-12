@@ -24,7 +24,9 @@ namespace Translate
             LanguageRoot = json.GetProperty("root").GetString() ?? throw new ArgumentNullException();
         }
 
-        public abstract Task Execute(Priority priority, Report.ReportGenerator reportGenerator);
+        public abstract Task Execute(Priority priority, Report.ReportGenerator reportGenerator,
+            bool reportOnly
+        );
 
         public static Job Create(JsonElement json)
         {
