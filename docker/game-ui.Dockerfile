@@ -60,8 +60,11 @@ RUN mkdir -p bin && \
 
 FROM bitnami/git:latest as vendor
 WORKDIR /src
+RUN apt-get update && \
+    apt-get install -y jq
 COPY . .
-RUN git submodule update --init --recursive
+RUN git submodule update --init --recursive && \
+    docker/only-supported-lang.sh
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as report
 # RUN apt-get update && \

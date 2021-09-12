@@ -12,9 +12,12 @@ namespace Translate.DeepLFree
 
         public bool Wait { get; }
 
-        public DeepLTranslator(bool wait)
+        public bool RetryRateLimit { get; }
+
+        public DeepLTranslator(bool wait, bool retryRateLimit)
         {
             Wait = wait;
+            RetryRateLimit = retryRateLimit;
         }
 
         private int errorCounter;
@@ -38,8 +41,35 @@ namespace Translate.DeepLFree
 
         public async Task<string?> GetTranslationAsync(string source, string target, string text)
         {
+            if (RetryRateLimit)
+            {
+                while (true)
+                {
+                    if (System.IO.File.Exists("cancel-retrylimit"))
+                    {
+                        System.IO.File.Delete("cancel-retrylimit");
+                        return null;
+                    }
+                    var (result, limit) = await GetTranslationInternalAsync(source, target, text)
+                        .ConfigureAwait(false);
+                    if (!limit)
+                        return result;
+                }
+            }
+            else
+            {
+                var (result, limit) = await GetTranslationInternalAsync(source, target, text)
+                    .ConfigureAwait(false);
+                if (limit)
+                    errorCounter = ErrorLimit;
+                return result;
+            }
+        }
+
+        private async Task<(string? result, bool limit)> GetTranslationInternalAsync(string source, string target, string text)
+        {
             if (errorCounter >= ErrorLimit)
-                return null;
+                return (null, false);
             
             if (Wait)
             {
@@ -67,7 +97,7 @@ namespace Translate.DeepLFree
             };
             using var process = Process.Start(startInfo);
             if (process is null)
-                return null;
+                return (null, false);
             await process.WaitForExitAsync().ConfigureAwait(false);
             // check for errors
             var sb = new StringBuilder();
@@ -78,8 +108,7 @@ namespace Translate.DeepLFree
                     continue;
                 if (line.Contains("429 Client Error: Too many Requests"))
                 {
-                    errorCounter = ErrorLimit;
-                    return null;
+                    return (null, true);
                 }
                 sb.AppendLine(line);
             }
@@ -87,13 +116,13 @@ namespace Translate.DeepLFree
             {
                 Serilog.Log.Error("DeepL: translation error {err}", sb);
                 errorCounter++;
-                return null;
+                return (null, false);
             }
             // the plain output is what we want
             var result = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
             if (result is not null)
                 errorCounter = 0;
-            return Verify(text, result);
+            return (Verify(text, result), false);
         }
 
         static Regex matcher = new Regex("(\\{[^\\}]+\\})", RegexOptions.Compiled);

@@ -19,7 +19,10 @@ namespace Translate
             translator.AddTranslator(10, new Bing.BingTranslator());
             translator.AddTranslator(15, new Libre.LibreTranslator());
             translator.AddTranslator(8, new GoogleFree.GoogleTranslator());
-            translator.AddTranslator(5, new DeepLFree.DeepLTranslator(!ContainsFlag(args, "--no-wait")));
+            translator.AddTranslator(5, new DeepLFree.DeepLTranslator(
+                wait: !ContainsFlag(args, "--no-wait"),
+                retryRateLimit: ContainsFlag(args, "--retry-ratelimit")
+            ));
             
             // var report = new Report.ReportStatus("../content/lang-info/root/en.json");
             // var tr = new LangFileTranslator(
