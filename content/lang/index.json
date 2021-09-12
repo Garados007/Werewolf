@@ -1,6 +1,7 @@
 {
     "languages": {
-        "de": "Deutsch"
+        "de": "Deutsch",
+        "en": "English"
     },
     "icons": {
         "de": "de",
@@ -9,16 +10,20 @@
     "themes": {
         "Werewolf.Theme.Default.DefaultTheme": {
             "default": {
-                "de": "Standard-Theme"
+                "de": "Standard-Theme",
+                "en": "Default Theme"
             },
             "rotlicht": {
-                "de": "AIDS im Rotlichtviertel (Beta)"
+                "de": "AIDS im Rotlichtviertel (Beta)",
+                "en": "AIDS in the red light district (Beta)"
             },
             "military": {
-                "de": "Saboteure beim Millitär (Beta)"
+                "de": "Saboteure beim Millitär (Beta)",
+                "en": "Military saboteurs (Beta)"
             },
             "bar": {
-                "de": "Bierpanscher in der Kneipe (Beta)"
+                "de": "Bierpanscher in der Kneipe (Beta)",
+                "en": "Beer adulterator in the pub (Beta)"
             }
         }
     }
