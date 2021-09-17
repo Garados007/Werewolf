@@ -43,33 +43,33 @@
   },
   {
     "path": "theme.roles.Healer",
-    "translator": "google-free",
+    "translator": "deepl-free",
     "source-value": "Heiler",
-    "target-value": "healer\n"
+    "target-value": "Healer"
   },
   {
     "path": "theme.roles.Hunter",
-    "translator": "google-free",
+    "translator": "deepl-free",
     "source-value": "J\u00E4ger",
-    "target-value": "Hunter\n"
+    "target-value": "Hunter"
   },
   {
     "path": "theme.roles.Idiot",
-    "translator": "google-free",
+    "translator": "deepl-free",
     "source-value": "Dorfdepp",
-    "target-value": "Village\n"
+    "target-value": "Village idiot"
   },
   {
     "path": "theme.roles.OldMan",
-    "translator": "google-free",
+    "translator": "deepl-free",
     "source-value": "Alte Mann",
-    "target-value": "Old man\n"
+    "target-value": "Old man"
   },
   {
     "path": "theme.roles.Oracle",
-    "translator": "google-free",
+    "translator": "deepl-free",
     "source-value": "Seherin",
-    "target-value": "Seer\n"
+    "target-value": "Seer"
   },
   {
     "path": "theme.roles.PureSoul",

@@ -12,7 +12,7 @@ namespace Translate.DeepLFree
 
         public bool Wait { get; }
 
-        public bool RetryRateLimit { get; }
+        public bool RetryRateLimit { get; private set; }
 
         public DeepLTranslator(bool wait, bool retryRateLimit)
         {
@@ -41,24 +41,32 @@ namespace Translate.DeepLFree
 
         public async Task<string?> GetTranslationAsync(string source, string target, string text)
         {
+            if (errorCounter >= ErrorLimit)
+                return null;
             if (RetryRateLimit)
             {
+                int maxTime = 300_000;
                 while (true)
                 {
                     if (System.IO.File.Exists("cancel-retrylimit"))
                     {
                         System.IO.File.Delete("cancel-retrylimit");
+                        RetryRateLimit = false;
+                        errorCounter = ErrorLimit;
                         return null;
                     }
-                    var (result, limit) = await GetTranslationInternalAsync(source, target, text)
+                    var (result, limit) = await GetTranslationInternalAsync(source, target, text, maxTime)
                         .ConfigureAwait(false);
                     if (!limit)
                         return result;
+                    maxTime = unchecked(maxTime * 2);
+                    if (maxTime < 0)
+                        maxTime = int.MaxValue;
                 }
             }
             else
             {
-                var (result, limit) = await GetTranslationInternalAsync(source, target, text)
+                var (result, limit) = await GetTranslationInternalAsync(source, target, text, 300_000)
                     .ConfigureAwait(false);
                 if (limit)
                     errorCounter = ErrorLimit;
@@ -66,16 +74,14 @@ namespace Translate.DeepLFree
             }
         }
 
-        private async Task<(string? result, bool limit)> GetTranslationInternalAsync(string source, string target, string text)
+        private async Task<(string? result, bool limit)> GetTranslationInternalAsync(
+            string source, string target, string text, int maxTime)
         {
-            if (errorCounter >= ErrorLimit)
-                return (null, false);
-            
             if (Wait)
             {
                 // wait for 1 to 5 minutes
                 var r = new Random();
-                var time = TimeSpan.FromMilliseconds(r.Next(60_000, 300_000));
+                var time = TimeSpan.FromMilliseconds(r.Next(60_000, maxTime));
                 Serilog.Log.Debug("Wait for {time}", time);
                 await Task.Delay(time);
             }

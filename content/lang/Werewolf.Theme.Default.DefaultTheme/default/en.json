@@ -1,5 +1,5 @@
 {
-  "#date": "2021-09-12 09:52:08Z",
+  "#date": "2021-09-17 19:04:04Z",
   "#hint": "This language file is automaticly translated from de to en",
   "theme": {
     "event": {
@@ -59,11 +59,11 @@
       "Angel": "Angel",
       "Flutist": "Flute player",
       "Girl": "Little girl",
-      "Healer": "healer\n",
-      "Hunter": "Hunter\n",
-      "Idiot": "Village\n",
-      "OldMan": "Old man\n",
-      "Oracle": "Seer\n",
+      "Healer": "Healer",
+      "Hunter": "Hunter",
+      "Idiot": "Village idiot",
+      "OldMan": "Old man",
+      "Oracle": "Seer",
       "PureSoul": "Pure\n",
       "ScapeGoat": "scapegoat\n",
       "ThreeBrothers": "Three brothers\n",
