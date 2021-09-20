@@ -526,7 +526,7 @@ namespace Werewolf.Game
             var role = Game.TryGetRoleKindSafe(UserEntry.User.Id);
             var allowed = role.IsLeader ||
                 currentPhase == null ||
-                (current == message.Phase && role != null && currentPhase.CanMessage(Game, role));
+                (current == message.Phase && currentPhase.CanMessage(Game, role));
             Game.SendEvent(new Theme.Events.ChatEvent(
                 UserEntry.User.Id, 
                 message.Phase, 
