@@ -20,7 +20,7 @@ namespace Werewolf.Theme.Events
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
             var id = game.TryGetId(Role);
-            var ownRole = game.TryGetRole(user.Id);
+            var ownRole = game.TryGetRoleKindSafe(user.Id);
             var seenRole = id is not null ?
                 Role.GetSeenRole(game, ExecutionRound, user, id.Value, Role) : null;
             writer.WriteString("id", id);

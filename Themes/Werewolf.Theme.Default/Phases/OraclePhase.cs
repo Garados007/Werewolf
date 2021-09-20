@@ -21,9 +21,9 @@ namespace Werewolf.Theme.Default.Phases
                     role.IsAlive && !(role is Roles.Oracle) && !baseRole.IsViewedByOracle;
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer is Roles.Oracle;
+                return viewer.IsLeaderOrRole<Roles.Oracle>();
             }
 
             public override bool CanVote(Role voter)
@@ -50,9 +50,9 @@ namespace Werewolf.Theme.Default.Phases
         protected override OraclePick Create(GameRoom game, IEnumerable<UserId>? ids = null)
             => new OraclePick(game, ids);
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
-            return role is Roles.Oracle;
+            return role.IsLeaderOrRole<Roles.Oracle>();
         }
     }
 }

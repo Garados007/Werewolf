@@ -50,7 +50,7 @@ namespace Werewolf.Theme
         /// <param name="game">The current game</param>
         /// <param name="viewer">The viewer of this role. null for the leader</param>
         /// <returns>a list of defined tags</returns>
-        public virtual IEnumerable<string> GetTags(GameRoom game, Role? viewer)
+        public virtual IEnumerable<string> GetTags(GameRoom game, RoleKind viewer)
         {
             if (!IsAlive)
                 yield return "not-alive";
@@ -179,13 +179,13 @@ namespace Werewolf.Theme
                 null;
         }
 
-        public static IEnumerable<string> GetSeenTags(GameRoom game, UserInfo user, Role? viewer, Role target)
+        public static IEnumerable<string> GetSeenTags(GameRoom game, UserInfo user, RoleKind viewer, Role target)
         {
-            if (viewer == null && game.Leader != user.Id)
-                return Enumerable.Empty<string>();
-            if (viewer != null && game.DeadCanSeeAllRoles && !viewer.IsAlive)
-                viewer = null;
-            return target.GetTags(game, viewer);
+            if (viewer.IsLeader)
+                return target.GetTags(game, viewer);
+            if (viewer.IsPlayer && game.DeadCanSeeAllRoles && !viewer.AsPlayer!.IsAlive)
+                viewer = RoleKind.CreateLeader();
+            return Enumerable.Empty<string>();
         }
     }
 }

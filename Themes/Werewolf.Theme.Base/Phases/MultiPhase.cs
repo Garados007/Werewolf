@@ -47,7 +47,7 @@ namespace Werewolf.Theme.Phases
             Phase2.ExecuteMultipleWinner(voting, game);
         }
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
             return Phase1.CanMessage(game, role) || Phase2.CanMessage(game, role);
         }

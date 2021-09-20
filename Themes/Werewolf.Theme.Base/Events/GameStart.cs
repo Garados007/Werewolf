@@ -10,7 +10,7 @@ namespace Werewolf.Theme.Events
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
         {
-            var ownRole = game.TryGetRole(user.Id);
+            var ownRole = game.TryGetRoleKindSafe(user.Id);
             writer.WriteStartObject("participants");
             foreach (var (id, participant) in game.Users.ToArray())
             {

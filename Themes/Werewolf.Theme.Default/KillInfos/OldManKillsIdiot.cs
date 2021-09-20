@@ -7,7 +7,7 @@ namespace Werewolf.Theme.Default.KillInfos
     {
         public override string NotificationId => "old-man-and-idiot-killed";
 
-        public override IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer)
+        public override IEnumerable<string> GetKillFlags(GameRoom game, RoleKind viewer)
         {
             return Enumerable.Empty<string>();
         }

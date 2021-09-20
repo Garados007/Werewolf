@@ -19,7 +19,7 @@ namespace Werewolf.Theme.Phases
             public override IEnumerable<(int id, VoteOption option)> Options
                 => Enumerable.Repeat((0, option), 1);
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
                 => phase.CanView(viewer);
 
             public override bool CanVote(Role voter)
@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Phases
             }
         }
 
-        protected abstract bool CanView(Role viewer);
+        protected abstract bool CanView(RoleKind viewer);
 
         protected abstract bool CanVote(Role voter);
 

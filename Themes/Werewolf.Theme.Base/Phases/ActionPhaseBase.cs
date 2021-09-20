@@ -22,7 +22,7 @@ namespace Werewolf.Theme.Phases
             Execute(game);
         }
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
             return false;
         }

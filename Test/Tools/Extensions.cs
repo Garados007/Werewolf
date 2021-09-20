@@ -135,7 +135,7 @@ namespace Test.Tools
 
         public static void ExpectTag(this Role role, GameRoom game, string tag)
         {
-            if (!role.GetTags(game, null).Contains(tag))
+            if (!role.GetTags(game, RoleKind.CreateLeader()).Contains(tag))
                 throw new InvalidOperationException(
                     $"The role {role.GetType().FullName} was expected to have the tag {tag} but hasn't."
                 );

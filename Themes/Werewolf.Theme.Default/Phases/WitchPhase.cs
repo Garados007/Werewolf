@@ -26,9 +26,9 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool AllowDoNothingOption => true;
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer == Witch;
+                return viewer.IsLeader || viewer.AsPlayer == Witch;
             }
 
             public override bool CanVote(Role voter)
@@ -60,9 +60,9 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool AllowDoNothingOption => true;
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer is Witch;
+                return viewer.IsLeaderOrRole<Witch>();
             }
 
             public override bool CanVote(Role voter)
@@ -93,9 +93,9 @@ namespace Werewolf.Theme.Default.Phases
                 base.RemoveVoting(voting);
             }
 
-            public override bool CanMessage(GameRoom game, Role role)
+            public override bool CanMessage(GameRoom game, RoleKind role)
             {
-                return role is Witch;
+                return role.IsLeaderOrRole<Witch>();
             }
         }
 
@@ -110,9 +110,9 @@ namespace Werewolf.Theme.Default.Phases
             protected override Witch GetRole(WitchKill voting)
                 => voting.Witch;
 
-            public override bool CanMessage(GameRoom game, Role role)
+            public override bool CanMessage(GameRoom game, RoleKind role)
             {
-                return role is Witch;
+                return role.IsLeaderOrRole<Witch>();
             }
         }
 

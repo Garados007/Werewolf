@@ -37,7 +37,7 @@ namespace Werewolf.Theme
 
         public abstract IEnumerable<(int id, VoteOption option)> Options { get; }
 
-        public abstract bool CanView(Role viewer);
+        public abstract bool CanView(RoleKind viewer);
 
         public abstract bool CanVote(Role voter);
 
@@ -176,10 +176,9 @@ namespace Werewolf.Theme
                 _ = FinishVotingAsync(game);
         }
 
-        public static bool CanViewVoting(GameRoom game, UserInfo user, Role? ownRole, Voting voting)
+        public static bool CanViewVoting(GameRoom game, UserInfo user, RoleKind ownRole, Voting voting)
         {
-            return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
-                (ownRole != null && voting.CanView(ownRole));
+            return ownRole.IsLeader || voting.CanView(ownRole);
         }
 
         private static readonly System.Globalization.NumberFormatInfo format =

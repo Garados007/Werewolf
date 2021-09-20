@@ -19,9 +19,9 @@ namespace Werewolf.Theme.Default.Phases
                 Hunter = hunter;
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer == Hunter;
+                return viewer.IsLeader || viewer.AsPlayer == Hunter;
             }
 
             public override bool CanVote(Role voter)
@@ -54,7 +54,7 @@ namespace Werewolf.Theme.Default.Phases
         protected override bool FilterVoter(Hunter role)
             => !role.IsAlive && !role.HasKilled;
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
             return true;
         }

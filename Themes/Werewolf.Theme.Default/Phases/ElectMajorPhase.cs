@@ -16,7 +16,7 @@ namespace Werewolf.Theme.Default.Phases
             }
 
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
                 return true;
             }
@@ -61,7 +61,7 @@ namespace Werewolf.Theme.Default.Phases
             }
         }
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
             return true;
         }

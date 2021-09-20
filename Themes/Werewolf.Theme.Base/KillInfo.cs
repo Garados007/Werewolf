@@ -14,7 +14,7 @@ namespace Werewolf.Theme
             }
         }
 
-        public abstract IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer);
+        public abstract IEnumerable<string> GetKillFlags(GameRoom game, RoleKind viewer);
 
     }
 }

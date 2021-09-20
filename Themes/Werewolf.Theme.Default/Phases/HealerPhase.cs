@@ -18,8 +18,8 @@ namespace Werewolf.Theme.Default.Phases
             protected override bool DefaultParticipantSelector(Role role)
                 => role.IsAlive && role is BaseRole baseRole && !baseRole.IsSelectedByHealer;
 
-            public override bool CanView(Role viewer)
-                => viewer is Roles.Healer;
+            public override bool CanView(RoleKind viewer)
+                => viewer.IsLeaderOrRole<Roles.Healer>();
 
             public override bool CanVote(Role voter)
                 => voter is Roles.Healer && voter.IsAlive;
@@ -46,9 +46,9 @@ namespace Werewolf.Theme.Default.Phases
         protected override HealerVote Create(GameRoom game, IEnumerable<UserId>? ids = null)
             => new HealerVote(game, ids);
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
-            return role is Roles.Healer;
+            return role.IsLeaderOrRole<Roles.Healer>();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Werewolf.Game.Events
 
         private void WriteGameInfo(Utf8JsonWriter writer)
         {
-            var ownRole = GameRoom.TryGetRole(User.Id);
+            var ownRole = GameRoom.TryGetRoleKindSafe(User.Id);
             var winner = GameRoom.Winner;
             writer.WriteStartObject("game");
 
@@ -56,7 +56,7 @@ namespace Werewolf.Game.Events
 
         }
 
-        private void WritePhaseInfo(Utf8JsonWriter writer, Role? ownRole)
+        private void WritePhaseInfo(Utf8JsonWriter writer, RoleKind ownRole)
         {
             if (GameRoom.Phase == null)
                 writer.WriteNull("phase");
@@ -83,7 +83,7 @@ namespace Werewolf.Game.Events
             }
         }
 
-        private void WriteGameUserEntries(Utf8JsonWriter writer, Role? ownRole,
+        private void WriteGameUserEntries(Utf8JsonWriter writer, RoleKind ownRole,
             (uint round, ReadOnlyMemory<UserId> winner)? winner
         )
         {

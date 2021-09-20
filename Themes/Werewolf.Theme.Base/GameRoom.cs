@@ -113,6 +113,17 @@ namespace Werewolf.Theme
             return Users.TryGetValue(id, out GameUserEntry? entry) ? entry.Role : null;
         }
 
+        public RoleKind? TryGetRoleKind(UserId id)
+        {
+            if (!LeaderIsPlayer && Leader == id)
+                return RoleKind.CreateLeader();
+            var role = TryGetRole(id);
+            return role is Role x ? RoleKind.CreatePlayer(x) : RoleKind.CreateSpectator();
+        }
+
+        public RoleKind TryGetRoleKindSafe(UserId id)
+            => TryGetRoleKind(id) ?? RoleKind.CreateSpectator();
+
         public UserId? TryGetId(Role role)
         {
             foreach (var (id, entry) in Users)

@@ -24,8 +24,8 @@ namespace Werewolf.Theme.Events
                 return false;
             if (game.Phase == null)
                 return true;
-            var role = game.TryGetRole(user.Id);
-            return role != null && game.Phase.Current.CanMessage(game, role);
+            var role = game.TryGetRoleKindSafe(user.Id);
+            return role.IsLeader || game.Phase.Current.CanMessage(game, role);
         }
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)

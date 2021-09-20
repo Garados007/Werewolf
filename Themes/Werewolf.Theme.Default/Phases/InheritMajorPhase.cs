@@ -20,9 +20,9 @@ namespace Werewolf.Theme.Default.Phases
                 return role.IsAlive && !role.IsMajor;
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer.IsMajor;
+                return viewer.IsLeader || (viewer.AsPlayer?.IsMajor ?? false);
             }
 
             public override bool CanVote(Role voter)
@@ -54,7 +54,7 @@ namespace Werewolf.Theme.Default.Phases
         protected override InheritMajor Create(GameRoom game, IEnumerable<UserId>? ids = null)
             => new InheritMajor(game, ids);
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
             return true;
         }

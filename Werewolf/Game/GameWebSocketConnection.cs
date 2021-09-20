@@ -523,8 +523,8 @@ namespace Werewolf.Game
         {
             var currentPhase = Game.Phase?.Current;
             var current = currentPhase?.LanguageId;
-            var role = Game.TryGetRole(UserEntry.User.Id);
-            var allowed = (UserEntry.User.Id == Game.Leader && !Game.LeaderIsPlayer) ||
+            var role = Game.TryGetRoleKindSafe(UserEntry.User.Id);
+            var allowed = role.IsLeader ||
                 currentPhase == null ||
                 (current == message.Phase && role != null && currentPhase.CanMessage(Game, role));
             Game.SendEvent(new Theme.Events.ChatEvent(

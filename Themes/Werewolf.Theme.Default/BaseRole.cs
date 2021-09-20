@@ -46,13 +46,14 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        public override IEnumerable<string> GetTags(GameRoom game, Role? viewer)
+        public override IEnumerable<string> GetTags(GameRoom game, RoleKind viewer)
         {
             foreach (var tag in base.GetTags(game, viewer))
                 yield return tag;
-            if (IsLoved && (viewer == this || viewer == null || ViewLoved(viewer)))
+            if (IsLoved && (viewer.IsLeader || viewer.AsPlayer == this || ViewLoved(viewer)))
                 yield return "loved";
-            if (IsEnchantedByFlutist && (viewer == null || viewer is Roles.Flutist || (viewer is BaseRole baseRole && baseRole.IsEnchantedByFlutist)))
+            if (IsEnchantedByFlutist && (viewer.IsLeaderOrRole<Roles.Flutist>() || 
+                    (viewer.AsPlayer is BaseRole baseRole && baseRole.IsEnchantedByFlutist)))
                 yield return "enchant-flutist";
         }
 
@@ -63,11 +64,15 @@ namespace Werewolf.Theme.Default
                 : base.ViewRole(viewer);
         }
 
-        public virtual bool ViewLoved(Role viewer)
+        public virtual bool ViewLoved(RoleKind viewer)
         {
-            return viewer is BaseRole viewer_
-                && (viewer_.IsLoved || viewer is Roles.Amor)
-                && IsLoved;
+            return viewer.Match(
+                () => true,
+                role => role is BaseRole viewer_ 
+                    && (viewer_.IsLoved || role is Roles.Amor)
+                    && IsLoved,
+                () => false
+            );
         }
 
         public override void ChangeToAboutToKill(GameRoom game)

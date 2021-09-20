@@ -12,7 +12,7 @@ namespace Werewolf.Theme.Events
 
         public override bool CanSendTo(GameRoom game, UserInfo user)
         {
-            return Voting.CanViewVoting(game, user, game.TryGetRole(user.Id), Voting);
+            return Voting.CanViewVoting(game, user, game.TryGetRoleKindSafe(user.Id), Voting);
         }
 
         public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)

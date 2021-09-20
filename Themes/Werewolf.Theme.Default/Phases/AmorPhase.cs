@@ -15,9 +15,9 @@ namespace Werewolf.Theme.Default.Phases
             {
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer is Roles.Amor;
+                return viewer.IsLeaderOrRole<Roles.Amor>();
             }
 
             public override bool CanVote(Role voter)
@@ -88,9 +88,9 @@ namespace Werewolf.Theme.Default.Phases
             }
         }
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
-            return role is Roles.Amor;
+            return role.IsLeaderOrRole<Roles.Amor>();
         }
     }
 }

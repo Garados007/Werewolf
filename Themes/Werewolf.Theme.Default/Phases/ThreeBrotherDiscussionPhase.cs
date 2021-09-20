@@ -20,12 +20,12 @@ namespace Werewolf.Theme.Default.Phases
                 user.HasSeenPartner = true;
         }
         
-        public override bool CanMessage(GameRoom game, Role role)
-            => CanVote(role);
+        public override bool CanMessage(GameRoom game, RoleKind role)
+            => role.IsLeader || (role.AsPlayer is Role x && CanVote(x));
 
-        protected override bool CanView(Role viewer)
+        protected override bool CanView(RoleKind viewer)
         {
-            return viewer is Roles.ThreeBrothers;
+            return viewer.IsLeaderOrRole<Roles.ThreeBrothers>();
         }
 
         protected override bool CanVote(Role voter)

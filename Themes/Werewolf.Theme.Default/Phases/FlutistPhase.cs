@@ -24,9 +24,9 @@ namespace Werewolf.Theme.Default.Phases
                     !baseRole.IsEnchantedByFlutist && !(role is Roles.Flutist);
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer is Roles.Flutist;
+                return viewer.IsLeaderOrRole<Roles.Flutist>();
             }
 
             public override bool CanVote(Role voter)
@@ -100,9 +100,9 @@ namespace Werewolf.Theme.Default.Phases
             RemoveVoting(voting);
         }
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, RoleKind role)
         {
-            return role is Roles.Flutist;
+            return role.IsLeaderOrRole<Roles.Flutist>();
         }
     }
 }

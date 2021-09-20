@@ -22,9 +22,9 @@ namespace Werewolf.Theme.Default.Phases
                 return !(role is WerwolfBase) && role.IsAlive;
             }
 
-            public override bool CanView(Role viewer)
+            public override bool CanView(RoleKind viewer)
             {
-                return viewer is WerwolfBase;
+                return viewer.IsLeaderOrRole<WerwolfBase>();
             }
 
             public override bool CanVote(Role voter)
@@ -58,9 +58,9 @@ namespace Werewolf.Theme.Default.Phases
             protected override WerwolfVote Create(GameRoom game, IEnumerable<UserId>? ids = null)
                 => new WerwolfVote(game, ids);
 
-            public override bool CanMessage(GameRoom game, Role role)
+            public override bool CanMessage(GameRoom game, RoleKind role)
             {
-                return role is WerwolfBase;
+                return role.IsLeaderOrRole<WerwolfBase>();
             }
         }
 
@@ -79,8 +79,8 @@ namespace Werewolf.Theme.Default.Phases
                 options.Add(new VoteOption("spy"));
             }
 
-            public override bool CanView(Role viewer)
-                => viewer == Girl;
+            public override bool CanView(RoleKind viewer)
+                => viewer.IsLeader || viewer.AsPlayer == Girl;
 
             public override bool CanVote(Role voter)
                 => voter == Girl;
@@ -135,9 +135,9 @@ namespace Werewolf.Theme.Default.Phases
             protected override Girl GetRole(GirlVote voting)
                 => voting.Girl;
 
-            public override bool CanMessage(GameRoom game, Role role)
+            public override bool CanMessage(GameRoom game, RoleKind role)
             {
-                return role is WerwolfBase;
+                return role.IsLeaderOrRole<WerwolfBase>();
             }
         }
 
