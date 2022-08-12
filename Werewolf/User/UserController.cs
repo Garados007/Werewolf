@@ -1,6 +1,8 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -108,16 +110,13 @@ namespace Werewolf.User
                 return null;
             
             // ask identity server for validation (this includes certificate check)
-            using var wc = new WebClient();
-            wc.Headers.Add(
-                HttpRequestHeader.Authorization,
-                $"Bearer {tokenString}"
-            );
+            using var hc = new HttpClient();
+            hc.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", tokenString);
             JsonDocument json;
             try 
             {
-                var webResponse = await wc.DownloadDataTaskAsync(OAuthUserInfoEndpoint).CAF(); 
-                using var m = new System.IO.MemoryStream(webResponse);
+                using var m = await hc.GetStreamAsync(OAuthUserInfoEndpoint).CAF();
                 json = await JsonDocument.ParseAsync(m).CAF();
             }
             catch (WebException)

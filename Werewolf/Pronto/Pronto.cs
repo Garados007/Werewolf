@@ -146,16 +146,18 @@ namespace Werewolf.Pronto
 
         private async Task UploadStatus()
         {
-            using var wc = new System.Net.WebClient();
-            wc.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/json");
-            wc.Headers.Add("token", Config.Token);
+            using var hc = new System.Net.Http.HttpClient();
+            hc.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            hc.DefaultRequestHeaders.Add("token", Config.Token);
             JsonDocument json;
             try
             {
-                using var result = new MemoryStream(await wc.UploadDataTaskAsync(
-                    $"{Config.Url}/v1/update",
-                    WriteToJson()
-                ).CAF());
+                using var result = (
+                    await hc.PostAsync(
+                        $"{Config.Url}/v1/update", 
+                        new System.Net.Http.ByteArrayContent(WriteToJson())
+                    ).CAF()
+                ).Content.ReadAsStream();
                 json = await JsonDocument.ParseAsync(result).CAF();
             }
             catch (System.Net.WebException e)
@@ -172,9 +174,9 @@ namespace Werewolf.Pronto
 
         public async Task<ProntoJoinToken?> CreateToken(string game, string lobby)
         {
-            using var wc = new System.Net.WebClient();
-            wc.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/json");
-            wc.Headers.Add("token", Config.Token);
+            using var hc = new System.Net.Http.HttpClient();
+            hc.DefaultRequestHeaders.Add("Content-Type", "application/json");
+            hc.DefaultRequestHeaders.Add("token", Config.Token);
 
             using var s = new MemoryStream();
             using var w = new Utf8JsonWriter(s);
@@ -183,14 +185,17 @@ namespace Werewolf.Pronto
             w.WriteString("lobby", lobby);
             w.WriteEndObject();
             w.Flush();
+            s.Position = 0;
 
             JsonDocument json;
             try
             {
-                using var result = new MemoryStream(await wc.UploadDataTaskAsync(
-                    $"{Config.Url}/v1/token",
-                    s.ToArray()
-                ).CAF());
+                using var result = (
+                    await hc.PostAsync(
+                        $"{Config.Url}/v1/token", 
+                        new System.Net.Http.StreamContent(s)
+                    ).CAF()
+                ).Content.ReadAsStream();
                 json = await JsonDocument.ParseAsync(result).CAF();
             }
             catch (System.Net.WebException e)

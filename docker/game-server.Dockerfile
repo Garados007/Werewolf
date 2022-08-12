@@ -3,7 +3,7 @@ WORKDIR /src
 COPY ./.git ./.git
 RUN git rev-parse --short HEAD > version-suffix
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as builder
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as builder
 WORKDIR /src
 COPY ./Themes ./Themes
 COPY ./Werewolf ./Werewolf
@@ -23,7 +23,7 @@ RUN mkdir -p /app && \
         Werewolf/Werewolf.csproj && \
     rm ./version-*
 
-FROM mcr.microsoft.com/dotnet/runtime:5.0
+FROM mcr.microsoft.com/dotnet/runtime:6.0
 WORKDIR /app
 COPY --from=builder /app /app
 CMD [ "dotnet", "/app/Werewolf.dll" ]

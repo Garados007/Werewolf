@@ -40,7 +40,7 @@ namespace Werewolf.User
                 }
                 catch (System.Exception e)
                 {
-
+                    Serilog.Log.Error(e, "Cannot update user");
                 }
             Info.DB.Stats.WinGames += dWinGames;
             Info.DB.Stats.Killed += dKilled;
@@ -77,7 +77,7 @@ namespace Werewolf.User
                     }
                     catch (System.Exception e)
                     {
-
+                        Serilog.Log.Error(e, "Cannot update user");
                     }
                 }
                 else break;
