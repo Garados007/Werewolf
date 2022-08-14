@@ -98,6 +98,10 @@
                 "old-man-and-idiot-killed": "Das Dorf hatte seine Vernunft verloren und den Dorfdepp gelyncht.",
                 "KilledByLove": "Der Liebeskummer war zu stark und man ist an gebrochenen Herzen gestorben."
             }
+        },
+        "logs": {
+            "Werewolf.Theme.Default.Chats.PlayerKillLog":
+                "{user} ist gestorben."
         }
     }
 }

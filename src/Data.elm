@@ -1,5 +1,7 @@
 module Data exposing
     ( ChatMessage
+    , ChatEntry(..)
+    , ChatLog
     , Error
     , UserInfo
     , Game
@@ -20,6 +22,10 @@ module Data exposing
     , decodeError
     , decodeGameGlobalState
     , decodeRoleTemplates
+    , ChatServiceMessage
+    , decodeChatServiceMessage
+    , TextVariable (..)
+    , decodeTextVariable
     )
 
 import Dict exposing (Dict)
@@ -235,21 +241,75 @@ decodeError =
         <| JD.nullable
         <| JD.string
 
-type alias ChatMessage =
+type alias ChatLog =
     { time: Posix
-    , sender: String
+    , shown: Bool
+    , entry: ChatEntry
+    }
+
+type ChatEntry
+    = ChatEntryMessage ChatMessage
+    | ChatEntryService ChatServiceMessage
+
+type alias ChatMessage =
+    { sender: String
     , phase: Maybe String
     , message: String
     , canSend: Bool
-    , shown: Bool
     }
 
 decodeChatMessage : Decoder ChatMessage
 decodeChatMessage =
     JD.succeed ChatMessage
-        |> Json.Decode.Pipeline.hardcoded (Time.millisToPosix 0)
         |> required "sender" JD.string
         |> required "phase" (JD.nullable JD.string)
         |> required "message" JD.string
         |> required "can-send" JD.bool
-        |> Json.Decode.Pipeline.hardcoded False
+
+type alias ChatServiceMessage =
+    { key: String
+    , epic: Bool
+    , args: Dict String TextVariable
+    }
+
+decodeChatServiceMessage : Decoder ChatServiceMessage
+decodeChatServiceMessage =
+    JD.succeed ChatServiceMessage
+    |> required "key" JD.string
+    |> required "epic" JD.bool
+    |> required "args" (JD.dict decodeTextVariable)
+
+type TextVariable
+    = TextVarPlain String
+    | TextVarUser String
+    | TextVarVoting String
+    | TextVarPhase String
+    | TextVarVotingOption String String (Dict String String)
+
+decodeTextVariable : Decoder TextVariable
+decodeTextVariable =
+    JD.andThen
+        (\type_ ->
+            case type_ of
+                "Plain" ->
+                    JD.map TextVarPlain
+                    <| JD.index 1 JD.string
+                "User" ->
+                    JD.map TextVarUser
+                    <| JD.index 1 JD.string
+                "Voting" ->
+                    JD.map TextVarVoting
+                    <| JD.index 1 JD.string
+                "Phase" ->
+                    JD.map TextVarPhase
+                    <| JD.index 1 JD.string
+                "VotingOption" ->
+                    JD.map3 TextVarVotingOption
+                        (JD.index 2 <| JD.index 0 JD.string)
+                        (JD.index 1 JD.string)
+                    <| JD.index 3
+                    <| JD.dict JD.string
+                _ -> JD.fail
+                    <| "Unknown variable type " ++ type_
+        )
+    <| JD.index 0 JD.string

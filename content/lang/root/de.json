@@ -116,6 +116,23 @@
             "player-notification": {
                 "offline-player-left": "Ein Spieler wurde automatisch aus dem Spiel gekickt, der er 30 Sekunden offline ist."
             }
+        },
+        "voting-title": {
+            "default-logs": "der Abstimmung"
+        },
+        "logs": {
+            "Werewolf.Theme.Chats.AddParticipantLog":
+                "{user} tritt der Lobby bei.",
+            "Werewolf.Theme.Chats.RemoveParticipantLog":
+                "{user} hat die Lobby wieder verlassen.",
+            "Werewolf.Theme.Chats.GameStartLog":
+                "Das Spiel wurde gestartet.",
+            "Werewolf.Theme.Chats.NextPhaseLog":
+                "Eine neue Phase bricht an: {phase}",
+            "Werewolf.Theme.Chats.SetVotingVoteLog":
+                "{voter} hat für {option} in {voting} gestimmt.",
+            "Werewolf.Theme.Chats.GameEndLog":
+                "Das Spiel wurde beendet."
         }
     },
     "user-stats": {

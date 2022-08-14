@@ -40,7 +40,7 @@ type alias Model =
     , lang: LangConfig
     , events: List (Bool,String)
     , styles: Styles
-    , chats: List Data.ChatMessage
+    , chats: List Data.ChatLog
     , chatView: Maybe String
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
@@ -231,9 +231,9 @@ applyEventData event model =
             { model
             | chats = 
                 (::)
-                    { chat
-                    | time = model.now
+                    { time = model.now
                     , shown = model.chatView /= Nothing
+                    , entry = Data.ChatEntryMessage chat
                     }
                 <| List.filter
                     (\chat_ ->
@@ -602,3 +602,21 @@ applyEventData event model =
                 Dict.empty
             }
             []
+        EventData.ChatServiceMessage msg -> Tuple.pair
+            { model
+            | chats = 
+                (::)
+                    { time = model.now
+                    , shown = model.chatView /= Nothing
+                    , entry = Data.ChatEntryService msg
+                    }
+                <| List.filter
+                    (\chat_ ->
+                        (Time.posixToMillis model.now) - (Time.posixToMillis chat_.time)
+                            < 1000 * 60 * 10
+                    )
+                <| List.take 30
+                <| model.chats
+            }
+            []
+

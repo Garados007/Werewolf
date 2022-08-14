@@ -2,6 +2,7 @@ module Views.ViewChat exposing (..)
 
 import Data
 import Language exposing (Language)
+import Language.ServiceRenderer
 
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
@@ -14,48 +15,18 @@ type Msg
     | Send String
     | Close
 
-view : Language -> Data.Game -> List Data.ChatMessage 
+view : Language -> Data.Game -> List Data.ChatLog 
     -> String -> Html Msg
 view lang game chats input =
     div [ class "chat-box" ]
         [ div [ class "chat-history", HA.id "chat-box-history" ]
             <| List.map
-                (\chat ->
-                    div
-                        [ HA.classList
-                            [ ("chat", True)
-                            , ("can-send", chat.canSend)
-                            ]
-                        , HA.title <|
-                            if chat.canSend
-                            then ""
-                            else Language.getTextOrPath lang
-                                [ "chat", "not-allowed" ]
-                        ]
-                    <| List.filterMap identity
-                        [ Maybe.map
-                                (Html.span [ class "chat-phase" ] << List.singleton)
-                            <| Maybe.map
-                                (\x -> text <| "[" ++ x ++ "]")
-                            <| Maybe.map
-                                (\name ->
-                                    Language.getTextOrPath lang
-                                        [ "theme", "phases", name ]
-                                )
-                            <| chat.phase
-                        , Just
-                            <| Html.span [ class "chat-user-name" ]
-                            <| List.singleton
-                            <| text
-                            <| (\x -> "[" ++ x ++ "]")
-                            <| Maybe.withDefault chat.sender
-                            <| Maybe.map (.user >> .name)
-                            <| Dict.get chat.sender game.user
-                        , Just
-                            <| Html.span [ class "chat-message" ]
-                            <| List.singleton
-                            <| text chat.message
-                        ]
+                (\{entry} ->
+                    case entry of
+                        Data.ChatEntryMessage message ->
+                            viewChatEntry lang game message
+                        Data.ChatEntryService message ->
+                            viewChatService lang game message
                 )
             <| List.reverse
             <| chats
@@ -75,6 +46,47 @@ view lang game chats input =
             , HE.onClick Close ]
             [ text "X" ]
         ]
+
+viewChatEntry : Language -> Data.Game -> Data.ChatMessage -> Html Msg
+viewChatEntry lang game chat =
+    div
+        [ HA.classList
+            [ ("chat", True)
+            , ("can-send", chat.canSend)
+            ]
+        , HA.title <|
+            if chat.canSend
+            then ""
+            else Language.getTextOrPath lang
+                [ "chat", "not-allowed" ]
+        ]
+    <| List.singleton
+    <| Language.ServiceRenderer.renderTextTokens lang game
+        (Dict.fromList
+            <| List.filterMap identity
+            [ Maybe.map (Tuple.pair "phase" << Data.TextVarPhase) chat.phase
+            , Just <| ("user", Data.TextVarUser chat.sender)
+            ]
+        )
+    <| List.filterMap identity
+        [ if chat.phase == Nothing
+            then Nothing
+            else Just <| Language.ServiceRenderer.TokenVariable "phase"
+        , Just <| Language.ServiceRenderer.TokenRaw " "
+        , Just <| Language.ServiceRenderer.TokenVariable "user"
+        , Just <| Language.ServiceRenderer.TokenRaw " "
+        , Just <| Language.ServiceRenderer.TokenRaw chat.message
+        ]
+
+viewChatService : Language -> Data.Game -> Data.ChatServiceMessage -> Html Msg
+viewChatService lang game chat =
+    div
+        [ HA.classList
+            [ ("chat", True)
+            , ("service", True)
+            ]
+        ]
+        [ Language.ServiceRenderer.render lang game chat ]
 
 onNotShiftEnter : msg -> Html.Attribute msg
 onNotShiftEnter event =

@@ -147,7 +147,6 @@ namespace Werewolf.Pronto
         private async Task UploadStatus()
         {
             using var hc = new System.Net.Http.HttpClient();
-            hc.DefaultRequestHeaders.Add("Content-Type", "application/json");
             hc.DefaultRequestHeaders.Add("token", Config.Token);
             JsonDocument json;
             try
@@ -156,6 +155,12 @@ namespace Werewolf.Pronto
                     await hc.PostAsync(
                         $"{Config.Url}/v1/update", 
                         new System.Net.Http.ByteArrayContent(WriteToJson())
+                        {
+                            Headers =
+                            {
+                                { "Content-Type", "application/json" }
+                            }
+                        }
                     ).CAF()
                 ).Content.ReadAsStream();
                 json = await JsonDocument.ParseAsync(result).CAF();
@@ -175,7 +180,6 @@ namespace Werewolf.Pronto
         public async Task<ProntoJoinToken?> CreateToken(string game, string lobby)
         {
             using var hc = new System.Net.Http.HttpClient();
-            hc.DefaultRequestHeaders.Add("Content-Type", "application/json");
             hc.DefaultRequestHeaders.Add("token", Config.Token);
 
             using var s = new MemoryStream();
@@ -194,6 +198,12 @@ namespace Werewolf.Pronto
                     await hc.PostAsync(
                         $"{Config.Url}/v1/token", 
                         new System.Net.Http.StreamContent(s)
+                        {
+                            Headers =
+                            {
+                                { "Content-Type", "application/json" }
+                            }
+                        }
                     ).CAF()
                 ).Content.ReadAsStream();
                 json = await JsonDocument.ParseAsync(result).CAF();

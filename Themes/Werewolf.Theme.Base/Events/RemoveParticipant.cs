@@ -1,5 +1,6 @@
 using Werewolf.User;
 using System.Text.Json;
+using Werewolf.Theme.Chats;
 
 namespace Werewolf.Theme.Events
 {
@@ -9,6 +10,9 @@ namespace Werewolf.Theme.Events
 
         public RemoveParticipant(UserId userId)
             => UserId = userId;
+
+        public override ChatServiceMessage? GetLogMessage()
+            => new Chats.RemoveParticipantLog(UserId);
 
         public override bool CanSendTo(GameRoom game, UserInfo user)
             => true;

@@ -77,6 +77,8 @@ namespace Werewolf.Theme.Default
                 foreach (var role in game.Users.Select(x => x.Value.Role))
                     if (role is BaseRole baseRole && role != this && baseRole.IsLoved)
                         role.SetKill(game, new KillInfos.KilledByLove());
+            if (game.TryGetId(this) is User.UserId id)
+                game.SendChat(new Chats.PlayerKillLog(id));
         }
 
         //public override void Kill(GameRoom game)

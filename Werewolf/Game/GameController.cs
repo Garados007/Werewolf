@@ -267,7 +267,18 @@ namespace Werewolf.Game
                     connection.UserEntry.User
                 ))
                 {
-                    _ = Task.Run(async () => await connection.SendEvent(@event));
+                    _ = Task.Run(async () => 
+                    {
+                        try { await connection.SendEvent(@event); }
+                        catch (Exception e)
+                        {
+                            Serilog.Log.Error(e, "Cannot send message {message} ({type}) to {user}",
+                                @event.GameEventType,
+                                @event.GetType().FullName,
+                                connection.UserEntry.User.Id
+                            );
+                        }
+                    });
                 }
             lockWsConnections.ExitReadLock();
         }

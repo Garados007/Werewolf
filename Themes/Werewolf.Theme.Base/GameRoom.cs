@@ -14,7 +14,7 @@ namespace Werewolf.Theme
 
         public uint ExecutionRound { get; private set; }
 
-        private UserId leader = new UserId();
+        private UserId leader;
         public UserId Leader
         {
             get => leader;
@@ -237,6 +237,12 @@ namespace Werewolf.Theme
             where T : GameEvent
         {
             OnEvent?.Invoke(this, @event);
+            if (@event.GetLogMessage() is Chats.ChatServiceMessage message)
+                SendChat(message);
         }
+
+        public void SendChat<T>(T message)
+            where T : Chats.ChatServiceMessage
+            => SendEvent(message);
     }
 }

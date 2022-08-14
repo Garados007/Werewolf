@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Werewolf.Theme.Chats;
 using Werewolf.User;
 
 namespace Werewolf.Theme.Events
@@ -9,6 +10,11 @@ namespace Werewolf.Theme.Events
 
         public NextPhase(Phase? phase)
             => Phase = phase;
+
+        public override ChatServiceMessage? GetLogMessage()
+        {
+            return Phase is null ? null : new Chats.NextPhaseLog(Phase);
+        }
 
         public override bool CanSendTo(GameRoom game, UserInfo user)
             => true;

@@ -1,10 +1,14 @@
 ﻿using System.Text.Json;
+using Werewolf.Theme.Chats;
 using Werewolf.User;
 
 namespace Werewolf.Theme.Events
 {
     public class GameStart : GameEvent
     {
+        public override ChatServiceMessage? GetLogMessage()
+            => new Chats.GameStartLog();
+
         public override bool CanSendTo(GameRoom game, UserInfo user)
             => true;
 

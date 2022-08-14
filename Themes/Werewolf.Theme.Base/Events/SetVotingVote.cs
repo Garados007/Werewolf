@@ -1,5 +1,6 @@
 ﻿using Werewolf.User;
 using System.Text.Json;
+using Werewolf.Theme.Chats;
 
 namespace Werewolf.Theme.Events
 {
@@ -17,6 +18,9 @@ namespace Werewolf.Theme.Events
         public int Option { get; }
 
         public UserId Voter { get; }
+
+        public override ChatServiceMessage? GetLogMessage()
+            => new SetVotingVoteLog(this);
 
         public override bool CanSendTo(GameRoom game, UserInfo user)
         {

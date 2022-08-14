@@ -59,15 +59,34 @@
 }
 .chat-box .chat {
     padding: 0.25em 0.4em;
+    white-space: pre-line;
+    overflow-wrap: break-word;
 }
 .chat-box .chat:hover {
     background-color: var(--color-dark);
 }
-.chat-box .chat:not(.can-send) {
+.chat-box .chat:not(.can-send):not(.service) {
     color: var(--text-color-dark);
     text-decoration: line-through;
 }
-.chat-box .chat .chat-message {
-    white-space: pre-line;
-    overflow-wrap: break-word;
+.chat-box .chat.service {
+    background-color: var(--color-dark-transparent);
+    font-style: italic;
+    font-size: 0.85em;
+}
+.chat-box .chat.service:hover {
+    background-color: var(--color-dark);
+}
+.chat-box .chat .highlight {
+    color: var(--color-base);
+    font-weight: 700;
+    font-style: normal;
+    cursor: default;
+}
+.chat-box .chat:not(.service) .highlight {
+    font-weight: 500;
+}
+.chat-box .chat .highlight:hover {
+    background-color: var(--color-background);
+    color: var(--text-color);
 }

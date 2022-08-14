@@ -33,6 +33,7 @@ type EventData
     | OnlineNotification String Data.OnlineInfo
     | Maintenance (Maybe String) Posix
     | SendStats (Dict String (GameUserStats, LevelData))
+    | ChatServiceMessage Data.ChatServiceMessage
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -215,6 +216,9 @@ decodeEventData =
                             |> required "current-xp" JD.int
                             |> required "max-xp" JD.int
                         )
+                "ChatServiceMessage" ->
+                    JD.map ChatServiceMessage
+                    <| Data.decodeChatServiceMessage
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

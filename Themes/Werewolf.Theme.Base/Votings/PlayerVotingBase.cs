@@ -51,8 +51,9 @@ namespace Werewolf.Theme.Votings
                 _ = OptionsDict.TryAdd(index++, 
                     ( id
                     , new VoteOption(PlayerTextId, 
-                        ("player", entry?.User.Config.Username ?? $"User {id}"))
-                    )
+                        ("player", entry?.User.Config.Username ?? $"User {id}"),
+                        ("player-id", id.ToString())
+                    ))
                 );
             }
         }
