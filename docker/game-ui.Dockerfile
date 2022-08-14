@@ -66,7 +66,7 @@ COPY . .
 RUN git submodule update --init --recursive && \
     docker/only-supported-lang.sh
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as report
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as report
 # RUN apt-get update && \
 #     apt-get install -y python3-pip nodejs npm && \
 #     ln /usr/bin/pip3 /usr/bin/pip && \
