@@ -26,7 +26,9 @@ RUN ver="$(cat "version")" && \
     sed -i "s/version = \".*\"/version = \"$ver\"/" \
         src/Config.elm && \
     mkdir /content && \
-    elm make --optimize --output=/content/index.js src/Main.elm
+    mkdir /content/special && \
+    elm make --optimize --output=/content/index.js src/Main.elm && \
+    elm make --optimize --output=/content/special/translation.html src/Translation/Main.elm
 
 FROM node:latest as js-compressor
 RUN npm install uglify-js --global
@@ -85,6 +87,7 @@ RUN cd /src/Translate && \
 
 FROM httpd:2.4
 COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
+COPY --from=builder /content/special /usr/local/apache2/htdocs/content/special
 COPY --from=vendor /src/content /usr/local/apache2/htdocs/content
 COPY --from=css-compressor /content/bin /usr/local/apache2/htdocs/content/css
 COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
