@@ -4,10 +4,7 @@ import Browser
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
-import Html.Events as HE
 import Http
-import Json.Decode as JD
-import Debug.Extra
 import Translation.Data as Data
 import Task
 import Translation.ViewProgress
@@ -92,7 +89,16 @@ view model =
         ModelEditor m ->
             Html.map WrapEditor
             <| Editor.view m
-        _ -> Debug.Extra.viewModel model
+        ModelErr err ->
+            Translation.ViewProgress.view
+                ( (++) "Unexpeced Error: " <| case err of
+                    Http.BadUrl x -> "Bad Url (" ++ x ++ ")"
+                    Http.Timeout -> "Network Timeout"
+                    Http.NetworkError -> "Network Error"
+                    Http.BadStatus x -> "Bad Status " ++ String.fromInt x
+                    Http.BadBody x -> "Bad Body (" ++ x ++ ")"
+
+                ) 0 0
     ]
 
 update : Msg -> Model -> (Model, Cmd Msg)

@@ -10,7 +10,6 @@ import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
 import Html.Events as HE
 import Translation.Data as Data
-import Debug.Extra
 import Dict exposing (Dict)
 import Set exposing (Set)
 import Json.Decode as JD
@@ -51,7 +50,7 @@ init index data =
 view : Model -> Html Msg
 view model =
     div [ class "editor" ]
-        [ viewTitle model
+        [ viewTitle
         , div [ class "edit-grid" ]
             [ div [ class "edit-grid-head" ]
                 <| List.singleton
@@ -70,8 +69,8 @@ view model =
         , viewChanges model.editTheme model.data
         ]
 
-viewTitle : Model -> Html Msg
-viewTitle model =
+viewTitle : Html Msg
+viewTitle =
     div [ class "editor-title-box" ]
         [ div [ class "title" ]
             [ text "Werewolf Resource Translation" ]
@@ -344,7 +343,7 @@ viewEditorRoot select data =
                 (\(key, info) ->
                     viewEditor select [ key ] info
                 )
-        Data.EditLeaf info ->
+        Data.EditLeaf _ ->
             viewEditor select [] data
 
 viewEditor : List Data.LangSource -> List String -> Data.EditData -> List (Html Msg)
