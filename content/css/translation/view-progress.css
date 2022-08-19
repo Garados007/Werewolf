@@ -1,0 +1,34 @@
+body {
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+}
+.loading-full {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+.loading-box {
+  width: 20em;
+  max-width: 50vw;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.loading-progress {
+  background-color: #aaa;
+  height: 0.5em;
+  margin: 0.5em 0.5em 0.2em 0.5em;
+  position: relative;
+  border-radius: 0.5em;
+  overflow: hidden;
+}
+.loading-progress div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background-color: #444;
+}

@@ -1,0 +1,97 @@
+.edit-grid {
+  display: table;
+  width: 100vw;
+}
+.edit-grid-head {
+  display: table-header-group;
+}
+.edit-grid-body {
+  display: table-row-group;
+}
+.edit-lang-group, .edit-grid-head > div {
+  display: table-row;
+}
+.edit-lang-group > div, .edit-grid-head > div > div {
+  display: table-cell;
+}
+.edit-lang-head > div, .edit-lang-head .spacer {
+  display: flex;
+  flex-wrap: nowrap;
+}
+.edit-lang-head > div {
+  max-width: 25em;
+  min-width: 15em;
+}
+.edit-lang-head .spacer div {
+  width: 2em;
+}
+.edit-lang-head .closer {
+  width: 1em;
+  height: 1em;
+  background-color: #aaa;
+  margin: 0.3em;
+  position: relative;
+  cursor: pointer;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+.edit-lang-head .closer.hidden {
+  visibility: hidden;
+}
+.edit-lang-head .closer:hover {
+  background-color: #777;
+}
+.edit-lang-head .closer div:nth-child(1) {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 0.1em;
+  transform: translateY(-50%);
+  background-color: #444;
+}
+.edit-lang-head .closer:not(.open) div:nth-child(2) {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 0.1em;
+  transform: translateX(-50%);
+  background-color: #444;
+}
+.edit-lang-head .text {
+  word-wrap: anywhere;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.edit-lang-row {
+  width: 80%;
+  position: relative;
+}
+.edit-lang-row > div, .edit-grid-head .selectors, .edit-lang-selector, .edit-info-editor .control {
+  display: flex;
+  flex-direction: row;
+}
+.edit-info-editor, .edit-lang-selector, .edit-lang-selector select, .edit-info-editor .control > div {
+  flex-grow: 1;
+  flex-shrink: 1;
+  position: relative;
+}
+.edit-info-editor .control .root {
+  font-style: italic;
+}
+.edit-info-editor .control .reset {
+  flex-grow: 0;
+  margin: 0 1em;
+  color: #f00;
+  text-decoration: none;
+  cursor: pointer;
+}
+.edit-info-editor .control .reset:hover {
+  text-decoration: underline;
+}
+.edit-info-editor textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+}
