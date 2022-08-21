@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "definitions": {
+        "node": {
+            "type": "object",
+            "properties": {
+                "nodes": {
+                    "description": "The nodes this item can contains",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/node"
+                    },
+                    "default": {}
+                },
+                "description": {
+                    "description": "The description that should be shown in the editor",
+                    "type": "string",
+                    "default": ""
+                },
+                "variables": {
+                    "description": "The list of supported variables. This is an object with the key as the variable names and the values are the description.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "default": {}
+                },
+                "root": {
+                    "description": "Specify if this node and all sub-nodes are allowed to be contained in the root resource file. The following settings exists: `root`=only in root; `theme`=only in theme files; `default`=both files are allowed",
+                    "enum": [ "default", "root", "theme" ],
+                    "type": "string",
+                    "default": "default"
+                },
+                "fallback": {
+                    "description": "If no value for this is set the language system will fallback to the specified text. The value is the absolute key for the fallback text.",
+                    "type": [ "array", "null" ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": null
+                }
+            }
+        }
+    },
+    "$ref": "#/definitions/node"
+}

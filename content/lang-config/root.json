@@ -1,0 +1,475 @@
+{
+  "$schema": "./schema.json",
+  "nodes": {
+    "fallback": {
+      "description": "The text that will be shown if the specified language wasn\u0027t provided and as a fallback this language was used.",
+      "variables": {
+        "lang": "The original language the user tried to use."
+      }
+    },
+    "init": {
+      "description": "The texts that are used before the lobby is created.",
+      "nodes": {
+        "title": {
+          "description": ""
+        },
+        "reset-user": {
+          "description": ""
+        },
+        "lost-token": {
+          "description": ""
+        },
+        "user-mode": {
+          "description": "",
+          "nodes": {
+            "play-login": {
+              "description": ""
+            },
+            "play-guest": {
+              "description": ""
+            },
+            "continue-login": {
+              "description": ""
+            },
+            "login": {
+              "description": "",
+              "nodes": {
+                "1": {
+                  "description": ""
+                },
+                "2": {
+                  "description": ""
+                },
+                "3": {
+                  "description": ""
+                }
+              }
+            },
+            "guest": {
+              "description": "",
+              "nodes": {
+                "1": {
+                  "description": ""
+                },
+                "2": {
+                  "description": ""
+                }
+              }
+            }
+          }
+        },
+        "guest-input": {
+          "description": "",
+          "nodes": {
+            "name": {
+              "description": ""
+            },
+            "image-code": {
+              "description": ""
+            },
+            "image-hint": {
+              "description": ""
+            },
+            "continue": {
+              "description": ""
+            }
+          }
+        },
+        "lobby-input": {
+          "description": "",
+          "nodes": {
+            "create": {
+              "description": ""
+            },
+            "join": {
+              "description": ""
+            },
+            "start": {
+              "description": ""
+            },
+            "hint": {
+              "description": ""
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "description": "The texts for the various settings",
+      "nodes": {
+        "game-room": {
+          "description": "The settings for the current game lobby",
+          "nodes": {
+            "leader-is-player": {
+              "description": ""
+            },
+            "dead-can-see-all-roles": {
+              "description": ""
+            },
+            "all-can-see-role-of-dead": {
+              "description": ""
+            },
+            "auto-start-votings": {
+              "description": ""
+            },
+            "auto-finish-votings": {
+              "description": ""
+            },
+            "votings-timeout": {
+              "description": ""
+            },
+            "auto-finish-rounds": {
+              "description": ""
+            },
+            "start": {
+              "description": ""
+            }
+          }
+        },
+        "page": {
+          "description": "The title for the different pages with their settings",
+          "nodes": {
+            "theme": {
+              "description": "On this page the user can change the current theme"
+            },
+            "roles": {
+              "description": "On this page the user has the overview of the existing roles for the selected theme"
+            },
+            "options": {
+              "description": "Additional options for the game"
+            }
+          }
+        },
+        "bar": {
+          "description": "the status bar for the game creation",
+          "nodes": {
+            "stats": {
+              "description": "the indicator how many roles are defined and how many need to be.",
+              "variables": {
+                "roles": "the number of defined roles",
+                "player": "the number of player and how many roles need to be defined"
+              }
+            }
+          }
+        }
+      }
+    },
+    "game": {
+      "description": "The texts for the current game",
+      "nodes": {
+        "voting": {
+          "description": "",
+          "nodes": {
+            "started": {
+              "description": ""
+            },
+            "not-started": {
+              "description": ""
+            },
+            "can-vote": {
+              "description": ""
+            },
+            "cannot-vote": {
+              "description": ""
+            },
+            "nobody-has-voted": {
+              "description": ""
+            },
+            "has-voted-list": {
+              "description": "",
+              "variables": {
+                "list": ""
+              }
+            },
+            "button": {
+              "description": "",
+              "nodes": {
+                "start": {
+                  "description": ""
+                },
+                "end": {
+                  "description": ""
+                },
+                "add-time-hint": {
+                  "description": "",
+                  "variables": {
+                    "time-left": "",
+                    "max-time": ""
+                  }
+                },
+                "add-time": {
+                  "description": "",
+                  "variables": {
+                    "time-left": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "phase": {
+          "description": "",
+          "nodes": {
+            "end": {
+              "description": ""
+            },
+            "next": {
+              "description": ""
+            }
+          }
+        },
+        "loading": {
+          "description": "",
+          "nodes": {
+            "not-found": {
+              "description": ""
+            },
+            "go-back": {
+              "description": ""
+            }
+          }
+        }
+      }
+    },
+    "banner": {
+      "description": "",
+      "nodes": {
+        "maintenance": {
+          "description": "",
+          "variables": {
+            "minute": "",
+            "sec-prefix": "",
+            "sec": ""
+          }
+        }
+      }
+    },
+    "modals": {
+      "description": "",
+      "nodes": {
+        "theme-editor": {
+          "description": "",
+          "nodes": {
+            "title": {
+              "description": ""
+            },
+            "background-url": {
+              "description": ""
+            },
+            "go-back": {
+              "description": ""
+            }
+          }
+        },
+        "winner": {
+          "description": "",
+          "nodes": {
+            "title": {
+              "description": ""
+            }
+          }
+        },
+        "player-notification": {
+          "description": "",
+          "nodes": {
+            "title": {
+              "description": ""
+            }
+          }
+        },
+        "maintenance": {
+          "description": "",
+          "nodes": {
+            "title": {
+              "description": ""
+            },
+            "desc": {
+              "description": ""
+            },
+            "reason": {
+              "description": ""
+            }
+          }
+        },
+        "connection": {
+          "description": "",
+          "nodes": {
+            "close": {
+              "description": "",
+              "nodes": {
+                "title": {
+                  "description": ""
+                },
+                "desc": {
+                  "description": ""
+                }
+              }
+            },
+            "code": {
+              "description": "",
+              "nodes": {
+                "1000": {
+                  "description": "",
+                  "nodes": {
+                    "lobby not found": {
+                      "description": ""
+                    }
+                  }
+                },
+                "1012": {
+                  "description": "",
+                  "nodes": {
+                    "": {
+                      "description": ""
+                    }
+                  }
+                }
+              }
+            },
+            "go-back": {
+              "description": ""
+            }
+          }
+        }
+      }
+    },
+    "theme": {
+      "description": "",
+      "nodes": {
+        "event": {
+          "description": "",
+          "nodes": {
+            "player-notification": {
+              "description": "",
+              "nodes": {
+                "offline-player-left": {
+                  "description": ""
+                }
+              }
+            }
+          }
+        },
+        "voting-title": {
+          "description": "",
+          "nodes": {
+            "default-logs": {
+              "description": ""
+            }
+          }
+        },
+        "logs": {
+          "description": "",
+          "nodes": {
+            "Werewolf.Theme.Chats.AddParticipantLog": {
+              "description": "",
+              "variables": {
+                "user": ""
+              }
+            },
+            "Werewolf.Theme.Chats.RemoveParticipantLog": {
+              "description": "",
+              "variables": {
+                "user": ""
+              }
+            },
+            "Werewolf.Theme.Chats.GameStartLog": {
+              "description": ""
+            },
+            "Werewolf.Theme.Chats.NextPhaseLog": {
+              "description": "",
+              "variables": {
+                "phase": ""
+              }
+            },
+            "Werewolf.Theme.Chats.SetVotingVoteLog": {
+              "description": "",
+              "variables": {
+                "voter": "",
+                "option": "",
+                "voting": ""
+              }
+            },
+            "Werewolf.Theme.Chats.GameEndLog": {
+              "description": ""
+            }
+          }
+        }
+      }
+    },
+    "user-stats": {
+      "description": "",
+      "nodes": {
+        "won-games": {
+          "description": ""
+        },
+        "died": {
+          "description": ""
+        },
+        "played-games": {
+          "description": ""
+        },
+        "leader": {
+          "description": ""
+        },
+        "level": {
+          "description": ""
+        },
+        "player-kick": {
+          "description": ""
+        },
+        "guest": {
+          "description": ""
+        },
+        "offline": {
+          "description": ""
+        }
+      }
+    },
+    "join-token": {
+      "description": "",
+      "nodes": {
+        "title": {
+          "description": ""
+        },
+        "description": {
+          "description": ""
+        },
+        "hint": {
+          "description": ""
+        },
+        "refetch": {
+          "description": ""
+        },
+        "time": {
+          "description": "",
+          "variables": {
+            "minute": "",
+            "second-leading": "",
+            "second": ""
+          }
+        },
+        "copied": {
+          "description": ""
+        },
+        "copy-hint": {
+          "description": ""
+        },
+        "streamer-mode": {
+          "description": ""
+        },
+        "stream-replacement": {
+          "description": ""
+        }
+      }
+    },
+    "chat": {
+      "description": "",
+      "nodes": {
+        "not-allowed": {
+          "description": ""
+        }
+      }
+    }
+  },
+  "description": ""
+}
