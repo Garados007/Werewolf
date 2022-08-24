@@ -2,7 +2,9 @@ module Test.SystemChatParser exposing (..)
 
 import Parser exposing (..)
 import Html exposing (Html)
+--!BEGIN
 import Debug.Extra
+--!END
 
 type Token
     = General String
@@ -23,7 +25,9 @@ execute : String -> Html msg
 execute content = 
     Html.div []
         [ Html.h2 [] [ Html.text content ]
+--!BEGIN
         , Debug.Extra.viewModel <| run parser content
+--!END
         ]
 
 parser : Parser (List Token)

@@ -32,3 +32,20 @@ body {
   bottom: 0;
   background-color: #444;
 }
+
+/* DARKMODE */
+body {
+  background-color: #333;
+  color: #aaa;
+}
+textarea {
+  background-color: #555;
+  color: #ccc;
+}
+div.download {
+  color: #fff;
+}
+select {
+  background-color: #777;
+  color: #fff;
+}
