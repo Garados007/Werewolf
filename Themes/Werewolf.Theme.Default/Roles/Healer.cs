@@ -1,16 +1,15 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class Healer : VillagerBase
 {
-    public class Healer : VillagerBase
+    public Healer(Theme theme) : base(theme)
     {
-        public Healer(Theme theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Heiler";
-
-        public override Role CreateNew()
-        {
-            return new Healer(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Healer(Theme);
     }
 }
+

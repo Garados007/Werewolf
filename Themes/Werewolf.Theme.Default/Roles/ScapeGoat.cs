@@ -1,22 +1,20 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class ScapeGoat : VillagerBase
 {
-    public class ScapeGoat : VillagerBase
+    public bool WasKilledByVillage { get; set; }
+
+    public bool HasRevenge { get; set; }
+
+    public bool HasDecided { get; set; }
+
+    public ScapeGoat(Theme theme) : base(theme)
     {
-        public bool WasKilledByVillage { get; set; }
+    }
 
-        public bool HasRevenge { get; set; }
-
-        public bool HasDecided { get; set; }
-
-        public ScapeGoat(Theme theme) : base(theme)
-        {
-        }
-
-        public override string Name => "Sündenbock";
-
-        public override Role CreateNew()
-        {
-            return new ScapeGoat(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new ScapeGoat(Theme);
     }
 }

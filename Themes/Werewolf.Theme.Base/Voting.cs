@@ -16,17 +16,17 @@ namespace Werewolf.Theme
         public Voting()
         {
             Id = unchecked(nextId++);
+            LanguageId = GetLanguageId(GetType());
         }
 
-        public virtual string LanguageId
+        public static string GetLanguageId(Type type)
         {
-            get
-            {
-                var name = GetType().FullName ?? "";
-                var ind = name.LastIndexOf('.');
-                return ind >= 0 ? name[(ind + 1)..] : name;
-            }
+            var name = type.FullName ?? "";
+            var ind = name.LastIndexOf('.');
+            return ind >= 0 ? name[(ind + 1)..] : name;
         }
+
+        public string LanguageId { get; }
 
         public bool Started { get; set; }
 

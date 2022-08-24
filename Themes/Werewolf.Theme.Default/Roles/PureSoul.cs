@@ -1,19 +1,17 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class PureSoul : VillagerBase
 {
-    public class PureSoul : VillagerBase
+    public PureSoul(Theme theme) : base(theme)
     {
-        public PureSoul(Theme theme) : base(theme)
-        {
-        }
-
-        public override Role ViewRole(Role viewer)
-        {
-            return this;
-        }
-
-        public override string Name => "pure-soul";
-
-        public override Role CreateNew()
-            => new PureSoul(Theme);
     }
+
+    public override Role ViewRole(Role viewer)
+    {
+        return this;
+    }
+
+    public override Role CreateNew()
+        => new PureSoul(Theme);
 }

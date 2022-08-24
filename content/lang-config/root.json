@@ -336,6 +336,35 @@
     "theme": {
       "description": "",
       "nodes": {
+        "roles": {
+          "description": "The display names for the roles",
+          "sub-schema": "Role",
+          "root": "theme"
+        },
+        "role-info": {
+          "description": "The full description of the role",
+          "sub-schema": "Role",
+          "root": "theme"
+        },
+        "phases": {
+          "description": "The display name of the phase",
+          "sub-schema": "Phase",
+          "root": "theme"
+        },
+        "tags": {
+          "description": "the display name for the tag",
+          "sub-schema": "Tag"
+        },
+        "voting-title": {
+          "description": "the title of a voting",
+          "sub-schema": "Voting",
+          "root": "theme"
+        },
+        "voting-options": {
+          "description": "the display text for a single voting option",
+          "sub-schema": "VotingWithVotes",
+          "root": "theme"
+        },
         "event": {
           "description": "",
           "nodes": {
@@ -346,14 +375,6 @@
                   "description": ""
                 }
               }
-            }
-          }
-        },
-        "voting-title": {
-          "description": "",
-          "nodes": {
-            "default-logs": {
-              "description": ""
             }
           }
         },

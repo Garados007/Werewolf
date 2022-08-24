@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "definitions": {
+        "node-def": {
+            "description": "list of all nodes",
+            "type": "object",
+            "additionalItems": {
+                "ref": "../schema.json"
+            },
+            "default": {}
+        }
+    },
+    "type": "object",
+    "properties": {
+        "Phase": {
+            "$ref": "#/definitions/node-def"
+        },
+        "Role": {
+            "$ref": "#/definitions/node-def"
+        },
+        "Tag": {
+            "$ref": "#/definitions/node-def"
+        },
+        "Voting": {
+            "$ref": "#/definitions/node-def"
+        },
+        "VotingWithVotes": {
+            "$ref": "#/definitions/node-def"
+        }
+    },
+    "required": [
+        "Phase",
+        "Role",
+        "Tag",
+        "Voting",
+        "VotingWithVotes"
+    ]
+}

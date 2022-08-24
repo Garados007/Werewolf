@@ -1,0 +1,547 @@
+{
+  "$schema": "./schema.json",
+  "Phase": {
+    "AmorPhase": {
+      "description": ""
+    },
+    "DailyVictimElectionPhase": {
+      "description": ""
+    },
+    "ElectMajorPhase": {
+      "description": ""
+    },
+    "FlutistPhase": {
+      "description": ""
+    },
+    "HealerPhase": {
+      "description": ""
+    },
+    "HunterPhase": {
+      "description": ""
+    },
+    "InheritMajorPhase": {
+      "description": ""
+    },
+    "OraclePhase": {
+      "description": ""
+    },
+    "ScapeGoatPhase": {
+      "description": ""
+    },
+    "ThreeBrotherDiscussionPhase": {
+      "description": ""
+    },
+    "TwoSisterDiscussionPhase": {
+      "description": ""
+    },
+    "WerwolfPhase": {
+      "description": ""
+    },
+    "WitchPhase": {
+      "description": ""
+    }
+  },
+  "Role": {
+    "Amor": {
+      "description": "Armor is the role that can make two people in love."
+    },
+    "Angel": {
+      "description": ""
+    },
+    "Flutist": {
+      "description": ""
+    },
+    "Girl": {
+      "description": ""
+    },
+    "Healer": {
+      "description": ""
+    },
+    "Hunter": {
+      "description": ""
+    },
+    "Idiot": {
+      "description": ""
+    },
+    "OldMan": {
+      "description": ""
+    },
+    "Oracle": {
+      "description": ""
+    },
+    "PureSoul": {
+      "description": ""
+    },
+    "ScapeGoat": {
+      "description": ""
+    },
+    "ThreeBrothers": {
+      "description": ""
+    },
+    "TwoSisters": {
+      "description": ""
+    },
+    "Unknown": {
+      "description": ""
+    },
+    "Villager": {
+      "description": ""
+    },
+    "Werwolf": {
+      "description": ""
+    },
+    "Witch": {
+      "description": ""
+    }
+  },
+  "Tag": {
+    "loved": {
+      "description": "This player is in love with another one"
+    },
+    "enchant-flutist": {
+      "description": "This player is enchanted by the flutist"
+    },
+    "not-alive": {
+      "description": "this player is no longer alive"
+    },
+    "major": {
+      "description": "this player is the major of the village"
+    },
+    "werwolf-select": {
+      "description": "This player was selected by the werewolves."
+    },
+    "witch-death-potion": {
+      "description": "This player got the death potion from the witch"
+    }
+  },
+  "Voting": {
+    "default": {
+      "description": "the default value for all votings"
+    },
+    "default-logs": {
+      "description": "the default value for all votings if the voting is logged"
+    },
+    "AmorPhase\u002BAmorPick": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "DailyVictimElectionPhase\u002BDailyVote": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "DailyVictimElectionPhase\u002BMajorPick": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "ElectMajorPhase\u002BElectMajor": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "FlutistPhase\u002BFlutistPick": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "HealerPhase\u002BHealerVote": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "HunterPhase\u002BHunterKill": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "InheritMajorPhase\u002BInheritMajor": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "OraclePhase\u002BOraclePick": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "ScapeGoatPhase\u002BScapeGoatSelect": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "WerwolfPhase\u002BWerwolfVote": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "WerwolfPhase\u002BGirlVote": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "WitchPhase\u002BWitchSafe": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    },
+    "WitchPhase\u002BWitchKill": {
+      "description": "",
+      "fallback": [
+        "default"
+      ]
+    }
+  },
+  "VotingWithVotes": {
+    "default": {
+      "description": "the default text of the options in all votings",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing."
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          }
+        },
+        "spy": {
+          "description": "the girl will try to spy"
+        }
+      }
+    },
+    "AmorPhase\u002BAmorPick": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "DailyVictimElectionPhase\u002BDailyVote": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "DailyVictimElectionPhase\u002BMajorPick": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "ElectMajorPhase\u002BElectMajor": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "FlutistPhase\u002BFlutistPick": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "HealerPhase\u002BHealerVote": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "HunterPhase\u002BHunterKill": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "InheritMajorPhase\u002BInheritMajor": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "OraclePhase\u002BOraclePick": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "ScapeGoatPhase\u002BScapeGoatSelect": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "WerwolfPhase\u002BWerwolfVote": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "WerwolfPhase\u002BGirlVote": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "the girl will do nothing this round",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "spy": {
+          "description": "the girl will try to spy",
+          "fallback": [
+            "default",
+            "spy"
+          ]
+        }
+      }
+    },
+    "WitchPhase\u002BWitchSafe": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    },
+    "WitchPhase\u002BWitchKill": {
+      "description": "",
+      "nodes": {
+        "do-nothing": {
+          "description": "The player decides to do nothing.",
+          "fallback": [
+            "default",
+            "do-nothing"
+          ]
+        },
+        "player": {
+          "description": "This option represents a player",
+          "variables": {
+            "player": "The name of the player",
+            "player-id": "The id of the player"
+          },
+          "fallback": [
+            "default",
+            "player"
+          ]
+        }
+      }
+    }
+  }
+}

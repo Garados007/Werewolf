@@ -39,6 +39,12 @@ public class Walker
         if (!schema.ContainsKey("description"))
             schema["description"] = JsonValue.Create("");
 
+        if (schema.ContainsKey("sub-schema"))
+        {
+            schema.Remove("nodes");
+            return;
+        }
+
         if (node.ValueKind == JsonValueKind.String)
         {
             CheckVariables(schema, node.GetString()!);

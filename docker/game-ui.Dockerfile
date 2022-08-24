@@ -68,7 +68,7 @@ COPY . .
 RUN git submodule update --init --recursive && \
     docker/only-supported-lang.sh
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as report
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as report
 # RUN apt-get update && \
 #     apt-get install -y python3-pip nodejs npm && \
 #     ln /usr/bin/pip3 /usr/bin/pip && \
@@ -85,6 +85,14 @@ COPY ./content ./content
 RUN cd /src/Translate && \
     dotnet run --report-only
 
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as language
+WORKDIR /src
+COPY ./Tools ./Tools
+COPY ./Themes ./Themes
+COPY ./content ./content
+RUN cd /src/Tools && \
+    ./generate-all.sh
+
 FROM httpd:2.4
 COPY --from=js-compressor /content /usr/local/apache2/htdocs/content
 COPY --from=builder /content/special /usr/local/apache2/htdocs/content/special
@@ -94,6 +102,7 @@ COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY --from=version /src/version /usr/local/apache2/htdocs/content/version
 COPY --from=report /src/content/report /usr/local/apache2/htdocs/content/report
+COPY --from=language /src/content/lang-config /usr/local/apache2/htdocs/content/lang-config
 RUN ver="$(cat /usr/local/apache2/htdocs/content/version)" && \
     sed -i "s@/content/index.js@/content/index.js?_v=$ver@" \
         /usr/local/apache2/htdocs/content/index.html

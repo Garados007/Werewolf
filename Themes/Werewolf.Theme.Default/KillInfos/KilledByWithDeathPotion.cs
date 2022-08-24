@@ -6,6 +6,7 @@ namespace Werewolf.Theme.Default.KillInfos
     {
         public override string NotificationId => "night-kills";
 
+        [Docs.Tag("witch-death-potion", "This player got the death potion from the witch")]
         public override IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer)
         {
             if (viewer is null or Roles.Witch)

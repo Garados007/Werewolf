@@ -1,179 +1,179 @@
 ﻿using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Votings;
-using System.Collections.Generic;
-using System.Linq;
 using Werewolf.Theme.Default.Roles;
 
-namespace Werewolf.Theme.Default.Phases
+namespace Werewolf.Theme.Default.Phases;
+
+[Docs.Phase]
+public class DailyVictimElectionPhase : Phase, IDayPhase<DailyVictimElectionPhase>
 {
-    public class DailyVictimElectionPhase : Phase, IDayPhase<DailyVictimElectionPhase>
+    [Docs.Voting]
+    public class DailyVote : PlayerVotingBase
     {
-        public class DailyVote : PlayerVotingBase
+        internal readonly HashSet<Role>? allowedVoter;
+
+        internal DailyVote(GameRoom game, IEnumerable<UserId>? participants, HashSet<Role>? allowedVoter)
+            : this(game, participants)
         {
-            internal readonly HashSet<Role>? allowedVoter;
+            this.allowedVoter = allowedVoter;
+        }
 
-            internal DailyVote(GameRoom game, IEnumerable<UserId>? participants, HashSet<Role>? allowedVoter)
-                : this(game, participants)
+        public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
+            : base(game, participants)
+        {
+            // check if scape goat phase
+            var isScapeGoatRevenge = game.Users
+                .Select(x => x.Value.Role)
+                .Where(x => x is Roles.ScapeGoat)
+                .Cast<Roles.ScapeGoat>()
+                .Where(x => x.HasDecided && !x.HasRevenge)
+                .Any();
+            if (isScapeGoatRevenge)
+                allowedVoter = new HashSet<Role>(game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x != null && x.IsAlive)
+                    .Where(x => x is BaseRole baseRole && baseRole.HasVotePermitFromScapeGoat)
+                    .Cast<Role>()
+                );
+        }
+
+        protected override bool DefaultParticipantSelector(Role role)
+        {
+            return base.DefaultParticipantSelector(role) &&
+                (role is not Roles.Idiot idiot || !idiot.IsRevealed);
+        }
+
+        public override bool CanView(Role viewer)
+        {
+            return true;
+        }
+
+        public override bool CanVote(Role voter)
+        {
+            // special voting condition
+            if (allowedVoter != null)
+                return allowedVoter.Contains(voter);
+            // normal vote
+            return voter.IsAlive && (voter is not Roles.Idiot idiot || !idiot.IsRevealed);
+        }
+
+        public override void Execute(GameRoom game, UserId id, Role role)
+        {
+            if (role is Roles.Idiot idiot)
             {
-                this.allowedVoter = allowedVoter;
+                idiot.IsRevealed = true;
+                idiot.WasMajor = idiot.IsMajor;
+                idiot.IsMajor = false;
+                var oldManKilled = game.Users
+                    .Select(x => x.Value.Role)
+                    .Where(x => x is Roles.OldMan oldMan && !oldMan.IsAlive)
+                    .Any();
+                if (oldManKilled)
+                {
+                    idiot.IsRevealed = false;
+                    idiot.SetKill(game, new KillInfos.VillageKill());
+                }
+                return;
             }
-
-            public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+            if (role is Roles.OldMan oldMan)
             {
-                // check if scape goat phase
-                var isScapeGoatRevenge = game.Users
+                oldMan.WasKilledByVillager = true;
+            }
+            role.SetKill(game, new KillInfos.VillageKill());
+        }
+
+        protected override void AfterFinishExecute(GameRoom game)
+        {
+            base.AfterFinishExecute(game);
+            if (allowedVoter != null)
+            {
+                var scapegoat = game.Users
                     .Select(x => x.Value.Role)
                     .Where(x => x is Roles.ScapeGoat)
                     .Cast<Roles.ScapeGoat>()
                     .Where(x => x.HasDecided && !x.HasRevenge)
-                    .Any();
-                if (isScapeGoatRevenge)
-                    allowedVoter = new HashSet<Role>(game.Users
-                        .Select(x => x.Value.Role)
-                        .Where(x => x != null && x.IsAlive)
-                        .Where(x => x is BaseRole baseRole && baseRole.HasVotePermitFromScapeGoat)
-                        .Cast<Role>()
-                    );
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return base.DefaultParticipantSelector(role) &&
-                    (role is not Roles.Idiot idiot || !idiot.IsRevealed);
-            }
-
-            public override bool CanView(Role viewer)
-            {
-                return true;
-            }
-
-            public override bool CanVote(Role voter)
-            {
-                // special voting condition
-                if (allowedVoter != null)
-                    return allowedVoter.Contains(voter);
-                // normal vote
-                return voter.IsAlive && (voter is not Roles.Idiot idiot || !idiot.IsRevealed);
-            }
-
-            public override void Execute(GameRoom game, UserId id, Role role)
-            {
-                if (role is Roles.Idiot idiot)
-                {
-                    idiot.IsRevealed = true;
-                    idiot.WasMajor = idiot.IsMajor;
-                    idiot.IsMajor = false;
-                    var oldManKilled = game.Users
-                        .Select(x => x.Value.Role)
-                        .Where(x => x is Roles.OldMan oldMan && !oldMan.IsAlive)
-                        .Any();
-                    if (oldManKilled)
-                    {
-                        idiot.IsRevealed = false;
-                        idiot.SetKill(game, new KillInfos.VillageKill());
-                    }
-                    return;
-                }
-                if (role is Roles.OldMan oldMan)
-                {
-                    oldMan.WasKilledByVillager = true;
-                }
-                role.SetKill(game, new KillInfos.VillageKill());
-            }
-
-            protected override void AfterFinishExecute(GameRoom game)
-            {
-                base.AfterFinishExecute(game);
-                if (allowedVoter != null)
-                {
-                    var scapegoat = game.Users
-                        .Select(x => x.Value.Role)
-                        .Where(x => x is Roles.ScapeGoat)
-                        .Cast<Roles.ScapeGoat>()
-                        .Where(x => x.HasDecided && !x.HasRevenge)
-                        .FirstOrDefault();
-                    if (scapegoat is not null)
-                        scapegoat.HasRevenge = true;
-                }
+                    .FirstOrDefault();
+                if (scapegoat is not null)
+                    scapegoat.HasRevenge = true;
             }
         }
+    }
 
-        public class MajorPick : PlayerVotingBase
+    [Docs.Voting]
+    public class MajorPick : PlayerVotingBase
+    {
+        public MajorPick(GameRoom game, IEnumerable<UserId>? participants = null)
+            : base(game, participants)
         {
-            public MajorPick(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
-            {
-            }
-
-            public override bool CanView(Role viewer)
-            {
-                return true;
-            }
-
-            public override bool CanVote(Role voter)
-            {
-                return voter.IsMajor && voter.IsAlive;
-            }
-
-            public override void Execute(GameRoom game, UserId id, Role role)
-            {
-                role.SetKill(game, new KillInfos.KilledByMajor());
-            }
         }
 
-        public override bool CanExecute(GameRoom game)
+        public override bool CanView(Role viewer)
         {
             return true;
         }
 
-        protected override void Init(GameRoom game)
+        public override bool CanVote(Role voter)
         {
-            base.Init(game);
-            AddVoting(new DailyVote(game));
+            return voter.IsMajor && voter.IsAlive;
         }
 
-        public override void ExecuteMultipleWinner(Voting voting, GameRoom game)
+        public override void Execute(GameRoom game, UserId id, Role role)
         {
-            if (voting is DailyVote dv)
+            role.SetKill(game, new KillInfos.KilledByMajor());
+        }
+    }
+
+    public override bool CanExecute(GameRoom game)
+    {
+        return true;
+    }
+
+    protected override void Init(GameRoom game)
+    {
+        base.Init(game);
+        AddVoting(new DailyVote(game));
+    }
+
+    public override void ExecuteMultipleWinner(Voting voting, GameRoom game)
+    {
+        if (voting is DailyVote dv)
+        {
+            var hasMajor = game.AliveRoles.Any(x => x is BaseRole baserRole && x.IsMajor);
+            var hasScapeGoat = game.AliveRoles.Any(x => x is Roles.ScapeGoat);
+            var hasLostAbility = game.Users
+                .Select(x => x.Value.Role)
+                .Any(x => x is OldMan oldman && oldman.WasKilledByVillager);
+            var ids = dv.GetResultUserIds().ToArray();
+            if (ids.Length > 0)
             {
-                var hasMajor = game.AliveRoles.Any(x => x is BaseRole baserRole && x.IsMajor);
-                var hasScapeGoat = game.AliveRoles.Any(x => x is Roles.ScapeGoat);
-                var hasLostAbility = game.Users
-                    .Select(x => x.Value.Role)
-                    .Any(x => x is OldMan oldman && oldman.WasKilledByVillager);
-                var ids = dv.GetResultUserIds().ToArray();
-                if (ids.Length > 0)
+                if (hasScapeGoat && !hasLostAbility)
                 {
-                    if (hasScapeGoat && !hasLostAbility)
-                    {
-                        foreach (var role in game.AliveRoles)
-                            if (role is Roles.ScapeGoat scapeGoat)
-                            {
-                                // kill the scape goat and end the voting
-                                scapeGoat.WasKilledByVillage = true;
-                                scapeGoat.SetKill(game, new KillInfos.ScapeGoatKilled());
-                            }
-                    }
-                    else if (hasMajor)
-                        AddVoting(new MajorPick(game, ids));
-                    else AddVoting(new DailyVote(game, ids, dv.allowedVoter));
+                    foreach (var role in game.AliveRoles)
+                        if (role is Roles.ScapeGoat scapeGoat)
+                        {
+                            // kill the scape goat and end the voting
+                            scapeGoat.WasKilledByVillage = true;
+                            scapeGoat.SetKill(game, new KillInfos.ScapeGoatKilled());
+                        }
                 }
-                RemoveVoting(voting);
-            }
-            if (voting is MajorPick mp)
-            {
-                var ids = mp.GetResultUserIds().ToArray();
-                if (ids.Length > 0)
+                else if (hasMajor)
                     AddVoting(new MajorPick(game, ids));
-                RemoveVoting(voting);
+                else AddVoting(new DailyVote(game, ids, dv.allowedVoter));
             }
+            RemoveVoting(voting);
         }
-
-        public override bool CanMessage(GameRoom game, Role role)
+        if (voting is MajorPick mp)
         {
-            return true;
+            var ids = mp.GetResultUserIds().ToArray();
+            if (ids.Length > 0)
+                AddVoting(new MajorPick(game, ids));
+            RemoveVoting(voting);
         }
+    }
+
+    public override bool CanMessage(GameRoom game, Role role)
+    {
+        return true;
     }
 }

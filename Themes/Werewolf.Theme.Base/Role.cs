@@ -50,6 +50,8 @@ namespace Werewolf.Theme
         /// <param name="game">The current game</param>
         /// <param name="viewer">The viewer of this role. null for the leader</param>
         /// <returns>a list of defined tags</returns>
+        [Docs.Tag("not-alive", "this player is no longer alive")]
+        [Docs.Tag("major", "this player is the major of the village")]
         public virtual IEnumerable<string> GetTags(GameRoom game, Role? viewer)
         {
             if (!IsAlive)
@@ -81,8 +83,6 @@ namespace Werewolf.Theme
         }
 
         public abstract Role CreateNew();
-
-        public abstract string Name { get; }
 
         /// <summary>
         /// Set <see cref="KillState"/> to <see cref="KillState.MarkedKill"/>. This role

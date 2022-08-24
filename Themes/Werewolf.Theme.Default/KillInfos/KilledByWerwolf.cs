@@ -6,6 +6,7 @@ namespace Werewolf.Theme.Default.KillInfos
     {
         public override string NotificationId => "night-kills";
 
+        [Docs.Tag("werwolf-select", "This player was selected by the werewolves.")]
         public override IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer)
         {
             if (viewer is null or Roles.Werwolf or Roles.Witch)

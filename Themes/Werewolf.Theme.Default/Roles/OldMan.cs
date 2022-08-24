@@ -1,29 +1,25 @@
-﻿using System.Linq;
+﻿namespace Werewolf.Theme.Default.Roles;
 
-namespace Werewolf.Theme.Default.Roles
+[Docs.Role]
+public class OldMan : VillagerBase
 {
-    public class OldMan : VillagerBase
+    public bool WasKilledByWolvesOneTime { get; set; }
+
+    public bool WasKilledByVillager { get; set; }
+
+    public OldMan(Theme theme) : base(theme)
     {
-        public bool WasKilledByWolvesOneTime { get; set; }
+    }
 
-        public bool WasKilledByVillager { get; set; }
+    public override Role CreateNew()
+        => new OldMan(Theme);
 
-        public OldMan(Theme theme) : base(theme)
-        {
-        }
-
-        public override string Name => "Der Alte";
-
-        public override Role CreateNew()
-            => new OldMan(Theme);
-
-        public override void ChangeToAboutToKill(GameRoom game)
-        {
-            base.ChangeToAboutToKill(game);
-            var idiots = game.AliveRoles
-                .Where(x => x is Idiot idiot && idiot.IsRevealed);
-            foreach (var idiot in idiots)
-                idiot.SetKill(game, new KillInfos.OldManKillsIdiot());
-        }
+    public override void ChangeToAboutToKill(GameRoom game)
+    {
+        base.ChangeToAboutToKill(game);
+        var idiots = game.AliveRoles
+            .Where(x => x is Idiot idiot && idiot.IsRevealed);
+        foreach (var idiot in idiots)
+            idiot.SetKill(game, new KillInfos.OldManKillsIdiot());
     }
 }

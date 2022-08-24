@@ -1,16 +1,14 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class Werwolf : WerwolfBase
 {
-    public class Werwolf : WerwolfBase
+    public Werwolf(Theme theme) : base(theme)
     {
-        public Werwolf(Theme theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Werwolf";
-
-        public override Role CreateNew()
-        {
-            return new Werwolf(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Werwolf(Theme);
     }
 }

@@ -1,16 +1,17 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+/// <summary>
+/// Armor is the role that can make two people in love.
+/// </summary>
+[Docs.Role]
+public class Amor : VillagerBase
 {
-    public class Amor : VillagerBase
+    public Amor(Theme theme) : base(theme)
     {
-        public Amor(Theme theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Amor";
-
-        public override Role CreateNew()
-        {
-            return new Amor(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Amor(Theme);
     }
 }

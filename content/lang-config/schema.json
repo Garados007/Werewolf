@@ -12,6 +12,18 @@
                     },
                     "default": {}
                 },
+                "sub-schema": {
+                    "description": "Use a generated sub schema at this point. The sub schemas exists for each implementation. If you use this member all settings in nodes will be ignored.",
+                    "type": [ "string", "null" ],
+                    "enum": [
+                        "Phase",
+                        "Role",
+                        "Tag",
+                        "Voting",
+                        "VotingWithVotes"
+                    ],
+                    "default": null
+                },
                 "description": {
                     "description": "The description that should be shown in the editor",
                     "type": "string",

@@ -1,21 +1,19 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class Unknown : BaseRole
 {
-    public class Unknown : BaseRole
+    public Unknown(Theme theme) : base(theme)
     {
-        public Unknown(Theme theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "unknown";
+    public override Role CreateNew()
+    {
+        return new Unknown(Theme);
+    }
 
-        public override Role CreateNew()
-        {
-            return new Unknown(Theme);
-        }
-
-        public override bool? IsSameFaction(Role other)
-        {
-            return null;
-        }
+    public override bool? IsSameFaction(Role other)
+    {
+        return null;
     }
 }

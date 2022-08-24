@@ -46,6 +46,8 @@ namespace Werewolf.Theme.Default
             }
         }
 
+        [Docs.Tag("loved", "This player is in love with another one")]
+        [Docs.Tag("enchant-flutist", "This player is enchanted by the flutist")]
         public override IEnumerable<string> GetTags(GameRoom game, Role? viewer)
         {
             foreach (var tag in base.GetTags(game, viewer))

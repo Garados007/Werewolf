@@ -1,16 +1,14 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+[Docs.Role]
+public class Villager : VillagerBase
 {
-    public class Villager : VillagerBase
+    public Villager(Theme theme) : base(theme)
     {
-        public Villager(Theme theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Dorfbewohner";
-
-        public override Role CreateNew()
-        {
-            return new Villager(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Villager(Theme);
     }
 }
