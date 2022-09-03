@@ -94,7 +94,12 @@ toThemeRawKey (k1, k2, _) = (k1, k2)
 type alias LanguageInfo =
     { languages: Dict String String
     , icons: Dict String String
+    , system: Dict String LanguageSystemInfo
     , themes: Dict String (Dict String (Dict String String))
+    }
+
+type alias LanguageSystemInfo =
+    { title: Dict String String
     }
 
 firstTheme : LanguageInfo -> Maybe ThemeKey
@@ -135,8 +140,14 @@ decodeLanguageInfo =
     JD.succeed LanguageInfo
         |> required "languages" (JD.dict JD.string)
         |> required "icons" (JD.dict JD.string)
+        |> required "system" (JD.dict decodeLanguageSystemInfo)
         |> required "themes" 
             (JD.dict 
                 <| JD.dict 
                 <| JD.dict JD.string
             )
+
+decodeLanguageSystemInfo : Decoder LanguageSystemInfo
+decodeLanguageSystemInfo =
+    JD.succeed LanguageSystemInfo
+        |> required "title" (JD.dict JD.string)

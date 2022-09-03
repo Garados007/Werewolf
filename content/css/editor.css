@@ -152,18 +152,59 @@ img.editor-role-image {
 .editor .start-button.disabled {
   cursor: not-allowed;
 }
-.editor .theme-selector {
-  margin: 2em auto 0;
-  max-width: 35em;
+.editor .theme-selector .theme-selector-system {
+  margin: 0.5em 1em;
 }
-.editor .theme-selector select {
-  margin: 0 auto;
+.editor .theme-selector .theme-selector-system-title {
   font-size: 1.5em;
-  max-width: 100%;
-  color: inherit;
-  background-color: var(--color-dark-transparent);
+  border-bottom: 0.1em solid var(--text-hightlight); 
 }
-
+.editor .theme-selector-variants {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.editor .theme-selector-variant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--color-light-transparent);
+  margin: 1em;
+  width: 12em;
+  padding: 1em;
+  border-radius: 1em;
+  position: relative;
+}
+.editor .theme-selector-variant.enabled {
+  cursor: pointer;
+}
+.editor .theme-selector-variant.enabled:hover {
+  background-color: var(--color-light);
+}
+.editor .theme-selector-variant-current {
+  position: absolute;
+  width: 2.5em;
+  right: 1em;
+  top: 1em;
+}
+.editor .theme-selector-variant-current path {
+  fill: var(--text-color);
+}
+.editor .theme-selector-variant-img {
+  width: 10em;
+}
+.editor .theme-selector-variant-title {
+  text-align: center;
+  margin: 1em 0 0.5em;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.editor .theme-selector-langs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 
 /* new definitions */
 .editor .editor-page-selector {
