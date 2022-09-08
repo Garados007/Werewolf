@@ -6,6 +6,13 @@
         "de": "de",
         "en": "gb"
     },
+    "system": {
+        "Werewolf.Theme.Default.DefaultTheme": {
+            "title": {
+                "de": "Standard Werwolf"
+            }
+        }
+    },
     "themes": {
         "Werewolf.Theme.Default.DefaultTheme": {
             "default": {

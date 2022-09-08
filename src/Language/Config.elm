@@ -17,6 +17,7 @@ init selLang =
     , info =
         { languages = Dict.empty
         , icons = Dict.empty
+        , system = Dict.empty
         , themes = Dict.empty
         }
     , root = Dict.empty

@@ -15,9 +15,9 @@ import Maybe.Extra
 import Language exposing (Language)
 import Language.Config exposing (LangConfig)
 import Json.Decode as JD
-import Json.Encode as JE
 import Url
 import Set exposing (Set)
+import Views.Icons
 
 type Msg
     = SetBuffer (Dict String Int) EditGameConfig
@@ -64,20 +64,22 @@ view lang langConfig roles theme game editable page buffer missingImg =
                     )
                     <| Dict.insert id new buffer
 
-        showImg : String -> String -> String -> Html Msg
-        showImg imgClass fallback path =
-            Html.node "picture" [ class imgClass ]
+        showImg : String -> String -> List String -> Html Msg
+        showImg imgClass fallback paths =
+            let 
+                path : String
+                path = Maybe.withDefault fallback
+                    <| List.head
+                    <| List.filter (\x -> not <| Set.member x missingImg)
+                    <| paths
+
+            in Html.node "picture" 
+                [ class imgClass ]
                 [ Html.source
-                    [ HA.attribute "srcset"
-                        <| if Set.member path missingImg
-                            then fallback
-                            else path
+                    [ HA.attribute "srcset" path
                     ] []
                 , Html.img
-                    [ HA.src
-                        <| if Set.member path missingImg
-                            then fallback
-                            else path
+                    [ HA.src path
                     , HE.on "error" <| JD.succeed <| MissingImg path
                     , class imgClass
                     ] []
@@ -92,28 +94,13 @@ view lang langConfig roles theme game editable page buffer missingImg =
                     ]
                     [ text "i" ]
                 , showImg "editor-role-image" "/content/img/assasin.svg"
+                    <| List.singleton
                     <| "/content/img/roles/" ++
                         (case theme of
                             Just (k, _) -> Url.percentEncode k ++ "/"
                             Nothing -> ""
                         ) ++
                         Url.percentEncode id ++ ".png"
-                -- , Html.object 
-                --     [ class "editor-role-image"
-                --     , HA.attribute "data" 
-                --         <| "/content/img/roles/" ++
-                --             (case theme of
-                --                 Just (k, _) -> Url.percentEncode k ++ "/"
-                --                 Nothing -> ""
-                --             ) ++
-                --             Url.percentEncode id ++ ".png"
-                --     ]
-                --     [ Html.img
-                --         [ HA.src "/content/img/assasin.svg"
-                --         , HA.type_ "image/svg+xml"
-                --         , class "editor-role-image"
-                --         ] []
-                --     ]
                 , div [ class "editor-role-name" ]
                     <| List.singleton
                     <| text
@@ -224,60 +211,71 @@ view lang langConfig roles theme game editable page buffer missingImg =
                     ] []
                 , Html.span [] [ text title ]
                 ]
-
-        viewThemeSelector : Bool -> Html Msg
-        viewThemeSelector enabled =
+        
+        viewThemeSelector2 : Bool -> Html Msg
+        viewThemeSelector2 enabled =
             div [ class "theme-selector" ]
-                <| List.singleton
-                <| Html.select
-                [ HA.disabled <| not enabled
-                , HE.on "change"
-                    <| JD.map
-                        (\key -> SendConf { editGameConfig | theme = Just key })
-                    <| JD.andThen
-                        (\raw ->
-                            case
-                                JD.decodeString
-                                    ( JD.map2 Tuple.pair
-                                        (JD.index 0 JD.string)
-                                        (JD.index 1 JD.string)
-                                    )
-                                    raw
-                            of
-                                Ok value -> JD.succeed value
-                                Err _ -> JD.fail "error"
-                        )
-                    <| HE.targetValue
-                ]
             <| List.map
-                (\((tk1, tk2), value) ->
-                    Html.option
-                        [ HA.selected
-                            <| (tk1, tk2) == game.theme
-                        , HA.value 
-                            <| JE.encode 0
-                            <| JE.list JE.string
-                                [ tk1, tk2 ]
+                (\(system, info) ->
+                    div [ class "theme-selector-system" ]
+                        [ div [ class "theme-selector-system-title" ]
+                            [ text
+                                <| Maybe.withDefault system
+                                <| Dict.get langConfig.lang info.title
+                            ]
+                        , div [ class "theme-selector-variants" ]
+                            <| List.map
+                                (\(key, names) ->
+                                    div [ HA.classList
+                                            [ ("theme-selector-variant", True)
+                                            , ("enabled", enabled)
+                                            ]
+                                        , HE.onClick <|
+                                            if enabled
+                                            then SendConf
+                                                { editGameConfig
+                                                | theme = Just (system, key)
+                                                }
+                                            else Noop
+                                        ]
+                                        [ if game.theme == (system, key)
+                                            then div [ class "theme-selector-variant-current" ]
+                                                <| List.singleton
+                                                <| Html.map (always Noop)
+                                                <| Views.Icons.svgTick
+                                            else text ""
+                                        , showImg "theme-selector-variant-img"
+                                            "/content/img/system/icon-fallback.png"
+                                            [ "/content/img/system/icons/" ++ system ++ "/" ++ key ++ ".png"
+                                            , "/content/img/system/icons/" ++ system ++ ".png"
+                                            ]
+                                        , div [ class "theme-selector-variant-title" ]
+                                            <| List.singleton
+                                            <| text
+                                            <| Maybe.withDefault key
+                                            <| Dict.get langConfig.lang names
+                                        , div [ class "theme-selector-langs" ]
+                                            <| List.map
+                                                (\icon ->
+                                                    Html.span
+                                                        [ class "flag-icon"
+                                                        , class <| "flag-icon-" ++ icon
+                                                        ] []
+                                                )
+                                            <| List.map
+                                                (\icon ->
+                                                    Dict.get icon langConfig.info.icons
+                                                    |> Maybe.withDefault icon
+                                                )
+                                            <| Dict.keys names
+                                        ]
+                                )
+                            <| Dict.toList 
+                            <| Maybe.withDefault Dict.empty
+                            <| Dict.get system langConfig.info.themes
                         ]
-                        [ text value ]
                 )
-            <| List.concatMap
-                (\(k1, d1) ->
-                    List.map
-                        (Tuple.mapFirst <| Tuple.pair k1)
-                    <| List.filterMap
-                        (\(k2, d2) ->
-                            Dict.get langConfig.lang d2
-                            |> Maybe.Extra.orElseLazy
-                                (\() -> Dict.get "de" d2)
-                            |> Maybe.Extra.orElseLazy
-                                (\() -> Dict.values d2 |> List.head)
-                            |> Maybe.map
-                                (Tuple.pair k2)
-                        )
-                    <| Dict.toList d1
-                )
-            <| Dict.toList langConfig.info.themes
+            <| Dict.toList langConfig.info.system
 
     in div [ class "editor" ]
         [ viewPageSelector lang page
@@ -285,11 +283,10 @@ view lang langConfig roles theme game editable page buffer missingImg =
         , case page of
             PageTheme ->
                 div [ class "editor-content-theme" ]
-                    [ viewThemeSelector editable ]
+                    [ viewThemeSelector2 editable ]
             PageRole ->
                 div [ class "editor-content-roles" ]
                     [ div [ class "editor-roles" ]
-                        -- <| List.map viewSingleRole
                         <| List.map viewSingleRoleBox
                         <| Maybe.withDefault []
                         <| Maybe.andThen
