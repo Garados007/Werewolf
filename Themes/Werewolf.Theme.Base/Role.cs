@@ -10,6 +10,8 @@ namespace Werewolf.Theme
     /// </summary>
     public abstract class Role
     {
+        public Effects.EffectCollection<Effects.IRoleEffect> Effects { get; } = new();
+
         private KillState killState = KillState.Alive;
         public KillState KillState
         {

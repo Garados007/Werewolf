@@ -18,6 +18,8 @@ namespace Werewolf.Theme
             Id = unchecked(nextId++);
         }
 
+        public Effects.EffectCollection<Effects.IVotingEffect> Effects { get; } = new();
+
         public virtual string LanguageId
         {
             get

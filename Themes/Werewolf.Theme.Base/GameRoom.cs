@@ -1,9 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Werewolf.User;
 
 namespace Werewolf.Theme
@@ -13,6 +8,8 @@ namespace Werewolf.Theme
         public int Id { get; }
 
         public uint ExecutionRound { get; private set; }
+
+        public Effects.EffectCollection<Effects.IGameRoomEffect> Effects { get; } = new();
 
         private UserId leader;
         public UserId Leader
