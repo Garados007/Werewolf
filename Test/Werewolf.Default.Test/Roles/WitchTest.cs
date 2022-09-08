@@ -43,7 +43,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, witch, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Alive);
+                vill1.Role!.ExpectLiveState(true);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>();
@@ -91,7 +91,7 @@ namespace Werewolf.Default.Test.Roles
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.WitchPhase.WitchSafe>();
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>();
@@ -142,8 +142,8 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, witch, vill2);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
-                vill2.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
+                vill2.Role!.ExpectLiveState(false);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>();
@@ -193,7 +193,7 @@ namespace Werewolf.Default.Test.Roles
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.WitchPhase.WitchKill>();
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>();

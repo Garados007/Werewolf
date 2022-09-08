@@ -35,7 +35,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, angel);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.NextPhaseAsync().ConfigureAwait(false);
-                angel.Role!.ExpectLiveState(Theme.KillState.Killed);
+                angel.Role!.ExpectLiveState(false);
                 room.ExpectWinner(angel);
             }
         }
@@ -66,7 +66,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, angel);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.NextPhaseAsync().ConfigureAwait(false);
-                angel.Role!.ExpectLiveState(Theme.KillState.Killed);
+                angel.Role!.ExpectLiveState(false);
                 room.ExpectWinner(angel);
             }
         }

@@ -1,8 +1,6 @@
 ﻿using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Votings;
-using System.Collections.Generic;
-using System.Linq;
 using Werewolf.Theme.Default.Roles;
 
 namespace Werewolf.Theme.Default.Phases
@@ -72,7 +70,7 @@ namespace Werewolf.Theme.Default.Phases
                     if (oldManKilled)
                     {
                         idiot.IsRevealed = false;
-                        idiot.SetKill(game, new KillInfos.VillageKill());
+                        idiot.AddKillFlag(new Effects.KillInfos.VillageKill());
                     }
                     return;
                 }
@@ -80,7 +78,7 @@ namespace Werewolf.Theme.Default.Phases
                 {
                     oldMan.WasKilledByVillager = true;
                 }
-                role.SetKill(game, new KillInfos.VillageKill());
+                role.AddKillFlag(new Effects.KillInfos.VillageKill());
             }
 
             protected override void AfterFinishExecute(GameRoom game)
@@ -119,7 +117,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.SetKill(game, new KillInfos.KilledByMajor());
+                role.AddKillFlag(new Effects.KillInfos.KilledByMajor());
             }
         }
 
@@ -152,8 +150,7 @@ namespace Werewolf.Theme.Default.Phases
                             if (role is Roles.ScapeGoat scapeGoat)
                             {
                                 // kill the scape goat and end the voting
-                                scapeGoat.WasKilledByVillage = true;
-                                scapeGoat.SetKill(game, new KillInfos.ScapeGoatKilled());
+                                scapeGoat.AddKillFlag(new Effects.KillInfos.ScapeGoatKilled());
                             }
                     }
                     else if (hasMajor)

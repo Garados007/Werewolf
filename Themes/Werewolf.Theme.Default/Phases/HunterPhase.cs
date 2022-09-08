@@ -31,7 +31,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.SetKill(game, new KillInfos.KilledByHunter());
+                role.AddKillFlag(new Effects.KillInfos.KilledByHunter());
                 Hunter.HasKilled = true;
             }
         }
@@ -52,7 +52,7 @@ namespace Werewolf.Theme.Default.Phases
             => voting.Hunter;
 
         protected override bool FilterVoter(Hunter role)
-            => !role.IsAlive && !role.HasKilled;
+            => role.IsAlive && role.HasKillFlag && !role.HasKilled;
 
         public override bool CanMessage(GameRoom game, Role role)
         {

@@ -94,17 +94,6 @@ namespace Werewolf.Theme
                 .Cast<Role>()
                 .Where(x => x.IsAlive);
 
-        /// <summary>
-        /// Any existing roles that are not finally dead. Only roles that have the
-        /// <see cref="KillState.Killed"/> are excluded.
-        /// </summary>
-        public IEnumerable<Role> NotKilledRoles
-            => Users.Values
-                .Select(x => x.Role)
-                .Where(x => x != null)
-                .Cast<Role>()
-                .Where(x => x.KillState != KillState.Killed);
-
         public Role? TryGetRole(UserId id)
         {
             return Users.TryGetValue(id, out GameUserEntry? entry) ? entry.Role : null;

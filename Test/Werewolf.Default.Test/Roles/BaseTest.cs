@@ -115,8 +115,8 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, vill3);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                vill3.Role!.ExpectLiveState(Theme.KillState.Killed);
-                vill4.Role!.ExpectLiveState(Theme.KillState.Alive);
+                vill3.Role!.ExpectLiveState(false);
+                vill4.Role!.ExpectLiveState(true);
             }
         }
 
@@ -157,12 +157,13 @@ namespace Werewolf.Default.Test.Roles
 
             // the major can now be inherited
             {
-                vill1.Role!.ExpectLiveState(Theme.KillState.BeforeKill);
+                vill1.Role!.ExpectLiveState(true);
+                vill1.Role!.ExpectKillFlag<Werewolf.Theme.Default.Effects.KillInfos.VillageKill>();
                 var voting = room.ExpectVoting<Theme.Default.Phases.InheritMajorPhase.InheritMajor>();
                 voting.Vote(room, vill1, vill3);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
                 Assert.IsTrue(vill3.Role!.IsMajor);
             }
         }
@@ -206,12 +207,13 @@ namespace Werewolf.Default.Test.Roles
 
             // the major can now be inherited
             {
-                vill1.Role!.ExpectLiveState(Theme.KillState.BeforeKill);
+                vill1.Role!.ExpectLiveState(true);
+                vill1.Role!.ExpectKillFlag<Werewolf.Theme.Default.Effects.KillInfos.KilledByWerwolf>();
                 var voting = room.ExpectVoting<Theme.Default.Phases.InheritMajorPhase.InheritMajor>();
                 voting.Vote(room, vill1, vill3);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
                 Assert.IsTrue(vill3.Role!.IsMajor);
             }
         }

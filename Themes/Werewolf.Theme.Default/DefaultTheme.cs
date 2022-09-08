@@ -50,9 +50,7 @@ namespace Werewolf.Theme.Default
                 // remove flags if possible
                 phases.Add(new Phases.KillFlagWerwolfVictimAction());
                 // transition and execute special actions
-                phases.Add(new Werewolf.Theme.Phases.KillTransitionToAboutToKillAction());
-                // transition to prepare special phases
-                phases.Add(new Werewolf.Theme.Phases.KillTransitionToBeforeKillAction());
+                phases.Add(new Werewolf.Theme.Phases.NotifyBeforeKilledRolesAction());
                 // special phases
                 phases.Add(new Phases.HunterPhase());
                 phases.Add(new Phases.ScapeGoatPhase());
@@ -148,7 +146,7 @@ namespace Werewolf.Theme.Default
         {
             winner = game.Users
                 .Select(x => x.Value.Role)
-                .Where(x => x is Roles.Angel angel && angel.KillState == KillState.Killed && !angel.MissedFirstRound)
+                .Where(x => x is Roles.Angel angel && !angel.IsAlive && !angel.MissedFirstRound)
                 .Cast<Role>()
                 .ToArray();
             return winner.Value.Length > 0;
@@ -156,7 +154,7 @@ namespace Werewolf.Theme.Default
 
         private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            foreach (var player in game.NotKilledRoles)
+            foreach (var player in game.AliveRoles)
                 if (player is BaseRole baseRole && !baseRole.IsLoved)
                 {
                     winner = null;
@@ -168,7 +166,7 @@ namespace Werewolf.Theme.Default
 
         private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            foreach (var player in game.NotKilledRoles)
+            foreach (var player in game.AliveRoles)
                 if (player is BaseRole baseRole && !(baseRole.IsEnchantedByFlutist || player is Roles.Flutist))
                 {
                     winner = null;

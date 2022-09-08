@@ -13,6 +13,8 @@ namespace Werewolf.Default.Test.Roles
         [TestMethod]
         public async Task AmorVotesTwoVillageAndOneIsKilledAtNight()
         {
+            // while (!System.Diagnostics.Debugger.IsAttached)
+            //     System.Threading.Thread.Sleep(100);
             // create runner and fill with data
             var runner = new Runner<DefaultTheme>()
                 .InitRoles<Roles.Villager>(2)
@@ -49,8 +51,8 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.NextPhaseAsync().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
-                vill2.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
+                vill2.Role!.ExpectLiveState(false);
             }
         }
 

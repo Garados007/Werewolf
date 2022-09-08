@@ -47,7 +47,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             return game.Users
                 .Select(x => x.Value.Role)
-                .Where(x => x != null && x.IsMajor && !x.IsAlive)
+                .Where(x => x != null && x.IsMajor && x.IsAlive && x.HasKillFlag)
                 .Any();
         }
 

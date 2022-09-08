@@ -2,6 +2,7 @@
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Votings;
+using Werewolf.Theme.Default.Effects.KillInfos;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +22,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool DefaultParticipantSelector(Role role)
             {
-                return role.KillInfo is KillInfos.KilledByWerwolf;
+                return role.Effects.GetEffect<KilledByWerwolf>() is not null;
             }
 
             protected override bool AllowDoNothingOption => true;
@@ -55,7 +56,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool DefaultParticipantSelector(Role role)
             {
-                return role.IsAlive && !(role.KillInfo is KillInfos.KilledByWerwolf);
+                return role.IsAlive && role.Effects.GetEffect<KilledByWerwolf>() is null;
             }
 
             protected override bool AllowDoNothingOption => true;
@@ -72,7 +73,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.AddKillFlag(new KillInfos.KilledByWithDeathPotion());
+                role.AddKillFlag(new KilledByWithDeathPotion());
                 Witch.UsedDeathPotion = true;
             }
         }

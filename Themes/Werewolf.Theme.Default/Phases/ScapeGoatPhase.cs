@@ -4,7 +4,7 @@ using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Votings;
 using System.Collections.Generic;
 using System.Linq;
-using Werewolf.Theme.Default.KillInfos;
+using Werewolf.Theme.Default.Effects.KillInfos;
 
 namespace Werewolf.Theme.Default.Phases
 {
@@ -99,7 +99,8 @@ namespace Werewolf.Theme.Default.Phases
             => new ScapeGoatSelect(role, game, ids);
 
         protected override bool FilterVoter(ScapeGoat role)
-            => !role.IsAlive && role.WasKilledByVillage && !role.HasRevenge && !role.HasDecided;
+            => role.IsAlive && role.Effects.GetEffect<ScapeGoatKilled>() is not null
+            && !role.HasRevenge && !role.HasDecided;
 
         protected override ScapeGoat GetRole(ScapeGoatSelect voting)
             => voting.ScapeGoat;

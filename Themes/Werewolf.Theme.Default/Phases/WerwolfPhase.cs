@@ -34,7 +34,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.AddKillFlag(new KillInfos.KilledByWerwolf());
+                role.AddKillFlag(new Effects.KillInfos.KilledByWerwolf());
             }
         }
 

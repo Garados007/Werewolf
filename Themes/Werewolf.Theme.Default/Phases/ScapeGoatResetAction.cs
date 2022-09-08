@@ -12,8 +12,10 @@ namespace Werewolf.Theme.Default.Phases
                 if (role is not BaseRole baseRole)
                     continue;
                 baseRole.HasVotePermitFromScapeGoat = false;
-                if (role is Roles.ScapeGoat scapeGoat && scapeGoat.WasKilledByVillage)
+                var effect = role.Effects.GetEffect<Default.Effects.KillInfos.ScapeGoatKilled>();
+                if (role is Roles.ScapeGoat scapeGoat && effect is not null)
                 {
+                    effect.Decided = true;
                     // this phase is executed right after the scapegoat is killed.
                     // At this moment this role had never the chance to decide.
                     // therefore:

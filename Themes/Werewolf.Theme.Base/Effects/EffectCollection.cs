@@ -16,6 +16,11 @@ public class EffectCollection<T>
     public int Count => items.Count;
 
     /// <summary>
+    /// This event is called every time when an event is added.
+    /// </summary>
+    public event Action<T>? Added;
+
+    /// <summary>
     /// Add an effect to the collection
     /// </summary>
     /// <param name="item">the effect to add</param>
@@ -26,11 +31,22 @@ public class EffectCollection<T>
         try
         {
             @lock.EnterWriteLock();
+            var node = items.First;
+            while (node is not null)
+            {
+                if (Equals(node.Value, item))
+                {
+                    node.Value = item;
+                    return;
+                }
+                node = node.Next;
+            }
             items.AddLast(item);
         }
         finally
         {
             @lock.ExitWriteLock();
+            Added?.Invoke(item);
         }
     }
 
@@ -71,6 +87,12 @@ public class EffectCollection<T>
     }
 
     /// <summary>
+    /// This event is called every time when an event is removed. This wont be called if the
+    /// collection was cleared.
+    /// </summary>
+    public event Action<T>? Removed;
+
+    /// <summary>
     /// Removes all effects of the specified type
     /// </summary>
     /// <typeparam name="U">the type of the effect to remove</typeparam>
@@ -89,6 +111,7 @@ public class EffectCollection<T>
                 {
                     count++;
                     items.Remove(node);
+                    Removed?.Invoke(node.Value);
                 }
                 node = next;
             }
@@ -112,7 +135,10 @@ public class EffectCollection<T>
         try
         {
             @lock.EnterWriteLock();
-            return items.Remove(item);
+            var success = items.Remove(item);
+            if (success)
+                Removed?.Invoke(item);
+            return success;
         }
         finally
         {
