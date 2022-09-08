@@ -1,4 +1,35 @@
 # Werewolf
+
+This is yet another implementation of the popular game werewolves of millers hill which can be
+played online with your friends together. This is pretty similar to Mafia or Among Us. In this game
+you have two parties in a small village: the normal villager and some werewolves. The goal of the
+game is that the werewolves eliminate all normal villager and the goal for the villager is to
+survive this. This game has multiple rounds and different phases with special actions.
+
+The game is a lot of fun for me and my friends. So much fun that I decided to release it as a web
+application so that we can play anytime, even if we can't physically meet. That was especially the
+case at the time of Corona.
+
+The project is a big construction site and I have ideas all over the place about how to expand on
+that so that I can achieve my goal of including all the characters and features from the official
+game, including expansions. From there, things can still change here in the future.
+
+If you want to try this game you can check out here:
+[werewolf.2complex.de](https://werewolf.2complex.de/).
+
+If you want to help me providing translations, images or the code base you can create an issue. I am
+happy to include your submissions. I'll put some more guidance in the wiki that can help you with
+this.
+
+If you want to host your own server, please contact me first. I want to have all instances to run
+the latest version of the game all the time and for this we need some preparation (e.g. Github
+webhooks, keys). Also for this some services needs to be prepared and the documentation is missing
+yet (mostly because this is still in work).
+
+---
+
+> Rest of the old Readme. I will move this to the wiki later.
+
 An online implementation of the popular game werewolfes of millers hill. This uses a C# web server 
 as a backend and elm as frontend.
 
