@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Default.Phases
             public override bool CanView(Role viewer)
                 => viewer is Roles.Healer;
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
                 => voter is Roles.Healer && voter.IsAlive;
 
             public override void Execute(GameRoom game, UserId id, Role role)

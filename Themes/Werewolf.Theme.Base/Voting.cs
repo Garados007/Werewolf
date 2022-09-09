@@ -13,9 +13,26 @@ namespace Werewolf.Theme
         private static ulong nextId;
         public ulong Id { get; }
 
-        public Voting()
+        public Voting(GameRoom game)
         {
             Id = unchecked(nextId++);
+
+            // load the one time override of voter
+            var ownType = GetType();
+            var overrideEffect = game.Effects.GetEffect<Effects.OverrideVotingVoter>(
+                x => ownType.IsAssignableTo(x.Voting)
+            );
+            if (overrideEffect is not null)
+            {
+                game.Effects.Remove(overrideEffect);
+                overrideVoter = new HashSet<Role>();
+                foreach (var id in overrideEffect)
+                {
+                    var role = game.TryGetRole(id);
+                    if (role is not null)
+                        overrideVoter.Add(role);
+                }
+            }
         }
 
         public Effects.EffectCollection<Effects.IVotingEffect> Effects { get; } = new();
@@ -41,7 +58,15 @@ namespace Werewolf.Theme
 
         public abstract bool CanView(Role viewer);
 
-        public abstract bool CanVote(Role voter);
+        private readonly HashSet<Role>? overrideVoter;
+        public bool CanVote(Role voter)
+        {
+            if (overrideVoter is not null)
+                return overrideVoter.Contains(voter);
+            return CanVoteBase(voter);
+        }
+
+        protected abstract bool CanVoteBase(Role voter);
 
         protected virtual int GetMissingVotes(GameRoom game)
         {

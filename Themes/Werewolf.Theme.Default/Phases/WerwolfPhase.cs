@@ -27,7 +27,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer is WerwolfBase;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter is WerwolfBase && voter.IsAlive;
             }
@@ -72,7 +72,8 @@ namespace Werewolf.Theme.Default.Phases
 
             public Girl Girl { get; }
 
-            public GirlVote(Girl girl)
+            public GirlVote(GameRoom game, Girl girl)
+                : base(game)
             {
                 Girl = girl;
                 options.Add(new VoteOption("do-nothing"));
@@ -82,7 +83,7 @@ namespace Werewolf.Theme.Default.Phases
             public override bool CanView(Role viewer)
                 => viewer == Girl;
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
                 => voter == Girl;
 
 #if DEBUG
@@ -125,7 +126,7 @@ namespace Werewolf.Theme.Default.Phases
             }
 
             protected override GirlVote Create(Girl role, GameRoom game)
-                => new GirlVote(role);
+                => new GirlVote(game, role);
 
             protected override bool FilterVoter(Girl role)
             {

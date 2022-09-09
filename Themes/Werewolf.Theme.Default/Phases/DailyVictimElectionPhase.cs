@@ -19,22 +19,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants)
-            {
-                // check if scape goat phase
-                var isScapeGoatRevenge = game.Users
-                    .Select(x => x.Value.Role)
-                    .Where(x => x is Roles.ScapeGoat)
-                    .Cast<Roles.ScapeGoat>()
-                    .Where(x => x.HasDecided && !x.HasRevenge)
-                    .Any();
-                if (isScapeGoatRevenge)
-                    allowedVoter = new HashSet<Role>(game.Users
-                        .Select(x => x.Value.Role)
-                        .Where(x => x != null && x.IsAlive)
-                        .Where(x => x is BaseRole baseRole && baseRole.HasVotePermitFromScapeGoat)
-                        .Cast<Role>()
-                    );
-            }
+            {}
 
             protected override bool DefaultParticipantSelector(Role role)
             {
@@ -47,7 +32,7 @@ namespace Werewolf.Theme.Default.Phases
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 // special voting condition
                 if (allowedVoter != null)
@@ -90,10 +75,10 @@ namespace Werewolf.Theme.Default.Phases
                         .Select(x => x.Value.Role)
                         .Where(x => x is Roles.ScapeGoat)
                         .Cast<Roles.ScapeGoat>()
-                        .Where(x => x.HasDecided && !x.HasRevenge)
+                        .Where(x => x.TakingRevenge)
                         .FirstOrDefault();
                     if (scapegoat is not null)
-                        scapegoat.HasRevenge = true;
+                        scapegoat.TakingRevenge = false;
                 }
             }
         }
@@ -110,7 +95,7 @@ namespace Werewolf.Theme.Default.Phases
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter.IsMajor && voter.IsAlive;
             }

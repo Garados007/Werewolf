@@ -24,7 +24,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer == Hunter;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter == Hunter;
             }

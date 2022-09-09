@@ -170,6 +170,30 @@ public class EffectCollection<T>
     }
 
     /// <summary>
+    /// Get a single effect from this collection.
+    /// </summary>
+    /// <param name="selector">Selects which of the <typeparamref name="U"/> should be used.</param>
+    /// <typeparam name="U">the type that should be searched for</typeparam>
+    /// <returns>the effect if found</returns>
+    public U? GetEffect<U>(Func<U, bool> selector)
+    {
+        try
+        {
+            @lock.EnterReadLock();
+            foreach (var node in items)
+            {
+                if (node is U item && selector(item))
+                    return item;
+            }
+            return default;
+        }
+        finally
+        {
+            @lock.ExitReadLock();
+        }
+    }
+
+    /// <summary>
     /// Return all stored effects
     /// </summary>
     /// <returns>all effects</returns>

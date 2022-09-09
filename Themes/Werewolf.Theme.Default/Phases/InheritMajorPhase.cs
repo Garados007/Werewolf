@@ -25,7 +25,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer.IsMajor;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter.IsMajor && !voter.IsAlive;
             }

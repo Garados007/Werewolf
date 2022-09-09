@@ -9,11 +9,6 @@ namespace Werewolf.Theme.Default.Effects.KillInfos
     /// </summary>
     public class ScapeGoatKilled : KillInfoEffect
     {
-        /// <summary>
-        /// This will be toggled to true after the scapegoat decided the fate.
-        /// </summary>
-        public bool Decided { get; set; }
-
         public override string NotificationId => "scapegoat-kill";
     }
 }

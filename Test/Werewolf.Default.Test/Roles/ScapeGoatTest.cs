@@ -8,19 +8,20 @@ namespace Werewolf.Default.Test.Roles
     using Roles = Werewolf.Theme.Default.Roles;
 
     [TestClass]
-    public class ScapeGoatTest
+    public class ScapeGoatTest09
     {
         [TestMethod]
         public async Task ScapeGoatKilledAtDayAndSelectsSome()
         {
             // create runner and fill with data
             var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(2)
+                .InitRoles<Roles.Villager>(3)
                 .InitRoles<Roles.ScapeGoat>(1)
                 .InitRoles<Roles.Werwolf>(1);
             var room = runner.GameRoom;
             var vill1 = room.GetUserWithRole<Roles.Villager>(0);
             var vill2 = room.GetUserWithRole<Roles.Villager>(1);
+            var vill3 = room.GetUserWithRole<Roles.Villager>(2);
             var goat = room.GetUserWithRole<Roles.ScapeGoat>(0);
             var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
 
@@ -42,8 +43,9 @@ namespace Werewolf.Default.Test.Roles
             // scape goat selects some
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.ScapeGoatPhase.ScapeGoatSelect>();
-                Assert.AreEqual(null, voting.Vote(room, goat, vill1));
-                Assert.AreEqual(null, voting.Vote(room, goat.User.Id, 0));
+                Assert.IsNull(voting.Vote(room, goat, vill1));
+                Assert.IsNull(voting.Vote(room, goat, vill3));
+                Assert.IsNull(voting.Vote(room, goat.User.Id, 0));
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
                 goat.Role!.ExpectLiveState(false);
@@ -57,6 +59,7 @@ namespace Werewolf.Default.Test.Roles
                 var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
                 Assert.IsTrue(voting.CanVote(vill1.Role!));
                 Assert.IsFalse(voting.CanVote(vill2.Role!));
+                Assert.IsTrue(voting.CanVote(vill3.Role!));
                 Assert.IsFalse(voting.CanVote(wolf.Role!));
                 voting.Vote(room, vill1, vill2);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
@@ -71,6 +74,7 @@ namespace Werewolf.Default.Test.Roles
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
                 Assert.IsTrue(voting.CanVote(vill1.Role!));
+                Assert.IsTrue(voting.CanVote(vill3.Role!));
                 Assert.IsTrue(voting.CanVote(wolf.Role!));
             }
         }
@@ -194,7 +198,6 @@ namespace Werewolf.Default.Test.Roles
                 Assert.IsFalse(voting.CanVote(vill2.Role!));
                 Assert.IsFalse(voting.CanVote(wolf.Role!));
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                Assert.IsTrue(((Roles.ScapeGoat)goat.Role!).HasRevenge);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
             }
 
@@ -206,193 +209,6 @@ namespace Werewolf.Default.Test.Roles
                 var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
                 Assert.IsTrue(voting.CanVote(vill2.Role!));
                 Assert.IsTrue(voting.CanVote(wolf.Role!));
-            }
-        }
-
-        [TestMethod]
-        public async Task HunterKilledAtDayAndKillPlayer()
-        {
-            // create runner and fill with data
-            var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(2)
-                .InitRoles<Roles.Hunter>(1)
-                .InitRoles<Roles.Werwolf>(1);
-            var room = runner.GameRoom;
-            var vill1 = room.GetUserWithRole<Roles.Villager>(0);
-            var vill2 = room.GetUserWithRole<Roles.Villager>(1);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
-            var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
-
-            // skip phases until we have our desired one
-            await room.StartGameAsync().ConfigureAwait(false);
-            room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>().ConfigureAwait(false);
-
-            // daily voting and kill hunter
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
-                voting.Vote(room, wolf, hunter);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.HunterPhase>().ConfigureAwait(false);
-            }
-
-            // hunter kill villager
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.HunterPhase.HunterKill>();
-                voting.Vote(room, hunter, vill1);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-            }
-        }
-        
-        [TestMethod]
-        public async Task HunterKilledAtNightAndKillWolfAndWin()
-        {
-            // create runner and fill with data
-            var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(2)
-                .InitRoles<Roles.Hunter>(1)
-                .InitRoles<Roles.Werwolf>(1);
-            var room = runner.GameRoom;
-            var vill1 = room.GetUserWithRole<Roles.Villager>(0);
-            var vill2 = room.GetUserWithRole<Roles.Villager>(1);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
-            var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
-
-            // skip phases until we have our desired one
-            await room.StartGameAsync().ConfigureAwait(false);
-            room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
-
-            // wolf voting and kill hunter
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.WerwolfPhase.WerwolfVote>();
-                voting.Vote(room, wolf, hunter);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.HunterPhase>().ConfigureAwait(false);
-            }
-
-            // hunter kill wolf
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.HunterPhase.HunterKill>();
-                voting.Vote(room, hunter, wolf);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.NextPhaseAsync().ConfigureAwait(false);
-                wolf.Role!.ExpectLiveState(false);
-                room.ExpectWinner(vill1, vill2, hunter);
-            }
-        }
-
-        [TestMethod]
-        public async Task HunterKilledAtDayAndKillWolfAndWin()
-        {
-            // create runner and fill with data
-            var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(2)
-                .InitRoles<Roles.Hunter>(1)
-                .InitRoles<Roles.Werwolf>(1);
-            var room = runner.GameRoom;
-            var vill1 = room.GetUserWithRole<Roles.Villager>(0);
-            var vill2 = room.GetUserWithRole<Roles.Villager>(1);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
-            var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
-
-            // skip phases until we have our desired one
-            await room.StartGameAsync().ConfigureAwait(false);
-            room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>().ConfigureAwait(false);
-
-            // daily voting and kill hunter
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
-                voting.Vote(room, wolf, hunter);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.HunterPhase>().ConfigureAwait(false);
-            }
-
-            // hunter kill wolf
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.HunterPhase.HunterKill>();
-                voting.Vote(room, hunter, wolf);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.NextPhaseAsync().ConfigureAwait(false);
-                wolf.Role!.ExpectLiveState(false);
-                room.ExpectWinner(vill1, vill2, hunter);
-            }
-        }
-
-        [TestMethod]
-        public async Task HunterKilledAtNightAndKillVillagerAndLoose()
-        {
-            // create runner and fill with data
-            var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(1)
-                .InitRoles<Roles.Hunter>(1)
-                .InitRoles<Roles.Werwolf>(1);
-            var room = runner.GameRoom;
-            var vill = room.GetUserWithRole<Roles.Villager>(0);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
-            var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
-
-            // skip phases until we have our desired one
-            await room.StartGameAsync().ConfigureAwait(false);
-            room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
-
-            // wolf voting and kill hunter
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.WerwolfPhase.WerwolfVote>();
-                voting.Vote(room, wolf, hunter);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.HunterPhase>().ConfigureAwait(false);
-            }
-
-            // hunter kill villager
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.HunterPhase.HunterKill>();
-                voting.Vote(room, hunter, vill);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.NextPhaseAsync().ConfigureAwait(false);
-                vill.Role!.ExpectLiveState(false);
-                room.ExpectWinner(wolf);
-            }
-        }
-
-        [TestMethod]
-        public async Task HunterKilledAtDayAndKillVillagerAndLoose()
-        {
-            // create runner and fill with data
-            var runner = new Runner<DefaultTheme>()
-                .InitRoles<Roles.Villager>(1)
-                .InitRoles<Roles.Hunter>(1)
-                .InitRoles<Roles.Werwolf>(1);
-            var room = runner.GameRoom;
-            var vill = room.GetUserWithRole<Roles.Villager>(0);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
-            var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
-
-            // skip phases until we have our desired one
-            await room.StartGameAsync().ConfigureAwait(false);
-            room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-            await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>().ConfigureAwait(false);
-
-            // daily voting and kill hunter
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
-                voting.Vote(room, wolf, hunter);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.ExpectNextPhaseAsync<Theme.Default.Phases.HunterPhase>().ConfigureAwait(false);
-            }
-
-            // hunter kill villager
-            {
-                var voting = room.ExpectVoting<Theme.Default.Phases.HunterPhase.HunterKill>();
-                voting.Vote(room, hunter, vill);
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                await room.NextPhaseAsync().ConfigureAwait(false);
-                vill.Role!.ExpectLiveState(false);
-                room.ExpectWinner(wolf);
             }
         }
 
@@ -412,7 +228,7 @@ namespace Werewolf.Default.Test.Roles
             var oldman = room.GetUserWithRole<Roles.OldMan>(0);
             var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
 
-            // skip phases until we have our desired oneselect spy
+            // skip phases until we have our desired one
             await room.StartGameAsync().ConfigureAwait(false);
             room.ExpectPhase<Theme.Default.Phases.WerwolfPhase>();
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
@@ -447,19 +263,19 @@ namespace Werewolf.Default.Test.Roles
             // create runner and fill with data
             var runner = new Runner<DefaultTheme>()
                 .InitRoles<Roles.Villager>(1)
-                .InitRoles<Roles.Hunter>(1)
+                .InitRoles<Roles.ScapeGoat>(1)
                 .InitRoles<Roles.Werwolf>(1);
             var room = runner.GameRoom;
             var vill = room.GetUserWithRole<Roles.Villager>(0);
-            var hunter = room.GetUserWithRole<Roles.Hunter>(0);
+            var scapegoat = room.GetUserWithRole<Roles.ScapeGoat>(0);
             var wolf = room.GetUserWithRole<Roles.Werwolf>(0);
 
             // verify visibility
             await room.StartGameAsync().ConfigureAwait(false);
-            hunter.Role!.ExpectVisibility<Roles.Unknown>(wolf.Role!);
-            hunter.Role!.ExpectVisibility<Roles.Unknown>(vill.Role!);
-            wolf.Role!.ExpectVisibility<Roles.Unknown>(hunter.Role!);
-            vill.Role!.ExpectVisibility<Roles.Unknown>(hunter.Role!);
+            scapegoat.Role!.ExpectVisibility<Roles.Unknown>(wolf.Role!);
+            scapegoat.Role!.ExpectVisibility<Roles.Unknown>(vill.Role!);
+            wolf.Role!.ExpectVisibility<Roles.Unknown>(scapegoat.Role!);
+            vill.Role!.ExpectVisibility<Roles.Unknown>(scapegoat.Role!);
         }
     }
 }

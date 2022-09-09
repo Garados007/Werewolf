@@ -29,7 +29,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer is Roles.Flutist;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter is Roles.Flutist && voter.IsAlive;
             }

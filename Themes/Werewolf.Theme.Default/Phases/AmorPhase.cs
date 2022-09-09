@@ -20,7 +20,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer is Roles.Amor;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter is Roles.Amor && voter.IsAlive;
             }

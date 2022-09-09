@@ -32,7 +32,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer == Witch;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter == Witch;
             }
@@ -66,7 +66,7 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer is Witch;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter == Witch && !Witch.UsedDeathPotion;
             }

@@ -37,8 +37,6 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        public bool HasVotePermitFromScapeGoat { get; set; }
-
         private bool isEnchantedByFlutist;
         public bool IsEnchantedByFlutist
         {
