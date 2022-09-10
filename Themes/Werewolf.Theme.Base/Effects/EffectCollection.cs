@@ -8,7 +8,7 @@ public class EffectCollection<T>
     where T : IEffect
 {
     private readonly LinkedList<T> items = new();
-    private readonly ReaderWriterLockSlim @lock = new();
+    private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);
 
     /// <summary>
     /// The total number of all effects in this collection
@@ -85,6 +85,14 @@ public class EffectCollection<T>
             @lock.ExitReadLock();
         }
     }
+
+    /// <summary>
+    /// Checks if any effect with the type <typeparamref name="U"/> is contained in the collection.
+    /// </summary>
+    /// <typeparam name="U">the type of the effect</typeparam>
+    /// <returns>true if found</returns>
+    public bool Contains<U>()
+    => GetEffect<U>() is not null;
 
     /// <summary>
     /// This event is called every time when an event is removed. This wont be called if the
@@ -231,7 +239,8 @@ public class EffectCollection<T>
         }
         finally
         {
-            @lock.ExitReadLock();
+            if (@lock.IsReadLockHeld)
+                @lock.ExitReadLock();
         }
     }
 }

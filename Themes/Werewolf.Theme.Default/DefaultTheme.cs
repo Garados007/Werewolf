@@ -154,12 +154,16 @@ namespace Werewolf.Theme.Default
 
         private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
+            winner = null;
             foreach (var player in game.AliveRoles)
-                if (player is BaseRole baseRole && !baseRole.IsLoved)
-                {
-                    winner = null;
+            {
+                var ownEffect = player.Effects.GetEffect<Effects.LovedEffect>();
+                if (ownEffect is null)
                     return false;
-                }
+                var targetEffect = ownEffect.Target.Effects.GetEffect<Effects.LovedEffect>();
+                if (targetEffect?.Target != player)
+                    return false;
+            }
             winner = game.AliveRoles.ToArray();
             return true;
         }

@@ -32,12 +32,11 @@ namespace Werewolf.Default.Test.Roles
 
             // amor vote 
             {
-                var voting1 = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>(0);
-                var voting2 = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>(1);
-                voting1.Vote(room, amor, vill1);
-                voting2.Vote(room, amor, vill2);
-                await voting1.FinishVotingAsync(room).ConfigureAwait(false);
-                await voting2.FinishVotingAsync(room).ConfigureAwait(false);
+                var voting = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>();
+                voting.Vote(room, amor, vill1);
+                voting.Vote(room, amor, vill2);
+                voting.Vote(room, amor.User.Id, 0);
+                await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 //validate tag
                 vill1.Role!.ExpectTag(room, "loved");
                 vill2.Role!.ExpectTag(room, "loved");
@@ -75,12 +74,11 @@ namespace Werewolf.Default.Test.Roles
 
             // amor vote 
             {
-                var voting1 = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>(0);
-                var voting2 = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>(1);
-                voting1.Vote(room, amor, amor);
-                voting2.Vote(room, amor, wolf);
-                await voting1.FinishVotingAsync(room).ConfigureAwait(false);
-                await voting2.FinishVotingAsync(room).ConfigureAwait(false);
+                var voting = room.ExpectVoting<Theme.Default.Phases.AmorPhase.AmorPick>();
+                voting.Vote(room, amor, amor);
+                voting.Vote(room, amor, wolf);
+                voting.Vote(room, amor.User.Id, 0);
+                await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 //validate tag
                 amor.Role!.ExpectTag(room, "loved");
                 wolf.Role!.ExpectTag(room, "loved");

@@ -23,20 +23,6 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        private bool isLoved;
-        public bool IsLoved
-        {
-            get => isLoved;
-            set
-            {
-                isLoved = value;
-                if (isLoved)
-                    Effects.Add(new Default.Effects.BeforeKillAction.KillByLove());
-                else Effects.Remove<Default.Effects.BeforeKillAction.KillByLove>();
-                SendRoleInfoChanged();
-            }
-        }
-
         private bool isEnchantedByFlutist;
         public bool IsEnchantedByFlutist
         {
@@ -52,8 +38,6 @@ namespace Werewolf.Theme.Default
         {
             foreach (var tag in base.GetTags(game, viewer))
                 yield return tag;
-            if (IsLoved && (viewer == this || viewer == null || ViewLoved(viewer)))
-                yield return "loved";
             if (IsEnchantedByFlutist && (viewer == null || viewer is Roles.Flutist || (viewer is BaseRole baseRole && baseRole.IsEnchantedByFlutist)))
                 yield return "enchant-flutist";
         }
@@ -63,13 +47,6 @@ namespace Werewolf.Theme.Default
             return IsViewedByOracle && viewer is Roles.Oracle
                 ? this
                 : base.ViewRole(viewer);
-        }
-
-        public virtual bool ViewLoved(Role viewer)
-        {
-            return viewer is BaseRole viewer_
-                && (viewer_.IsLoved || viewer is Roles.Amor)
-                && IsLoved;
         }
     }
 }

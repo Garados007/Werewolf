@@ -27,6 +27,7 @@ type EventData
     | SetUserConfig UserConfig
     | SetVotingTimeout String (Maybe Posix)
     | SetVotingVote String String String -- voting option voter
+    | RemoveVotingVote String String String -- voting option voter
     | SubmitRoles RoleTemplates
     | Success
     | GetJoinToken LobbyJoinToken
@@ -181,6 +182,11 @@ decodeEventData =
                     |> required "timeout" (JD.nullable Iso8601.decoder)
                 "SetVotingVote" ->
                     JD.succeed SetVotingVote
+                    |> required "voting" JD.string
+                    |> required "option" JD.string 
+                    |> required "voter" JD.string
+                "RemoveVotingVote" ->
+                    JD.succeed RemoveVotingVote
                     |> required "voting" JD.string
                     |> required "option" JD.string 
                     |> required "voter" JD.string
