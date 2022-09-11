@@ -9,7 +9,6 @@ namespace Werewolf.Theme.Default.Phases;
 
 public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPhase<AmorPhase>
 {
-
     public class AmorPick : PlayerVotingBase
     {
         public Amor Amor { get; }
