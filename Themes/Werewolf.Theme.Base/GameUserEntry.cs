@@ -20,6 +20,9 @@ namespace Werewolf.Theme
         
         public DateTime LastConnectionUpdate { get; private set; }
 
+
+        public Effects.EffectCollection<Effects.IGameUserEntryEffect> Effects { get; } = new();
+
         public GameUserEntry(UserInfo user)
         {
             User = user;

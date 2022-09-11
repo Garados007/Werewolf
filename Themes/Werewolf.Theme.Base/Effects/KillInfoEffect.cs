@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Werewolf.Theme
+namespace Werewolf.Theme.Effects
 {
-    public abstract class KillInfo
+    public abstract class KillInfoEffect : IRoleEffect
     {
         public virtual string NotificationId
         {
@@ -14,7 +14,9 @@ namespace Werewolf.Theme
             }
         }
 
-        public abstract IEnumerable<string> GetKillFlags(GameRoom game, Role? viewer);
-
+        public virtual IEnumerable<string> GetSeenTags(GameRoom game, Role current, Role? viewer)
+        {
+            yield break;
+        }
     }
 }

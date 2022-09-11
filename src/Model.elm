@@ -529,6 +529,44 @@ applyEventData event model =
                 }
             }
             []
+        EventData.RemoveVotingVote vid oid voter -> Tuple.pair 
+            { model
+            | state = editGame model <| \game ->
+                { game
+                | phase = 
+                    Maybe.withDefault
+                        (Data.GamePhase "" 
+                            (Data.GameStage "" "" "")
+                            []
+                        ) 
+                        game.phase 
+                    |> \phase -> Just
+                        { phase
+                        | voting = List.map
+                            (\v ->
+                                if v.id == vid
+                                then
+                                    { v
+                                    | options = Dict.map
+                                        (\key value ->
+                                            if key == oid
+                                            then 
+                                                { value
+                                                | user = List.filter
+                                                    ((/=) voter)
+                                                    value.user
+                                                }
+                                            else value
+                                        )
+                                        v.options
+                                    }
+                                else v
+                            )
+                            phase.voting
+                        }
+                }
+            }
+            []
         EventData.GetJoinToken token -> Tuple.pair
             { model 
             | joinToken = Just token

@@ -9,6 +9,9 @@ namespace Test.Tools
 {
     public static class Extensions
     {
+        private static string Prefix(bool value)
+        => value ? "" : "not ";
+
         public static GameUserEntry GetUserWithRole<TRole>(this GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
             where TRole : Role
         {
@@ -125,11 +128,30 @@ namespace Test.Tools
             phase.ExpectNoVoting(offset, verifier);
         }
 
-        public static void ExpectLiveState(this Role role, KillState state = KillState.Alive)
+        public static void ExpectLiveState(this Role role, bool alive = true)
         {
-            if (role.KillState != state)
+            if (role.IsAlive != alive)
                 throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to be {state} but is {role.KillState}."
+                    $"The role {role.GetType().FullName} was expected to be {Prefix(alive)}alive but is {Prefix(role.IsAlive)}alive."
+                );
+        }
+
+        public static void ExpectNoKillFlag(this Role role)
+        {
+            var effect = role.Effects.GetEffect<Werewolf.Theme.Effects.KillInfoEffect>();
+            if (effect is not null)
+                throw new InvalidOperationException(
+                    $"The role {role.GetType().FullName} was expected to have no kill flag but got {effect.GetType().FullName}."
+                );
+        }
+
+        public static void ExpectKillFlag<T>(this Role role)
+            where T : Werewolf.Theme.Effects.KillInfoEffect
+        {
+            var effect = role.Effects.GetEffect<T>();
+            if (effect is null)
+                throw new InvalidOperationException(
+                    $"The role {role.GetType().FullName} was expected to have kill flag {typeof(T).FullName} but haven't."
                 );
         }
 

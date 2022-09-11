@@ -43,7 +43,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
             }
         }
 
@@ -79,7 +79,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Alive);
+                vill1.Role!.ExpectLiveState(true);
             }
         }
 
@@ -174,7 +174,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, hunter, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
             }
         }
 
@@ -220,8 +220,8 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, witch, vill1);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                vill1.Role!.ExpectLiveState(Theme.KillState.Killed);
-                vill2.Role!.ExpectLiveState(Theme.KillState.Killed);
+                vill1.Role!.ExpectLiveState(false);
+                vill2.Role!.ExpectLiveState(false);
             }
         }
 

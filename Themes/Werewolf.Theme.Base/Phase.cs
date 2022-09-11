@@ -6,6 +6,9 @@ namespace Werewolf.Theme
 {
     public abstract class Phase
     {
+
+        public Effects.EffectCollection<Effects.IPhaseEffect> Effects { get; } = new();
+
         public virtual string LanguageId
         {
             get

@@ -4,7 +4,7 @@ using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Votings;
 using System.Collections.Generic;
 using System.Linq;
-using Werewolf.Theme.Default.KillInfos;
+using Werewolf.Theme.Default.Effects.KillInfos;
 
 namespace Werewolf.Theme.Default.Phases
 {
@@ -31,17 +31,18 @@ namespace Werewolf.Theme.Default.Phases
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter == ScapeGoat;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                if (role is BaseRole baseRole)
-                {
-                    baseRole.HasVotePermitFromScapeGoat = true;
-                }
+                game.Effects.Add(
+                    new Werewolf.Theme.Effects.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
+                        (ReadOnlyMemory<UserId>)new[] { id }
+                    )
+                );
             }
 
             protected override int GetMissingVotes(GameRoom game)
@@ -82,7 +83,7 @@ namespace Werewolf.Theme.Default.Phases
                     "scapegoat-vote",
                     GetResultUserIds().ToArray()
                 ));
-                ScapeGoat.HasDecided = true;
+                ScapeGoat.TakingRevenge = true;
             }
         }
 
@@ -99,7 +100,8 @@ namespace Werewolf.Theme.Default.Phases
             => new ScapeGoatSelect(role, game, ids);
 
         protected override bool FilterVoter(ScapeGoat role)
-            => !role.IsAlive && role.WasKilledByVillage && !role.HasRevenge && !role.HasDecided;
+            => role.IsAlive && role.Effects.GetEffect<ScapeGoatKilled>() is not null
+            && !role.TakingRevenge;
 
         protected override ScapeGoat GetRole(ScapeGoatSelect voting)
             => voting.ScapeGoat;
@@ -108,9 +110,11 @@ namespace Werewolf.Theme.Default.Phases
         {
             if (voting is ScapeGoatSelect select)
             {
-                foreach (var id in select.GetResultUserIds())
-                    if (game.Users.TryGetValue(id, out GameUserEntry? entry) && entry.Role is not null)
-                        select.Execute(game, id, entry.Role);
+                game.Effects.Add(
+                    new Werewolf.Theme.Effects.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
+                        select.GetResultUserIds()
+                    )
+                );
                 RemoveVoting(voting);
             }
         }

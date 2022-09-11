@@ -50,9 +50,7 @@ namespace Werewolf.Theme.Default
                 // remove flags if possible
                 phases.Add(new Phases.KillFlagWerwolfVictimAction());
                 // transition and execute special actions
-                phases.Add(new Werewolf.Theme.Phases.KillTransitionToAboutToKillAction());
-                // transition to prepare special phases
-                phases.Add(new Werewolf.Theme.Phases.KillTransitionToBeforeKillAction());
+                phases.Add(new Werewolf.Theme.Phases.NotifyBeforeKilledRolesAction());
                 // special phases
                 phases.Add(new Phases.HunterPhase());
                 phases.Add(new Phases.ScapeGoatPhase());
@@ -148,7 +146,7 @@ namespace Werewolf.Theme.Default
         {
             winner = game.Users
                 .Select(x => x.Value.Role)
-                .Where(x => x is Roles.Angel angel && angel.KillState == KillState.Killed && !angel.MissedFirstRound)
+                .Where(x => x is Roles.Angel angel && !angel.IsAlive && !angel.MissedFirstRound)
                 .Cast<Role>()
                 .ToArray();
             return winner.Value.Length > 0;
@@ -156,28 +154,54 @@ namespace Werewolf.Theme.Default
 
         private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            foreach (var player in game.NotKilledRoles)
-                if (player is BaseRole baseRole && !baseRole.IsLoved)
-                {
-                    winner = null;
+            winner = null;
+            foreach (var player in game.AliveRoles)
+            {
+                var ownEffect = player.Effects.GetEffect<Effects.LovedEffect>(
+                    x => x.Target.IsAlive &&
+                        x.Target.Effects.GetEffect<Effects.LovedEffect>(
+                            y => y.Target == player
+                        ) is not null
+                );
+                if (ownEffect is null)
                     return false;
-                }
+            }
             winner = game.AliveRoles.ToArray();
             return true;
         }
 
         private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            foreach (var player in game.NotKilledRoles)
-                if (player is BaseRole baseRole && !(baseRole.IsEnchantedByFlutist || player is Roles.Flutist))
+            var flutistWon = new List<Roles.Flutist>();
+            foreach (var player in game.Users.Values)
+                if (player.Role is Roles.Flutist flutist)
                 {
-                    winner = null;
-                    return false;
+                    var hasMissingPlayer = false;
+                    foreach (var role in game.AliveRoles)
+                        if (role != flutist
+                            && role.Effects.GetEffect<Effects.FlutistEnchantEffect>(
+                                x => x.Flutist == flutist
+                            ) is null
+                        )
+                        {
+                            hasMissingPlayer = true;
+                            break;
+                        }
+                    if (!hasMissingPlayer)
+                    {
+                        flutistWon.Add(flutist);
+                    }
                 }
-            winner = game.Users
-                .Select(x => x.Value.Role)
-                .Where(x => x is Roles.Flutist).Cast<Role>().ToArray();
-            return true;
+            if (flutistWon.Count == 0)
+            {
+                winner = null;
+                return false;
+            }
+            else
+            {
+                winner = flutistWon.ToArray();
+                return true;
+            }
         }
 
         public override bool CheckRoleUsage(Role role, ref int count, int oldCount, [NotNullWhen(false)] out string? error)

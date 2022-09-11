@@ -40,7 +40,7 @@ namespace Werewolf.Theme
                 return check ?? false;
             }
 
-            Span<Role> player = game.NotKilledRoles.ToArray();
+            Span<Role> player = game.AliveRoles.ToArray();
             for (int i = 0; i < player.Length; ++i)
                 for (int j = i + 1; j < player.Length; ++j)
                     if (!IsSameFaction(player[i], player[j]))

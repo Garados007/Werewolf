@@ -34,7 +34,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Alive);
+                oldman.Role!.ExpectLiveState(true);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.DailyVictimElectionPhase>().ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
             }
@@ -45,7 +45,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, wolf, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Killed);
+                oldman.Role!.ExpectLiveState(false);
             }
         }
 
@@ -83,7 +83,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, hunter, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Killed);
+                oldman.Role!.ExpectLiveState(false);
             }
         }
 
@@ -114,7 +114,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, witch, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Killed);
+                oldman.Role!.ExpectLiveState(false);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Killed);
+                oldman.Role!.ExpectLiveState(false);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, idiot);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                idiot.Role!.ExpectLiveState(Theme.KillState.Killed);
+                idiot.Role!.ExpectLiveState(false);
             }
         }
 
@@ -190,7 +190,7 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, idiot);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                idiot.Role!.ExpectLiveState(Theme.KillState.Alive);
+                idiot.Role!.ExpectLiveState(true);
             }
 
             await room.ExpectNextPhaseAsync<Theme.Default.Phases.ElectMajorPhase>().ConfigureAwait(false);
@@ -202,8 +202,8 @@ namespace Werewolf.Default.Test.Roles
                 voting.Vote(room, vill1, oldman);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
-                oldman.Role!.ExpectLiveState(Theme.KillState.Killed);
-                idiot.Role!.ExpectLiveState(Theme.KillState.Killed);
+                oldman.Role!.ExpectLiveState(false);
+                idiot.Role!.ExpectLiveState(false);
             }
         }
 

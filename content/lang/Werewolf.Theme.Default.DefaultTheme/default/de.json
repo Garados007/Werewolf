@@ -66,6 +66,7 @@
         },
         "voting-title": {
             "default": "Wähle eine Option",
+            "AmorPhase+AmorPick": "Wähle die zwei Verliebten",
             "ScapeGoatPhase+ScapeGoatSelect": "Verteile Stimmrechte",
             "WitchPhase+WitchSafe": "Lebenstrank nutzen",
             "WitchPhase+WitchKill": "Todestrank nutzen"
@@ -74,6 +75,9 @@
             "default": {
                 "do-nothing": "Nichts tun",
                 "player": "{player}"
+            },
+            "AmorPhase+AmorPick": {
+                "do-love": "Liebespfeile abschießen"
             },
             "ScapeGoatPhase+ScapeGoatSelect": {
                 "stop-voting": "Abstimmung beenden"

@@ -1,8 +1,6 @@
 ﻿using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Votings;
-using System.Collections.Generic;
-using System.Linq;
 using Werewolf.Theme.Default.Roles;
 
 namespace Werewolf.Theme.Default.Phases
@@ -20,36 +18,18 @@ namespace Werewolf.Theme.Default.Phases
             }
 
             public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
-            {
-                // check if scape goat phase
-                var isScapeGoatRevenge = game.Users
-                    .Select(x => x.Value.Role)
-                    .Where(x => x is Roles.ScapeGoat)
-                    .Cast<Roles.ScapeGoat>()
-                    .Where(x => x.HasDecided && !x.HasRevenge)
-                    .Any();
-                if (isScapeGoatRevenge)
-                    allowedVoter = new HashSet<Role>(game.Users
-                        .Select(x => x.Value.Role)
-                        .Where(x => x != null && x.IsAlive)
-                        .Where(x => x is BaseRole baseRole && baseRole.HasVotePermitFromScapeGoat)
-                        .Cast<Role>()
-                    );
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return base.DefaultParticipantSelector(role) &&
-                    (role is not Roles.Idiot idiot || !idiot.IsRevealed);
-            }
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role.IsAlive
+                        && (role is not Roles.Idiot idiot || !idiot.IsRevealed)
+                ))
+            {}
 
             public override bool CanView(Role viewer)
             {
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 // special voting condition
                 if (allowedVoter != null)
@@ -72,7 +52,7 @@ namespace Werewolf.Theme.Default.Phases
                     if (oldManKilled)
                     {
                         idiot.IsRevealed = false;
-                        idiot.SetKill(game, new KillInfos.VillageKill());
+                        idiot.AddKillFlag(new Effects.KillInfos.VillageKill());
                     }
                     return;
                 }
@@ -80,7 +60,7 @@ namespace Werewolf.Theme.Default.Phases
                 {
                     oldMan.WasKilledByVillager = true;
                 }
-                role.SetKill(game, new KillInfos.VillageKill());
+                role.AddKillFlag(new Effects.KillInfos.VillageKill());
             }
 
             protected override void AfterFinishExecute(GameRoom game)
@@ -92,10 +72,10 @@ namespace Werewolf.Theme.Default.Phases
                         .Select(x => x.Value.Role)
                         .Where(x => x is Roles.ScapeGoat)
                         .Cast<Roles.ScapeGoat>()
-                        .Where(x => x.HasDecided && !x.HasRevenge)
+                        .Where(x => x.TakingRevenge)
                         .FirstOrDefault();
                     if (scapegoat is not null)
-                        scapegoat.HasRevenge = true;
+                        scapegoat.TakingRevenge = false;
                 }
             }
         }
@@ -112,14 +92,14 @@ namespace Werewolf.Theme.Default.Phases
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter.IsMajor && voter.IsAlive;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.SetKill(game, new KillInfos.KilledByMajor());
+                role.AddKillFlag(new Effects.KillInfos.KilledByMajor());
             }
         }
 
@@ -152,8 +132,7 @@ namespace Werewolf.Theme.Default.Phases
                             if (role is Roles.ScapeGoat scapeGoat)
                             {
                                 // kill the scape goat and end the voting
-                                scapeGoat.WasKilledByVillage = true;
-                                scapeGoat.SetKill(game, new KillInfos.ScapeGoatKilled());
+                                scapeGoat.AddKillFlag(new Effects.KillInfos.ScapeGoatKilled());
                             }
                     }
                     else if (hasMajor)

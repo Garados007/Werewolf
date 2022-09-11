@@ -1,9 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Werewolf.User;
 
 namespace Werewolf.Theme
@@ -13,6 +8,8 @@ namespace Werewolf.Theme
         public int Id { get; }
 
         public uint ExecutionRound { get; private set; }
+
+        public Effects.EffectCollection<Effects.IGameRoomEffect> Effects { get; } = new();
 
         private UserId leader;
         public UserId Leader
@@ -96,17 +93,6 @@ namespace Werewolf.Theme
                 .Where(x => x != null)
                 .Cast<Role>()
                 .Where(x => x.IsAlive);
-
-        /// <summary>
-        /// Any existing roles that are not finally dead. Only roles that have the
-        /// <see cref="KillState.Killed"/> are excluded.
-        /// </summary>
-        public IEnumerable<Role> NotKilledRoles
-            => Users.Values
-                .Select(x => x.Role)
-                .Where(x => x != null)
-                .Cast<Role>()
-                .Where(x => x.KillState != KillState.Killed);
 
         public Role? TryGetRole(UserId id)
         {

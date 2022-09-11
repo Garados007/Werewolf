@@ -13,13 +13,10 @@ namespace Werewolf.Theme.Default.Phases
         public class WerwolfVote : PlayerVotingBase
         {
             public WerwolfVote(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role is not WerwolfBase && role.IsAlive
+                ))
             {
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return !(role is WerwolfBase) && role.IsAlive;
             }
 
             public override bool CanView(Role viewer)
@@ -27,14 +24,14 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer is WerwolfBase;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter is WerwolfBase && voter.IsAlive;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.AddKillFlag(new KillInfos.KilledByWerwolf());
+                role.AddKillFlag(new Effects.KillInfos.KilledByWerwolf());
             }
         }
 
@@ -72,7 +69,8 @@ namespace Werewolf.Theme.Default.Phases
 
             public Girl Girl { get; }
 
-            public GirlVote(Girl girl)
+            public GirlVote(GameRoom game, Girl girl)
+                : base(game)
             {
                 Girl = girl;
                 options.Add(new VoteOption("do-nothing"));
@@ -82,11 +80,18 @@ namespace Werewolf.Theme.Default.Phases
             public override bool CanView(Role viewer)
                 => viewer == Girl;
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
                 => voter == Girl;
 
 #if DEBUG
-            private static int? Seed = null;
+#pragma warning disable CS0649
+            /// <summary>
+            /// This seed is only used for the automatic test cases to have a deterministic
+            /// behavior. In release mode this field is removed and always a pseudo random behavior
+            /// is used. The test setup will use reflections to access this field.
+            /// </summary>
+            private static int? Seed;
+#pragma warning restore CS0649
 #endif
 
             public override void Execute(GameRoom game, int id)
@@ -125,7 +130,7 @@ namespace Werewolf.Theme.Default.Phases
             }
 
             protected override GirlVote Create(Girl role, GameRoom game)
-                => new GirlVote(role);
+                => new GirlVote(game, role);
 
             protected override bool FilterVoter(Girl role)
             {

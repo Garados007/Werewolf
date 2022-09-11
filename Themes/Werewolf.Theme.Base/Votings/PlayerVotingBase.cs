@@ -30,7 +30,26 @@ namespace Werewolf.Theme.Votings
         protected virtual string PlayerTextId { get; } = "player";
 
         public PlayerVotingBase(GameRoom game, IEnumerable<UserId>? participants = null)
+            : base(game)
         {
+            // check if someone has overwritten the participant selection for this one time
+
+            var ownType = GetType();
+            var overrideEffect = game.Effects.GetEffect<Effects.OverrideVotingParticipants>(
+                x => ownType.IsAssignableTo(x.Voting)
+            );
+            if (overrideEffect is not null)
+            {
+                participants = overrideEffect;
+                game.Effects.Remove(overrideEffect);
+            }
+
+            // load participants if not overwritten
+
+            participants ??= GetDefaultParticipants(game);
+
+            // init do nothing
+
             int index = 0;
 
             if (AllowDoNothingOption)
@@ -39,10 +58,8 @@ namespace Werewolf.Theme.Votings
                 _ = OptionsDict.TryAdd(NoOptionId.Value, (new UserId(), new VoteOption(DoNothingOptionTextId)));
             }
             else NoOptionId = null;
-
-            participants ??= game.Users
-                .Where(x => x.Value.Role is not null && DefaultParticipantSelector(x.Value.Role))
-                .Select(x => x.Key);
+            
+            // create option for participants
 
             foreach (var id in participants)
             {
@@ -58,14 +75,22 @@ namespace Werewolf.Theme.Votings
             }
         }
 
-        protected virtual bool DefaultParticipantSelector(Role role)
+        protected static IEnumerable<UserId> GetDefaultParticipants(
+            GameRoom game, Func<Role, bool>? selector = null
+        )
         {
-            return role.IsAlive;
+            var @enum = game.Users.Where(x => x.Value.Role is not null);
+            if (selector is not null)
+                @enum = @enum.Where(x => selector(x.Value.Role!));
+            else
+                @enum = @enum.Where(x => x.Value.Role!.IsAlive);
+            return @enum.Select(x => x.Key);
         }
 
         public IEnumerable<UserId> GetResultUserIds()
         {
             return GetResults()
+                .Where(x => x != NoOptionId)
                 .Select<int, UserId?>(x => OptionsDict.TryGetValue(x, out (UserId, VoteOption) r) ? r.Item1 : null)
                 .Where(x => x is not null)
                 .Select(x => x!.Value);
@@ -77,8 +102,14 @@ namespace Werewolf.Theme.Votings
             {
                 if (game.Users.TryGetValue(result.user, out GameUserEntry? entry) && 
                     entry.Role is not null)
+                {
                     Execute(game, result.user, entry.Role);
+                    return;
+                }
             }
+            // it could be that no option won this voting, but this has to be handled with the
+            // multiple winner method.
+            game.Phase?.Current.ExecuteMultipleWinner(this, game);
         }
 
         public abstract void Execute(GameRoom game, UserId id, Role role);

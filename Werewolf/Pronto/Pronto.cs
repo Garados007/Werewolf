@@ -170,6 +170,11 @@ namespace Werewolf.Pronto
                 Serilog.Log.Error(e, "Cannot upload server status");
                 return;
             }
+            catch (System.Text.Json.JsonException e)
+            {
+                Serilog.Log.Error(e, "Cannot upload server status");
+                return;
+            }
             var oldId = Id;
             if (json.RootElement.TryGetProperty("id", out JsonElement idElement))
                 Id = idElement.GetString();

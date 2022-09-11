@@ -9,7 +9,8 @@ namespace Werewolf.Theme.Default.Phases
         {
             foreach (var role in game.Users.Select(x => x.Value.Role))
             {
-                if (role?.KillInfo is not KillInfos.KilledByWerwolf || role is not BaseRole baseRole)
+                if (role is not BaseRole baseRole ||
+                    baseRole.Effects.GetEffect<Effects.KillInfos.KilledByWerwolf>() is null)
                     continue;
                 if (baseRole.IsSelectedByHealer)
                 {

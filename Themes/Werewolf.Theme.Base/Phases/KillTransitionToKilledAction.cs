@@ -9,7 +9,7 @@ namespace Werewolf.Theme.Phases
         public override async Task ExecuteAsync(GameRoom game)
         {
             foreach (var (id, entry) in game.Users)
-                if (entry.Role != null && entry.Role.KillState == KillState.BeforeKill)
+                if (entry.Role != null && entry.Role.HasKillFlag)
                 {
                     entry.Role.ChangeToKilled();
                     if (game.DeadCanSeeAllRoles)

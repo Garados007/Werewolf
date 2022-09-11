@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Default.Phases
                 return true;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter.IsAlive;
             }

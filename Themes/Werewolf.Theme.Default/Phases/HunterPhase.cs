@@ -24,14 +24,14 @@ namespace Werewolf.Theme.Default.Phases
                 return viewer == Hunter;
             }
 
-            public override bool CanVote(Role voter)
+            protected override bool CanVoteBase(Role voter)
             {
                 return voter == Hunter;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {
-                role.SetKill(game, new KillInfos.KilledByHunter());
+                role.AddKillFlag(new Effects.KillInfos.KilledByHunter());
                 Hunter.HasKilled = true;
             }
         }
@@ -52,7 +52,7 @@ namespace Werewolf.Theme.Default.Phases
             => voting.Hunter;
 
         protected override bool FilterVoter(Hunter role)
-            => !role.IsAlive && !role.HasKilled;
+            => role.IsAlive && role.HasKillFlag && !role.HasKilled;
 
         public override bool CanMessage(GameRoom game, Role role)
         {
