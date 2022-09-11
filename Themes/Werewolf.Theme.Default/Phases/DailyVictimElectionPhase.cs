@@ -18,14 +18,11 @@ namespace Werewolf.Theme.Default.Phases
             }
 
             public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role.IsAlive
+                        && (role is not Roles.Idiot idiot || !idiot.IsRevealed)
+                ))
             {}
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return base.DefaultParticipantSelector(role) &&
-                    (role is not Roles.Idiot idiot || !idiot.IsRevealed);
-            }
 
             public override bool CanView(Role viewer)
             {

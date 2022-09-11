@@ -15,14 +15,11 @@ namespace Werewolf.Theme.Default.Phases
             public Witch Witch { get; }
 
             public WitchSafe(Witch witch, GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role.Effects.GetEffect<KilledByWerwolf>() is not null
+                ))
             {
                 Witch = witch;
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return role.Effects.GetEffect<KilledByWerwolf>() is not null;
             }
 
             protected override bool AllowDoNothingOption => true;
@@ -49,14 +46,11 @@ namespace Werewolf.Theme.Default.Phases
             public Witch Witch { get; }
 
             public WitchKill(Witch witch, GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role.IsAlive && role.Effects.GetEffect<KilledByWerwolf>() is null
+                ))
             {
                 Witch = witch;
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return role.IsAlive && role.Effects.GetEffect<KilledByWerwolf>() is null;
             }
 
             protected override bool AllowDoNothingOption => true;

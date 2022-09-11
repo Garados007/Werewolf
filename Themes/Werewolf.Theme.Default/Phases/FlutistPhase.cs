@@ -14,19 +14,16 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
         public Flutist Flutist { get; }
 
         public FlutistPick(Flutist flutist, GameRoom game, IEnumerable<UserId>? participants = null)
-            : base(game, participants)
+            : base(game, participants ?? GetDefaultParticipants(game,
+                role => role.IsAlive
+                    && role.Effects.GetEffect<Effects.FlutistEnchantEffect>(
+                        x => x.Flutist == flutist
+                    ) is null
+                    && role is not Roles.Flutist
+            ))
         {
             Game = game;
             Flutist = flutist;
-        }
-
-        protected override bool DefaultParticipantSelector(Role role)
-        {
-            return role.IsAlive
-                && role.Effects.GetEffect<Effects.FlutistEnchantEffect>(
-                    x => x.Flutist == Flutist
-                ) is null
-                && role is not Roles.Flutist;
         }
 
         public override bool CanView(Role viewer)

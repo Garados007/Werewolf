@@ -11,13 +11,10 @@ namespace Werewolf.Theme.Default.Phases
         public class InheritMajor : PlayerVotingBase
         {
             public InheritMajor(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role.IsAlive && !role.IsMajor
+                ))
             {
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return role.IsAlive && !role.IsMajor;
             }
 
             public override bool CanView(Role viewer)

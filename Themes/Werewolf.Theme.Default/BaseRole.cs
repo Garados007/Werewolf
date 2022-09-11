@@ -12,17 +12,6 @@ namespace Werewolf.Theme.Default
 
         public bool IsSelectedByHealer { get; set; }
 
-        private bool isViewedByOracle;
-        public bool IsViewedByOracle
-        {
-            get => isViewedByOracle;
-            set
-            {
-                isViewedByOracle = value;
-                SendRoleInfoChanged();
-            }
-        }
-
         public override IEnumerable<string> GetTags(GameRoom game, Role? viewer)
         {
             foreach (var tag in base.GetTags(game, viewer))
@@ -31,9 +20,12 @@ namespace Werewolf.Theme.Default
 
         public override Role ViewRole(Role viewer)
         {
-            return IsViewedByOracle && viewer is Roles.Oracle
-                ? this
-                : base.ViewRole(viewer);
+            var trueShown = Effects.GetEffect<Effects.TrueIdentityShownEffect>(
+                x => x.Viewer == viewer
+            ) is not null;
+            if (trueShown)
+                return this;
+            return base.ViewRole(viewer);
         }
     }
 }

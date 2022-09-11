@@ -13,13 +13,10 @@ namespace Werewolf.Theme.Default.Phases
         public class WerwolfVote : PlayerVotingBase
         {
             public WerwolfVote(GameRoom game, IEnumerable<UserId>? participants = null)
-                : base(game, participants)
+                : base(game, participants ?? GetDefaultParticipants(game,
+                    role => role is not WerwolfBase && role.IsAlive
+                ))
             {
-            }
-
-            protected override bool DefaultParticipantSelector(Role role)
-            {
-                return !(role is WerwolfBase) && role.IsAlive;
             }
 
             public override bool CanView(Role viewer)

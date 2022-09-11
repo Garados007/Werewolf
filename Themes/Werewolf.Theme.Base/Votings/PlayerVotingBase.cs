@@ -44,6 +44,10 @@ namespace Werewolf.Theme.Votings
                 game.Effects.Remove(overrideEffect);
             }
 
+            // load participants if not overwritten
+
+            participants ??= GetDefaultParticipants(game);
+
             // init do nothing
 
             int index = 0;
@@ -54,12 +58,6 @@ namespace Werewolf.Theme.Votings
                 _ = OptionsDict.TryAdd(NoOptionId.Value, (new UserId(), new VoteOption(DoNothingOptionTextId)));
             }
             else NoOptionId = null;
-
-            // load participants if not overwritten
-
-            participants ??= game.Users
-                .Where(x => x.Value.Role is not null && DefaultParticipantSelector(x.Value.Role))
-                .Select(x => x.Key);
             
             // create option for participants
 
@@ -77,9 +75,16 @@ namespace Werewolf.Theme.Votings
             }
         }
 
-        protected virtual bool DefaultParticipantSelector(Role role)
+        protected static IEnumerable<UserId> GetDefaultParticipants(
+            GameRoom game, Func<Role, bool>? selector = null
+        )
         {
-            return role.IsAlive;
+            var @enum = game.Users.Where(x => x.Value.Role is not null);
+            if (selector is not null)
+                @enum = @enum.Where(x => selector(x.Value.Role!));
+            else
+                @enum = @enum.Where(x => x.Value.Role!.IsAlive);
+            return @enum.Select(x => x.Key);
         }
 
         public IEnumerable<UserId> GetResultUserIds()
