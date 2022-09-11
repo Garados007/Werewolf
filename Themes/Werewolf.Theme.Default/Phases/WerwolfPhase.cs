@@ -87,7 +87,14 @@ namespace Werewolf.Theme.Default.Phases
                 => voter == Girl;
 
 #if DEBUG
-            private static int? Seed = null;
+#pragma warning disable CS0649
+            /// <summary>
+            /// This seed is only used for the automatic test cases to have a deterministic
+            /// behavior. In release mode this field is removed and always a pseudo random behavior
+            /// is used. The test setup will use reflections to access this field.
+            /// </summary>
+            private static int? Seed;
+#pragma warning restore CS0649
 #endif
 
             public override void Execute(GameRoom game, int id)
