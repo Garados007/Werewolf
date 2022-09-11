@@ -109,9 +109,9 @@ namespace Werewolf.Default.Test.Roles
             {
                 room.ExpectNoVoting<Theme.Default.Phases.DailyVictimElectionPhase.DailyVote>();
                 var voting = room.ExpectVoting<Theme.Default.Phases.DailyVictimElectionPhase.MajorPick>();
-                Assert.AreEqual(null, voting.GetOptionIndex(vill2.User.Id));
-                Assert.AreNotEqual(null, voting.GetOptionIndex(vill3.User.Id));
-                Assert.AreNotEqual(null, voting.GetOptionIndex(vill4.User.Id));
+                Assert.IsNull(voting.GetOptionIndex(vill2.User.Id));
+                Assert.IsNotNull(voting.GetOptionIndex(vill3.User.Id));
+                Assert.IsNotNull(voting.GetOptionIndex(vill4.User.Id));
                 voting.Vote(room, vill1, vill3);
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);

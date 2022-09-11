@@ -111,7 +111,7 @@ namespace Werewolf.Default.Test.Roles
             // scape goat selects noone
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.ScapeGoatPhase.ScapeGoatSelect>();
-                Assert.AreEqual(null, voting.Vote(room, goat.User.Id, 0));
+                Assert.IsNull(voting.Vote(room, goat.User.Id, 0));
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
                 goat.Role!.ExpectLiveState(false);
@@ -174,8 +174,8 @@ namespace Werewolf.Default.Test.Roles
             // scape goat selects some
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.ScapeGoatPhase.ScapeGoatSelect>();
-                Assert.AreEqual(null, voting.Vote(room, goat, vill1));
-                Assert.AreEqual(null, voting.Vote(room, goat.User.Id, 0));
+                Assert.IsNull(voting.Vote(room, goat, vill1));
+                Assert.IsNull(voting.Vote(room, goat.User.Id, 0));
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
                 await room.ExpectNextPhaseAsync<Theme.Default.Phases.WerwolfPhase>().ConfigureAwait(false);
                 goat.Role!.ExpectLiveState(false);
