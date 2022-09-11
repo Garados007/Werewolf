@@ -30,8 +30,8 @@ public class LovedEffect : IRoleEffect
             return true;
         }
         // if viewer is in love with the current role
-        var effect = viewer.Effects.GetEffect<LovedEffect>();
-        if (effect is not null && effect.Target == current)
+        var effect = viewer.Effects.GetEffect<LovedEffect>(x => x.Target == current);
+        if (effect is not null)
         {
             return true;
         }

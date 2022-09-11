@@ -157,11 +157,13 @@ namespace Werewolf.Theme.Default
             winner = null;
             foreach (var player in game.AliveRoles)
             {
-                var ownEffect = player.Effects.GetEffect<Effects.LovedEffect>();
+                var ownEffect = player.Effects.GetEffect<Effects.LovedEffect>(
+                    x => x.Target.IsAlive &&
+                        x.Target.Effects.GetEffect<Effects.LovedEffect>(
+                            y => y.Target == player
+                        ) is not null
+                );
                 if (ownEffect is null)
-                    return false;
-                var targetEffect = ownEffect.Target.Effects.GetEffect<Effects.LovedEffect>();
-                if (targetEffect?.Target != player)
                     return false;
             }
             winner = game.AliveRoles.ToArray();
