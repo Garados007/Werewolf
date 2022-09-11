@@ -23,23 +23,10 @@ namespace Werewolf.Theme.Default
             }
         }
 
-        private bool isEnchantedByFlutist;
-        public bool IsEnchantedByFlutist
-        {
-            get => isEnchantedByFlutist;
-            set
-            {
-                isEnchantedByFlutist = value;
-                SendRoleInfoChanged();
-            }
-        }
-
         public override IEnumerable<string> GetTags(GameRoom game, Role? viewer)
         {
             foreach (var tag in base.GetTags(game, viewer))
                 yield return tag;
-            if (IsEnchantedByFlutist && (viewer == null || viewer is Roles.Flutist || (viewer is BaseRole baseRole && baseRole.IsEnchantedByFlutist)))
-                yield return "enchant-flutist";
         }
 
         public override Role ViewRole(Role viewer)

@@ -172,16 +172,36 @@ namespace Werewolf.Theme.Default
 
         private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
         {
-            foreach (var player in game.AliveRoles)
-                if (player is BaseRole baseRole && !(baseRole.IsEnchantedByFlutist || player is Roles.Flutist))
+            var flutistWon = new List<Roles.Flutist>();
+            foreach (var player in game.Users.Values)
+                if (player.Role is Roles.Flutist flutist)
                 {
-                    winner = null;
-                    return false;
+                    var hasMissingPlayer = false;
+                    foreach (var role in game.AliveRoles)
+                        if (role != flutist
+                            && role.Effects.GetEffect<Effects.FlutistEnchantEffect>(
+                                x => x.Flutist == flutist
+                            ) is null
+                        )
+                        {
+                            hasMissingPlayer = true;
+                            break;
+                        }
+                    if (!hasMissingPlayer)
+                    {
+                        flutistWon.Add(flutist);
+                    }
                 }
-            winner = game.Users
-                .Select(x => x.Value.Role)
-                .Where(x => x is Roles.Flutist).Cast<Role>().ToArray();
-            return true;
+            if (flutistWon.Count == 0)
+            {
+                winner = null;
+                return false;
+            }
+            else
+            {
+                winner = flutistWon.ToArray();
+                return true;
+            }
         }
 
         public override bool CheckRoleUsage(Role role, ref int count, int oldCount, [NotNullWhen(false)] out string? error)

@@ -227,10 +227,8 @@ namespace Werewolf.Default.Test.Roles
             {
                 var voting = room.ExpectVoting<Theme.Default.Phases.FlutistPhase.FlutistPick>();
                 Assert.AreEqual(null, voting.Vote(room, flutist, vill1));
-                await voting.FinishVotingAsync(room).ConfigureAwait(false);
-                
-                voting = room.ExpectVoting<Theme.Default.Phases.FlutistPhase.FlutistPick>();
                 Assert.AreEqual(null, voting.Vote(room, flutist, vill2));
+                Assert.IsNotNull(voting.Vote(room, flutist, wolf));
                 await voting.FinishVotingAsync(room).ConfigureAwait(false);
 
                 room.ExpectNoVoting<Theme.Default.Phases.FlutistPhase.FlutistPick>();
