@@ -1,5 +1,7 @@
 # visual studio stuff
-.vscode
+!.vscode
+.vscode/*
+!.vscode/extensions
 .vs
 # builds
 bin

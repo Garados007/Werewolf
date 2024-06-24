@@ -1,0 +1,374 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Werewolf Logic",
+  "patterns": [
+    {
+      "include": "#firstLevel"
+    },
+    {
+      "include": "#nestedBlock"
+    },
+    {
+      "include": "#comment"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "name": "comment.line.double-slash",
+      "match": "//[^\\r\\n]*"
+    },
+    "firstLevel": {
+      "begin": "\\b(?:(abstract)|(mode|phase|scene|label|character|voting|option|win|sequence|event))\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "storage.modifier"
+        },
+        "2": {
+          "name": "storage.type"
+        }
+      },
+      "end": "(?<=[};])",
+      "name": "meta.first-level.ww-logic",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#firstLevelBlock"
+        },
+        {
+          "match": "\\b(mode|phase|scene|label|character|voting|option|win|sequence|event)\\b",
+          "name": "storage.type"
+        },
+        {
+          "match": "\\b\\w+\\b",
+          "name": "entity.name.type"
+        }
+      ]
+    },
+    "firstLevelBlock": {
+      "begin": "\\s*(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "meta.first-level-block.begin.ww-logic"
+        }
+      },
+      "end": "\\s*(\\})",
+      "endCaptures": {
+        "1": {
+          "name": "meta.first-level-block.end.ww-logic"
+        }
+      },
+      "contentName": "meta.first-level-block.ww-logic",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "name": "#nestedBlock"
+        },
+        {
+          "name": "meta.type-single.ww-logic",
+          "begin": "\\b(phase)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type"
+            }
+          },
+          "end": "(;)",
+          "endCaptures": {
+            "1": {
+              "name": "keyword.operator"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "\\b(\\w+)\\b",
+              "name": "entity.name.type"
+            }
+          ]
+        },
+        {
+          "name": "meta.type-list.ww-logic",
+          "begin": "\\b(?:(after|before)|(character|win))\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other"
+            },
+            "2": {
+              "name": "storage.type"
+            }
+          },
+          "end": "(?<=[}])",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "contentName": "meta.type-list.block.ww-logic",
+              "begin": "(\\{)",
+              "beginCaptures": {
+                "1": {
+                  "name": "meta.type-list.block.begin.ww-logic"
+                }
+              },
+              "end": "(\\})",
+              "endCaptures": {
+                "1": {
+                  "name": "meta.type-list.block.end.ww-logic"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#comment"
+                },
+                {
+                  "match": "\\b(\\w+)\\b",
+                  "name": "entity.name.type"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "meta.with-list.ww-logic",
+          "begin": "\\b(with)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other"
+            }
+          },
+          "end": "(;)",
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "\\b(character|string|int|bool)\\b",
+              "name": "storage.type"
+            },
+            {
+              "match": "\\b(\\w+)\\b",
+              "name": "entity.name.type"
+            }
+          ]
+        },
+        {
+          "name": "meta.func.ww-logic",
+          "begin": "\\b(func|step)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other"
+            }
+          },
+          "end": "(?<=(?:[}])|(;))",
+          "endCaptures": {
+            "1": {
+              "name": "keyword.operator"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "match": "\\b(\\w+)\\b",
+              "name": "entity.name.function"
+            },
+            {
+              "include": "#nestedBlock"
+            }
+          ]
+        },
+        {
+          "name": "meta.target.ww-logic",
+          "begin": "\\b(target)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.other"
+            }
+          },
+          "end": "(?<=(?:[}])|(;))",
+          "endCaptures": {
+            "1": {
+              "name": "keyword.operator"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "begin": "\\b(phase|scene)\\b",
+              "beginCaptures": {
+                "1": {
+                  "name": "storage.type"
+                }
+              },
+              "end": "\\b(\\w+)\\b",
+              "endCaptures": {
+                "1": {
+                  "name": "entity.name.type"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#comment"
+                }
+              ]
+            },
+            {
+              "match": "\\b(\\w+)\\b",
+              "name": "entity.name.function"
+            },
+            {
+              "contentName": "meta.target-block.ww-logic",
+              "begin": "(\\{)",
+              "beginCaptures": {
+                "1": {
+                  "name": "meta.target-block.begin.ww-logic"
+                }
+              },
+              "end": "(\\})",
+              "endCaptures": {
+                "1": {
+                  "name": "meta.target-block.end.ww-logic"
+                }
+              },
+              "patterns": [
+                {
+                  "include": "#comment"
+                },
+                {
+                  "match": "\\b(mode|character|phase|scene|voting)\\b",
+                  "name": "storage.type"
+                },
+                {
+                  "name": "meta.step.ww-logic",
+                  "begin": "\\b(step)\\b",
+                  "beginCaptures": {
+                    "1": {
+                      "name": "keyword.control"
+                    }
+                  },
+                  "end": "(?<=[}])",
+                  "patterns": [
+                    {
+                      "include": "#comment"
+                    },
+                    {
+                      "include": "#nestedBlock"
+                    },
+                    {
+                      "match": "\\b(\\w+)\\b",
+                      "name": "entity.name.function"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "nestedBlock": {
+      "begin": "\\s*(\\{)",
+      "beginCaptures": {
+        "1": {
+          "name": "meta.nested-block.begin.ww-logic"
+        }
+      },
+      "end": "\\s*(\\})",
+      "endCaptures": {
+        "1": {
+          "name": "meta.nested-block.end.ww-logic"
+        }
+      },
+      "contentName": "meta.nested-block.ww-logic",
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#nestedBlock"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "match": "(\\$\\w+)\\b",
+          "name": "variable.parameter"
+        },
+        {
+          "match": "(@(?:character))\\b",
+          "name": "support.variable"
+        },
+        {
+          "match": "(@\\w+)\\b",
+          "name": "variable.other"
+        },
+        {
+          "match": "\\b(true|false)\\b",
+          "name": "variable.language"
+        },
+        {
+          "match": "(;|\\|\\||\\||==|=|&&|&|,|\\+|-|\\*|/|<=|<|>=|>|!=|!|:)",
+          "name": "keyword.operator"
+        },
+        {
+          "match": "\\b(\\d+)\\b",
+          "name": "constant.numeric"
+        },
+        {
+          "match": "\\b(let)\\b",
+          "name": "storage.type"
+        },
+        {
+          "match": "\\b(if|else|for|notify|with|spawn)\\b",
+          "name": "keyword.control"
+        },
+        {
+          "begin": "\\b(mode|phase|scene|label|character|voting|option|win|sequence|event)\\b",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type"
+            }
+          },
+          "end": "\\b(\\w+)\\b|(\\*)",
+          "endCaptures": {
+            "1": {
+              "name": "entity.name.type"
+            },
+            "2": {
+              "name": "keyword.other"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            }
+          ]
+        },
+        {
+          "match": "(?x)\n  \\b(\n    has(?:_not)?(?:_character)?|set_(?:in)visible|labels|add|get_with|remove|\n    empty|any|length|rand|get2?|shuffle|split|enabled|flatten|cancel|filter\n  )\\b\n",
+          "name": "support.function"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.ww-logic",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.ww-logic",
+          "match": "\\\\."
+        }
+      ]
+    }
+  },
+  "scopeName": "source.w5logic"
+}

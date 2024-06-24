@@ -1,0 +1,37 @@
+{
+  "name": "werewolf-logic",
+  "displayName": "werewolf-logic",
+  "description": "Syntax highlighting for the logic language in Werewolf",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ww-logic",
+        "aliases": [
+          "Werewolf Logic",
+          "ww-logic"
+        ],
+        "extensions": [
+          ".w5logic"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ww-logic",
+        "scopeName": "source.w5logic",
+        "path": "./syntaxes/ww-logic.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
