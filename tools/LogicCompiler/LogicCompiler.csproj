@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>3021</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AntlrInput Include="grammar\*.g4" />
+    <AntlrOutput Include="grammar\W5LogicLexer.interp;grammar\W5LogicLexer.tokens;grammar\W5LogicParser.interp;grammar\W5LogicParser.tokens;grammar\W5LogicLexer.cs;grammar\W5LogicParser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+  </ItemGroup>
+
+  <Target Name="AntlrBuild" BeforeTargets="BeforeBuild" Inputs="@(AntlrInput)" Outputs="@(AntlrOutput)">
+    <Message Text="Rebuild Antlr targets" Importance="high" />
+    <Exec Command="java -jar antlr-4.13.1-complete.jar -message-format vs2005 -long-messages -Werror -Dlanguage=CSharp -no-listener -package LogicCompiler.Grammar -o grammar grammar/W5LogicLexer.g4 grammar/W5LogicParser.g4" />
+  </Target>
+
+  <Target Name="AntlrClean" BeforeTargets="CoreClean">
+    <Delete Files="@(AntlrOutput)" />
+  </Target>
+
+</Project>
