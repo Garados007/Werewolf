@@ -12,7 +12,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public HealerVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants ?? GetDefaultParticipants(game,
-                    role => role.IsAlive
+                    role => role.Enabled
                         && role is BaseRole baseRole
                         && !baseRole.IsSelectedByHealer
                 ))
@@ -23,7 +23,7 @@ namespace Werewolf.Theme.Default.Phases
                 => viewer is Roles.Healer;
 
             protected override bool CanVoteBase(Role voter)
-                => voter is Roles.Healer && voter.IsAlive;
+                => voter is Roles.Healer && voter.Enabled;
 
             public override void Execute(GameRoom game, UserId id, Role role)
             {

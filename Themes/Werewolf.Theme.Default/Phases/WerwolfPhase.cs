@@ -1,4 +1,4 @@
-﻿using Werewolf.User;
+using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Votings;
@@ -14,7 +14,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public WerwolfVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants ?? GetDefaultParticipants(game,
-                    role => role is not WerwolfBase && role.IsAlive
+                    role => role is not WerwolfBase && role.Enabled
                 ))
             {
             }
@@ -26,7 +26,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool CanVoteBase(Role voter)
             {
-                return voter is WerwolfBase && voter.IsAlive;
+                return voter is WerwolfBase && voter.Enabled;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
@@ -134,7 +134,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool FilterVoter(Girl role)
             {
-                return role.IsAlive;
+                return role.Enabled;
             }
 
             protected override Girl GetRole(GirlVote voting)

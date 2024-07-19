@@ -14,7 +14,7 @@ public class OraclePhase : SeperateVotingPhase<OraclePhase.OraclePick, Oracle>, 
         public OraclePick(Oracle oracle, GameRoom game, IEnumerable<UserId>? participants = null)
             : base(game, participants ?? GetDefaultParticipants(
                 game,
-                role => role.IsAlive
+                role => role.Enabled
                     && role is not Roles.Oracle
                     && role.Effects.GetEffect<Effects.TrueIdentityShownEffect>(
                         x => x.Viewer == oracle
@@ -62,7 +62,7 @@ public class OraclePhase : SeperateVotingPhase<OraclePhase.OraclePick, Oracle>, 
 
     protected override bool FilterVoter(Oracle role)
     {
-        return role.IsAlive;
+        return role.Enabled;
     }
 
     protected override Oracle GetRole(OraclePick voting)

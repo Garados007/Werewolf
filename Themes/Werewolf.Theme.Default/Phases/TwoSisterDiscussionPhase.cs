@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Default.Phases
 
         protected override bool CanVote(Role voter)
         {
-            return voter is Roles.TwoSisters && voter.IsAlive;
+            return voter is Roles.TwoSisters && voter.Enabled;
         }
     }
 }

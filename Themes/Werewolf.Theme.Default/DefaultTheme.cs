@@ -146,7 +146,7 @@ namespace Werewolf.Theme.Default
         {
             winner = game.Users
                 .Select(x => x.Value.Role)
-                .Where(x => x is Roles.Angel angel && !angel.IsAlive && !angel.MissedFirstRound)
+                .Where(x => x is Roles.Angel angel && !angel.Enabled && !angel.MissedFirstRound)
                 .Cast<Role>()
                 .ToArray();
             return winner.Value.Length > 0;
@@ -158,7 +158,7 @@ namespace Werewolf.Theme.Default
             foreach (var player in game.AliveRoles)
             {
                 var ownEffect = player.Effects.GetEffect<Effects.LovedEffect>(
-                    x => x.Target.IsAlive &&
+                    x => x.Target.Enabled &&
                         x.Target.Effects.GetEffect<Effects.LovedEffect>(
                             y => y.Target == player
                         ) is not null

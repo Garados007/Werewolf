@@ -28,10 +28,10 @@ public class FlutistEnchantEffect : IRoleEffect
         if (viewer is Flutist)
             return true;
         // if viewer is dead and game setting is set
-        if (!viewer.IsAlive && game.DeadCanSeeAllRoles)
+        if (!viewer.Enabled && game.DeadCanSeeAllRoles)
             return true;
         // if current is dead and game setting is set
-        if (!current.IsAlive && game.AllCanSeeRoleOfDead)
+        if (!current.Enabled && game.AllCanSeeRoleOfDead)
             return true;
         // if viewer is enchanted by the same flutist
         if (viewer.Effects.GetEffect<FlutistEnchantEffect>(x => x.Flutist == Flutist) is not null)

@@ -52,7 +52,7 @@ namespace Werewolf.Theme.Default.Phases
             => voting.Hunter;
 
         protected override bool FilterVoter(Hunter role)
-            => role.IsAlive && role.HasKillFlag && !role.HasKilled;
+            => role.Enabled && role.HasKillFlag && !role.HasKilled;
 
         public override bool CanMessage(GameRoom game, Role role)
         {

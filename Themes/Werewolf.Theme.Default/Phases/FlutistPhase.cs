@@ -15,7 +15,7 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
 
         public FlutistPick(Flutist flutist, GameRoom game, IEnumerable<UserId>? participants = null)
             : base(game, participants ?? GetDefaultParticipants(game,
-                role => role.IsAlive
+                role => role.Enabled
                     && role.Effects.GetEffect<Effects.FlutistEnchantEffect>(
                         x => x.Flutist == flutist
                     ) is null
@@ -95,7 +95,7 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
 
     protected override bool FilterVoter(Flutist role)
     {
-        return role.IsAlive;
+        return role.Enabled;
     }
 
     protected override Flutist GetRole(FlutistPick voting)

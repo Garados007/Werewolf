@@ -13,13 +13,13 @@ namespace Werewolf.Theme
     {
         public EffectCollection<IRoleEffect> Effects { get; } = new();
 
-        private bool isAlive = true;
-        public bool IsAlive
+        private bool enabled = true;
+        public bool Enabled
         {
-            get => isAlive;
+            get => enabled;
             private set
             {
-                isAlive = value;
+                enabled = value;
                 SendRoleInfoChanged();
             }
         }
@@ -38,14 +38,14 @@ namespace Werewolf.Theme
         }
 
         /// <summary>
-        /// Get a list of special tags that are defined for this role. 
+        /// Get a list of special tags that are defined for this role.
         /// </summary>
         /// <param name="game">The current game</param>
         /// <param name="viewer">The viewer of this role. null for the leader</param>
         /// <returns>a list of defined tags</returns>
         public virtual IEnumerable<string> GetTags(GameRoom game, Role? viewer)
         {
-            if (!IsAlive)
+            if (!Enabled)
                 yield return "not-alive";
             if (IsMajor)
                 yield return "major";
@@ -83,7 +83,7 @@ namespace Werewolf.Theme
         /// <param name="info">the kill info</param>
         public void AddKillFlag(KillInfoEffect info)
         {
-            if (!IsAlive)
+            if (!Enabled)
                 return;
             Effects.Add(info);
         }
@@ -103,7 +103,7 @@ namespace Werewolf.Theme
         public void ChangeToKilled()
         {
             if (Effects.Remove<KillInfoEffect>() > 0)
-                IsAlive = false;
+                Enabled = false;
         }
 
         public static Role? GetSeenRole(GameRoom game, uint? round, UserInfo user, UserId targetId, Role target)
@@ -112,8 +112,8 @@ namespace Werewolf.Theme
             return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
                     targetId == user.Id ||
                     round == game.ExecutionRound ||
-                    (game.AllCanSeeRoleOfDead && !target.IsAlive) ||
-                    (ownRole != null && game.DeadCanSeeAllRoles && !ownRole.IsAlive) ?
+                    (game.AllCanSeeRoleOfDead && !target.Enabled) ||
+                    (ownRole != null && game.DeadCanSeeAllRoles && !ownRole.Enabled) ?
                 target :
                 ownRole != null ?
                 target.ViewRole(ownRole) :
@@ -124,7 +124,7 @@ namespace Werewolf.Theme
         {
             if (viewer == null && game.Leader != user.Id)
                 return Enumerable.Empty<string>();
-            if (viewer != null && game.DeadCanSeeAllRoles && !viewer.IsAlive)
+            if (viewer != null && game.DeadCanSeeAllRoles && !viewer.Enabled)
                 viewer = null;
             return target.GetTags(game, viewer);
         }

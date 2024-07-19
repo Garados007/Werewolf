@@ -12,7 +12,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             public InheritMajor(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants ?? GetDefaultParticipants(game,
-                    role => role.IsAlive && !role.IsMajor
+                    role => role.Enabled && !role.IsMajor
                 ))
             {
             }
@@ -24,7 +24,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool CanVoteBase(Role voter)
             {
-                return voter.IsMajor && !voter.IsAlive;
+                return voter.IsMajor && !voter.Enabled;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
@@ -44,7 +44,7 @@ namespace Werewolf.Theme.Default.Phases
         {
             return game.Users
                 .Select(x => x.Value.Role)
-                .Where(x => x != null && x.IsMajor && x.IsAlive && x.HasKillFlag)
+                .Where(x => x != null && x.IsMajor && x.Enabled && x.HasKillFlag)
                 .Any();
         }
 

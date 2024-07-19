@@ -98,7 +98,7 @@ public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPh
     => new AmorPick(role, game, ids);
 
     protected override bool FilterVoter(Amor role)
-    => role.IsAlive;
+    => role.Enabled;
 
     protected override Amor GetRole(AmorPick voting)
     => voting.Amor;

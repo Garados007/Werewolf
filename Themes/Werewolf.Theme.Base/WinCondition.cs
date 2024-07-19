@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -57,7 +57,7 @@ namespace Werewolf.Theme
                 return true;
             }
             foreach (var role in game.Users.Select(x => x.Value.Role))
-                if (role != null && !role.IsAlive)
+                if (role != null && !role.Enabled)
                 {
                     // check if has same faction with all players
                     for (int i = 0; i < player.Length; ++i)

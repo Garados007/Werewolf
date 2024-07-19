@@ -47,7 +47,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public WitchKill(Witch witch, GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants ?? GetDefaultParticipants(game,
-                    role => role.IsAlive && role.Effects.GetEffect<KilledByWerwolf>() is null
+                    role => role.Enabled && role.Effects.GetEffect<KilledByWerwolf>() is null
                 ))
             {
                 Witch = witch;
@@ -78,7 +78,7 @@ namespace Werewolf.Theme.Default.Phases
                 => new WitchSafe(role, game, ids);
 
             protected override bool FilterVoter(Witch role)
-                => role.IsAlive && !role.UsedLivePotion;
+                => role.Enabled && !role.UsedLivePotion;
 
             protected override Witch GetRole(WitchSafe voting)
                 => voting.Witch;
@@ -100,7 +100,7 @@ namespace Werewolf.Theme.Default.Phases
                 => new WitchKill(role, game);
 
             protected override bool FilterVoter(Witch role)
-                => role.IsAlive && !role.UsedDeathPotion;
+                => role.Enabled && !role.UsedDeathPotion;
 
             protected override Witch GetRole(WitchKill voting)
                 => voting.Witch;

@@ -1,4 +1,4 @@
-﻿using Werewolf.User;
+using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Votings;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool CanVoteBase(Role voter)
             {
-                return voter.IsAlive;
+                return voter.Enabled;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)

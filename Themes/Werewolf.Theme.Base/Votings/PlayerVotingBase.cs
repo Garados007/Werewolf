@@ -1,4 +1,4 @@
-﻿using Werewolf.User;
+using Werewolf.User;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,7 +83,7 @@ namespace Werewolf.Theme.Votings
             if (selector is not null)
                 @enum = @enum.Where(x => selector(x.Value.Role!));
             else
-                @enum = @enum.Where(x => x.Value.Role!.IsAlive);
+                @enum = @enum.Where(x => x.Value.Role!.Enabled);
             return @enum.Select(x => x.Key);
         }
 

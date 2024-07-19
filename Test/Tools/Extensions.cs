@@ -130,9 +130,9 @@ namespace Test.Tools
 
         public static void ExpectLiveState(this Role role, bool alive = true)
         {
-            if (role.IsAlive != alive)
+            if (role.Enabled != alive)
                 throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to be {Prefix(alive)}alive but is {Prefix(role.IsAlive)}alive."
+                    $"The role {role.GetType().FullName} was expected to be {Prefix(alive)}alive but is {Prefix(role.Enabled)}alive."
                 );
         }
 

@@ -100,7 +100,7 @@ namespace Werewolf.Theme.Default.Phases
             => new ScapeGoatSelect(role, game, ids);
 
         protected override bool FilterVoter(ScapeGoat role)
-            => role.IsAlive && role.Effects.GetEffect<ScapeGoatKilled>() is not null
+            => role.Enabled && role.Effects.GetEffect<ScapeGoatKilled>() is not null
             && !role.TakingRevenge;
 
         protected override ScapeGoat GetRole(ScapeGoatSelect voting)

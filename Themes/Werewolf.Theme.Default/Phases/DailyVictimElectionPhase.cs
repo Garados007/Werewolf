@@ -1,4 +1,4 @@
-﻿using Werewolf.User;
+using Werewolf.User;
 using Werewolf.Theme.Phases;
 using Werewolf.Theme.Votings;
 using Werewolf.Theme.Default.Roles;
@@ -19,7 +19,7 @@ namespace Werewolf.Theme.Default.Phases
 
             public DailyVote(GameRoom game, IEnumerable<UserId>? participants = null)
                 : base(game, participants ?? GetDefaultParticipants(game,
-                    role => role.IsAlive
+                    role => role.Enabled
                         && (role is not Roles.Idiot idiot || !idiot.IsRevealed)
                 ))
             {}
@@ -35,7 +35,7 @@ namespace Werewolf.Theme.Default.Phases
                 if (allowedVoter != null)
                     return allowedVoter.Contains(voter);
                 // normal vote
-                return voter.IsAlive && (voter is not Roles.Idiot idiot || !idiot.IsRevealed);
+                return voter.Enabled && (voter is not Roles.Idiot idiot || !idiot.IsRevealed);
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)
@@ -47,7 +47,7 @@ namespace Werewolf.Theme.Default.Phases
                     idiot.IsMajor = false;
                     var oldManKilled = game.Users
                         .Select(x => x.Value.Role)
-                        .Where(x => x is Roles.OldMan oldMan && !oldMan.IsAlive)
+                        .Where(x => x is Roles.OldMan oldMan && !oldMan.Enabled)
                         .Any();
                     if (oldManKilled)
                     {
@@ -94,7 +94,7 @@ namespace Werewolf.Theme.Default.Phases
 
             protected override bool CanVoteBase(Role voter)
             {
-                return voter.IsMajor && voter.IsAlive;
+                return voter.IsMajor && voter.Enabled;
             }
 
             public override void Execute(GameRoom game, UserId id, Role role)

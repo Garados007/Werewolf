@@ -92,7 +92,7 @@ namespace Werewolf.Theme
                 .Select(x => x.Role)
                 .Where(x => x != null)
                 .Cast<Role>()
-                .Where(x => x.IsAlive);
+                .Where(x => x.Enabled);
 
         public Role? TryGetRole(UserId id)
         {
@@ -171,7 +171,7 @@ namespace Werewolf.Theme
                             }
                             if (entry.Role != null)
                             {
-                                if (entry.Role.IsAlive)
+                                if (entry.Role.Enabled)
                                 {
                                     dXP += (ulong)Math.Round(xpMultiplier * 160);
                                 }

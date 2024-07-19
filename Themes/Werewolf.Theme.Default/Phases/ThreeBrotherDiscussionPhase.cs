@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Werewolf.Theme.Default.Roles;
 using Werewolf.Theme.Phases;
 
@@ -30,7 +30,7 @@ namespace Werewolf.Theme.Default.Phases
 
         protected override bool CanVote(Role voter)
         {
-            return voter is Roles.ThreeBrothers && voter.IsAlive;
+            return voter is Roles.ThreeBrothers && voter.Enabled;
         }
     }
 }
