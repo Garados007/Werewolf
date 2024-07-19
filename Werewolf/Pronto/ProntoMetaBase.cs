@@ -1,49 +1,47 @@
-namespace Werewolf.Pronto
+namespace Werewolf.Pronto;
+
+public class ProntoMetaBase
 {
-    public class ProntoMetaBase
+    public Pronto Pronto { get; private set; }
+
+    protected void Set<T>(ref T target, T value)
     {
-        public Pronto Pronto { get; private set; }
+        if (Equals(target, value))
+            return;
+        target = value;
+        Changed();
+    }
 
-        protected void Set<T>(ref T target, T value)
+    private bool isEdit;
+    private bool isDirty;
+
+    protected void Changed()
+    {
+        if (isEdit)
         {
-            if (Equals(target, value))
-                return;
-            target = value;
+            isDirty = true;
+        }
+        else
+        {
+            Pronto.SendUpdate();
+        }
+    }
+
+    public void BeginEdit()
+    {
+        isEdit = true;
+    }
+
+    public void EndEdit()
+    {
+        isEdit = false;
+        if (isDirty)
             Changed();
-        }
+        isDirty = false;
+    }
 
-        private bool isEdit;
-        private bool isDirty;
-
-        protected void Changed()
-        {
-            if (isEdit)
-            {
-                isDirty = true;
-            }
-            else
-            {
-                Pronto.SendUpdate();
-            }
-        }
-
-        public void BeginEdit()
-        {
-            isEdit = true;
-        }
-
-        public void EndEdit()
-        {
-            isEdit = false;
-            if (isDirty)
-                Changed();
-            isDirty = false;
-        }
-
-        protected internal ProntoMetaBase(Pronto host)
-        {
-            Pronto = host;
-        }
-
+    protected internal ProntoMetaBase(Pronto host)
+    {
+        Pronto = host;
     }
 }

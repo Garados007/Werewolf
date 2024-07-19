@@ -36,7 +36,7 @@ namespace Test.Tools
             var entry = GetUserWithRole<TRole>(room, index, selector);
             if (entry?.Role is TRole role)
                 return role;
-            else 
+            else
                 throw new KeyNotFoundException(
                     $"Role {typeof(TRole).FullName} at index {index} and specified rules not found"
                 );
@@ -61,7 +61,7 @@ namespace Test.Tools
             verifier ??= x => true;
             if (room.Phase?.Current is not TPhase @phase || !verifier(@phase))
                 throw new InvalidOperationException(
-                    $"The current phase is expected to be {typeof(TPhase).FullName} but is " + 
+                    $"The current phase is expected to be {typeof(TPhase).FullName} but is " +
                     $"{room.Phase?.Current?.GetType().FullName ?? "null"}."
                 );
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Test.Tools.User;
 using Werewolf.Theme;
+using Werewolf.Theme.User;
 using Werewolf.User;
 
 namespace Test.Tools
@@ -32,7 +33,7 @@ namespace Test.Tools
 
         public Runner()
             : this(Construct)
-        {}
+        { }
 
         public Runner(Func<GameRoom, UserFactory, T> themeConstructor)
         {
@@ -86,7 +87,7 @@ namespace Test.Tools
                 GameRoom.AddParticipant(factory.NewUser());
             }
         }
-    
+
         public Runner<T> InitRoles<TRole>(TRole role, int count)
             where TRole : Role
         {
@@ -132,11 +133,11 @@ namespace Test.Tools
 
         public bool HasCapturedEvents()
             => capturedEvents.Count > 0;
-        
+
         public bool HasCapturedEvents<E>()
             where E : GameEvent
             => capturedEvents.Where(x => x is E).Any();
-        
+
         public bool HasCapturedEvents<E>(Func<E, bool> check)
             where E : GameEvent
             => capturedEvents
@@ -148,7 +149,7 @@ namespace Test.Tools
         public void CollectEvent<E>()
             where E : GameEvent
             => CollectEvent<E>(x => true);
-        
+
         public void CollectEvent<E>(Func<E, bool> selector)
             where E : GameEvent
         {
@@ -161,7 +162,7 @@ namespace Test.Tools
             }
             throw new KeyNotFoundException($"Event {typeof(E).FullName} is not captured");
         }
-    
+
         public void ClearEvents()
             => capturedEvents.Clear();
 

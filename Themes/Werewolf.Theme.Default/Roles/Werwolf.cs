@@ -1,16 +1,15 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+public class Werwolf : WerwolfBase
 {
-    public class Werwolf : WerwolfBase
+    public Werwolf(GameMode theme) : base(theme)
     {
-        public Werwolf(GameMode theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Werwolf";
+    public override string Name => "Werwolf";
 
-        public override Role CreateNew()
-        {
-            return new Werwolf(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Werwolf(Theme);
     }
 }

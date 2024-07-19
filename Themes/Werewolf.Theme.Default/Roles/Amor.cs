@@ -1,16 +1,15 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+public class Amor : VillagerBase
 {
-    public class Amor : VillagerBase
+    public Amor(GameMode theme) : base(theme)
     {
-        public Amor(GameMode theme) : base(theme)
-        {
-        }
+    }
 
-        public override string Name => "Amor";
+    public override string Name => "Amor";
 
-        public override Role CreateNew()
-        {
-            return new Amor(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Amor(Theme);
     }
 }

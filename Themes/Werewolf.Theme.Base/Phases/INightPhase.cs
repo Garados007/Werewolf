@@ -1,7 +1,6 @@
-﻿namespace Werewolf.Theme.Phases
+﻿namespace Werewolf.Theme.Phases;
+
+public interface INightPhase<T>
+    where T : Phase, INightPhase<T>
 {
-    public interface INightPhase<T>
-        where T : Phase, INightPhase<T>
-    {
-    }
 }

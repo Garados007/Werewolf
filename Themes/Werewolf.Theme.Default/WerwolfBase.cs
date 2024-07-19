@@ -1,42 +1,38 @@
-﻿using System.Collections.Generic;
+﻿namespace Werewolf.Theme.Default;
 
-namespace Werewolf.Theme.Default
+public abstract class WerwolfBase : BaseRole
 {
-    public abstract class WerwolfBase : BaseRole
+    private readonly List<Roles.Girl> seenByGirl = new();
+    private readonly object lockSeenByGirl = new();
+
+    public void AddSeenByGirl(Roles.Girl girl)
     {
-        private readonly List<Roles.Girl> seenByGirl
-            = new List<Roles.Girl>();
-        private readonly object lockSeenByGirl = new object();
+        lock (lockSeenByGirl)
+            seenByGirl.Add(girl);
+        SendRoleInfoChanged();
+    }
 
-        public void AddSeenByGirl(Roles.Girl girl)
-        {
-            lock (lockSeenByGirl)
-                seenByGirl.Add(girl);
-            SendRoleInfoChanged();
-        }
+    public bool IsSeenByGirl(Roles.Girl girl)
+    {
+        lock (lockSeenByGirl)
+            return seenByGirl.Contains(girl);
+    }
 
-        public bool IsSeenByGirl(Roles.Girl girl)
-        {
-            lock (lockSeenByGirl)
-                return seenByGirl.Contains(girl);
-        }
+    protected WerwolfBase(GameMode theme) : base(theme)
+    {
+    }
 
-        protected WerwolfBase(GameMode theme) : base(theme)
-        {
-        }
+    public override bool? IsSameFaction(Role other)
+    {
+        return other is WerwolfBase
+            ? true
+            : null;
+    }
 
-        public override bool? IsSameFaction(Role other)
-        {
-            return other is WerwolfBase
-                ? true
-                : (bool?)null;
-        }
-
-        public override Role ViewRole(Role viewer)
-        {
-            return viewer is WerwolfBase || (viewer is Roles.Girl girl && IsSeenByGirl(girl))
-                ? new Roles.Werwolf(Theme)
-                : base.ViewRole(viewer);
-        }
+    public override Role ViewRole(Role viewer)
+    {
+        return viewer is WerwolfBase || (viewer is Roles.Girl girl && IsSeenByGirl(girl))
+            ? new Roles.Werwolf(Theme)
+            : base.ViewRole(viewer);
     }
 }

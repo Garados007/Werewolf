@@ -1,22 +1,19 @@
-using MongoDB.Bson.Serialization.Attributes;
+namespace Werewolf.User.DB;
 
-namespace Werewolf.User.DB
+[BsonIgnoreExtraElements]
+public class UserConfig
 {
-    [BsonIgnoreExtraElements]
-    public class UserConfig
-    {
-        [BsonRequired]
-        public string Username { get; set; } = "";
+    [BsonRequired]
+    public string Username { get; set; } = "";
 
-        [BsonRequired]
-        public string Image { get; set; } = ""; 
+    [BsonRequired]
+    public string Image { get; set; } = "";
 
-        [BsonRequired]
-        public string ThemeColor { get; set; } = "#333333";
+    [BsonRequired]
+    public string ThemeColor { get; set; } = "#333333";
 
-        public string? BackgroundImage { get; set; }
+    public string? BackgroundImage { get; set; }
 
-        [BsonRequired]
-        public string Language { get; set; } = "en";
-    }
+    [BsonRequired]
+    public string Language { get; set; } = "en";
 }

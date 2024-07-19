@@ -1,12 +1,11 @@
-﻿namespace Werewolf.Theme.Default.Stages
+﻿namespace Werewolf.Theme.Default.Stages;
+
+public class NightStage : Stage
 {
-    public class NightStage : Stage
-    {
-        public override string LanguageId => "night";
+    public override string LanguageId => "night";
 
-        public override string BackgroundId =>
-            $"/content/img/stage/{typeof(DefaultTheme).FullName}/background-night.png";
+    public override string BackgroundId =>
+        $"/content/img/stage/{typeof(DefaultTheme).FullName}/background-night.png";
 
-        public override string ColorTheme => "#000911";
-    }
+    public override string ColorTheme => "#000911";
 }

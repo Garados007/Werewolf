@@ -17,9 +17,9 @@ public abstract class ChatServiceMessage : GameEvent
 
     public sealed override string GameEventType => nameof(ChatServiceMessage);
 
-    public virtual string MessageKey => GetType().FullName 
+    public virtual string MessageKey => GetType().FullName
         ?? throw new NotSupportedException("unsupported message key, override this member to get a meaningfull key");
-    
+
     public abstract IEnumerable<(string key, ChatVariable value)> GetArgs();
 
     public sealed override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)

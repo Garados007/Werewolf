@@ -1,18 +1,17 @@
-﻿namespace Werewolf.Theme.Default.Roles
+﻿namespace Werewolf.Theme.Default.Roles;
+
+public class Angel : VillagerBase
 {
-    public class Angel : VillagerBase
+    public bool MissedFirstRound { get; set; }
+
+    public Angel(GameMode theme) : base(theme)
     {
-        public bool MissedFirstRound { get; set; }
+    }
 
-        public Angel(GameMode theme) : base(theme)
-        {
-        }
+    public override string Name => "Angel";
 
-        public override string Name => "Angel";
-
-        public override Role CreateNew()
-        {
-            return new Angel(Theme);
-        }
+    public override Role CreateNew()
+    {
+        return new Angel(Theme);
     }
 }

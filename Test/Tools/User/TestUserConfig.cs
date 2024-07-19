@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
+using Werewolf.Theme.User;
 
 namespace Test.Tools.User
 {
-    public class TestUserConfig : Werewolf.User.UserConfig
+    public class TestUserConfig : UserConfig
     {
         public int Index { get; }
 

@@ -1,30 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿namespace Werewolf.Theme.Phases;
 
-namespace Werewolf.Theme.Phases
+public abstract class AsyncActionPhaseBase : Phase
 {
-    public abstract class AsyncActionPhaseBase : Phase
+    public override bool CanExecute(GameRoom game)
+        => true;
+
+    public override bool IsGamePhase => false;
+
+    public abstract Task ExecuteAsync(GameRoom game);
+
+    public sealed override async Task InitAsync(GameRoom game)
     {
-        public override bool CanExecute(GameRoom game)
-            => true;
+        await base.InitAsync(game);
+        await ExecuteAsync(game);
+    }
 
-        public override bool IsGamePhase => false;
+    protected sealed override void Init(GameRoom game)
+    {
+        base.Init(game);
+    }
 
-        public abstract Task ExecuteAsync(GameRoom game);
-
-        public sealed override async Task InitAsync(GameRoom game)
-        {
-            await base.InitAsync(game);
-            await ExecuteAsync(game);
-        }
-
-        protected sealed override void Init(GameRoom game)
-        {
-            base.Init(game);
-        }
-
-        public override bool CanMessage(GameRoom game, Role role)
-        {
-            return false;
-        }
+    public override bool CanMessage(GameRoom game, Role role)
+    {
+        return false;
     }
 }

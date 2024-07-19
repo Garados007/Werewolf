@@ -50,7 +50,7 @@ public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPh
             if (CanFinishVoting)
                 return "You already select finish";
 
-            
+
             var votes = GetResultUserIds().Count();
 
             var option = Options
@@ -95,7 +95,7 @@ public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPh
     => role is Amor;
 
     protected override AmorPick Create(Amor role, GameRoom game, IEnumerable<UserId>? ids = null)
-    => new AmorPick(role, game, ids);
+    => new(role, game, ids);
 
     protected override bool FilterVoter(Amor role)
     => role.Enabled;

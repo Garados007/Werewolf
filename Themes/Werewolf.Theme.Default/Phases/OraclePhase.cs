@@ -43,13 +43,10 @@ public class OraclePhase : SeperateVotingPhase<OraclePhase.OraclePick, Oracle>, 
 
     public override bool CanExecute(GameRoom game)
     {
-        if (game.Users
+        return !game.Users
             .Select(x => x.Value.Role)
-            .Where(x => x is Roles.OldMan oldMan && oldMan.WasKilledByVillager)
-            .Any()
-        )
-            return false;
-        return base.CanExecute(game);
+            .Any(x => x is Roles.OldMan oldMan && oldMan.WasKilledByVillager)
+            && base.CanExecute(game);
     }
 
     public override bool CanMessage(GameRoom game, Role role)
@@ -58,7 +55,7 @@ public class OraclePhase : SeperateVotingPhase<OraclePhase.OraclePick, Oracle>, 
     }
 
     protected override OraclePick Create(Oracle role, GameRoom game, IEnumerable<UserId>? ids = null)
-    => new OraclePick(role, game, ids);
+    => new(role, game, ids);
 
     protected override bool FilterVoter(Oracle role)
     {

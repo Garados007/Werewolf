@@ -58,13 +58,13 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
                 .Where(x => x.id == id)
                 .Select(x => x.option)
                 .FirstOrDefault();
-            
+
             if (option == null)
                 return "option not found";
 
             if (option.Users.Any(x => x == voter))
                 return null;
-            
+
             option.Users.Add(voter);
             game.SendEvent(new Events.SetVotingVote(this, id, voter));
 
@@ -91,7 +91,7 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
     }
 
     protected override FlutistPick Create(Flutist role, GameRoom game, IEnumerable<UserId>? ids = null)
-    => new FlutistPick(role, game, ids);
+    => new(role, game, ids);
 
     protected override bool FilterVoter(Flutist role)
     {

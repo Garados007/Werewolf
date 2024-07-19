@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Werewolf.Theme.User;
 using Werewolf.User;
 
 namespace Test.Tools.User

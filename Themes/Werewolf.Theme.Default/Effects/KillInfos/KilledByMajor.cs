@@ -1,9 +1,8 @@
 ﻿using Werewolf.Theme.Effects;
 
-namespace Werewolf.Theme.Default.Effects.KillInfos
+namespace Werewolf.Theme.Default.Effects.KillInfos;
+
+public class KilledByMajor : KillInfoEffect
 {
-    public class KilledByMajor : KillInfoEffect
-    {
-        public override string NotificationId => "killed-by-major";
-    }
+    public override string NotificationId => "killed-by-major";
 }
