@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Default
                 return seenByGirl.Contains(girl);
         }
 
-        protected WerwolfBase(Theme theme) : base(theme)
+        protected WerwolfBase(GameMode theme) : base(theme)
         {
         }
 

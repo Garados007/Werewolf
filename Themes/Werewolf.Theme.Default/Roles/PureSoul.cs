@@ -2,7 +2,7 @@
 {
     public class PureSoul : VillagerBase
     {
-        public PureSoul(Theme theme) : base(theme)
+        public PureSoul(GameMode theme) : base(theme)
         {
         }
 

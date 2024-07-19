@@ -2,7 +2,7 @@
 {
     public class Unknown : BaseRole
     {
-        public Unknown(Theme theme) : base(theme)
+        public Unknown(GameMode theme) : base(theme)
         {
         }
 

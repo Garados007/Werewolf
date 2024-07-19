@@ -15,7 +15,7 @@
 
         public bool WasMajor { get; set; }
 
-        public Idiot(Theme theme) : base(theme)
+        public Idiot(GameMode theme) : base(theme)
         {
         }
 

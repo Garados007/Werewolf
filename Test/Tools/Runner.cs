@@ -8,7 +8,7 @@ using Werewolf.User;
 namespace Test.Tools
 {
     public class Runner<T>
-        where T : Theme
+        where T : GameMode
     {
         public T Theme { get; }
 
@@ -126,7 +126,7 @@ namespace Test.Tools
                 Theme
             );
             if (prototype is null)
-                throw new ArgumentException($"Type {typeof(TRole).FullName} has no constructor that expects one param of type {typeof(Theme).FullName}");
+                throw new ArgumentException($"Type {typeof(TRole).FullName} has no constructor that expects one param of type {typeof(GameMode).FullName}");
             return InitRoles(prototype, count);
         }
 

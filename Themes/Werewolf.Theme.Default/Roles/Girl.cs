@@ -21,7 +21,7 @@ namespace Werewolf.Theme.Default.Roles
                 return seenByWolf.Contains(wolf);
         }
 
-        public Girl(Theme theme) : base(theme)
+        public Girl(GameMode theme) : base(theme)
         {
         }
 

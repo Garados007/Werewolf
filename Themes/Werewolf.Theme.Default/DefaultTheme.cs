@@ -6,7 +6,7 @@ using Werewolf.User;
 
 namespace Werewolf.Theme.Default
 {
-    public class DefaultTheme : Theme
+    public class DefaultTheme : GameMode
     {
         public DefaultTheme(GameRoom? game, UserFactory users) : base(game, users)
         {

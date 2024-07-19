@@ -4,7 +4,7 @@
     {
         public bool MissedFirstRound { get; set; }
 
-        public Angel(Theme theme) : base(theme)
+        public Angel(GameMode theme) : base(theme)
         {
         }
 

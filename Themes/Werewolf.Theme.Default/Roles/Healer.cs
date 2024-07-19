@@ -2,7 +2,7 @@
 {
     public class Healer : VillagerBase
     {
-        public Healer(Theme theme) : base(theme)
+        public Healer(GameMode theme) : base(theme)
         {
         }
 

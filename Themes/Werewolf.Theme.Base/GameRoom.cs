@@ -50,7 +50,7 @@ namespace Werewolf.Theme
 
         public bool AutoFinishRounds { get; set; }
 
-        public Theme? Theme { get; set; }
+        public GameMode? Theme { get; set; }
 
         public (uint round, ReadOnlyMemory<UserId> winner)? Winner { get; set; }
 

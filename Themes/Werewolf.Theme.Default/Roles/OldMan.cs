@@ -8,7 +8,7 @@ namespace Werewolf.Theme.Default.Roles
 
         public bool WasKilledByVillager { get; set; }
 
-        public OldMan(Theme theme) : base(theme)
+        public OldMan(GameMode theme) : base(theme)
         {
             Effects.Add(new Default.Effects.BeforeKillAction.KillRevealedIdiots());
         }

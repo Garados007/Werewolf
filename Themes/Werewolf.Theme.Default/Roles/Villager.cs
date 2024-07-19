@@ -2,7 +2,7 @@
 {
     public class Villager : VillagerBase
     {
-        public Villager(Theme theme) : base(theme)
+        public Villager(GameMode theme) : base(theme)
         {
         }
 

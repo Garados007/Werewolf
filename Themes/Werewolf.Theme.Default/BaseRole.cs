@@ -5,7 +5,7 @@ namespace Werewolf.Theme.Default
 {
     public abstract class BaseRole : Role
     {
-        protected BaseRole(Theme theme) : base(theme)
+        protected BaseRole(GameMode theme) : base(theme)
         {
             Effects.Add(new Default.Effects.BeforeKillAction.LogPlayerKill());
         }

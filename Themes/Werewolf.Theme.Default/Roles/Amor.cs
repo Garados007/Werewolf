@@ -2,7 +2,7 @@
 {
     public class Amor : VillagerBase
     {
-        public Amor(Theme theme) : base(theme)
+        public Amor(GameMode theme) : base(theme)
         {
         }
 

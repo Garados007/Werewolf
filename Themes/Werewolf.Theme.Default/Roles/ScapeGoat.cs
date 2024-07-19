@@ -4,7 +4,7 @@
     {
         public bool TakingRevenge { get; set; }
 
-        public ScapeGoat(Theme theme) : base(theme)
+        public ScapeGoat(GameMode theme) : base(theme)
         {
         }
 

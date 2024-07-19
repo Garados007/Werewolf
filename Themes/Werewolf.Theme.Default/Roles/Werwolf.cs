@@ -2,7 +2,7 @@
 {
     public class Werwolf : WerwolfBase
     {
-        public Werwolf(Theme theme) : base(theme)
+        public Werwolf(GameMode theme) : base(theme)
         {
         }
 

@@ -2,7 +2,7 @@
 {
     public class ThreeBrothers : VillagerBase
     {
-        public ThreeBrothers(Theme theme) : base(theme)
+        public ThreeBrothers(GameMode theme) : base(theme)
         {
         }
 

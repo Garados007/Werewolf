@@ -2,7 +2,7 @@
 {
     public class TwoSisters : VillagerBase
     {
-        public TwoSisters(Theme theme) : base(theme)
+        public TwoSisters(GameMode theme) : base(theme)
         {
         }
 

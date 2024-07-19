@@ -5,7 +5,7 @@ using Werewolf.User;
 
 namespace Werewolf.Theme
 {
-    public abstract class Theme
+    public abstract class GameMode
     {
         public string LanguageTheme { get; set; } = "default";
 
@@ -21,7 +21,7 @@ namespace Werewolf.Theme
 
         public UserFactory Users { get; }
 
-        public Theme(GameRoom? game, UserFactory users)
+        public GameMode(GameRoom? game, UserFactory users)
             => (Game, Users) = (game, users ?? throw new ArgumentNullException(nameof(users)));
 
         public virtual bool CheckRoleUsage(Role role, ref int count, int oldCount,

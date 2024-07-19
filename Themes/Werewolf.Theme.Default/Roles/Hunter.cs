@@ -2,7 +2,7 @@
 {
     public class Hunter : VillagerBase
     {
-        public Hunter(Theme theme) : base(theme)
+        public Hunter(GameMode theme) : base(theme)
         {
         }
 

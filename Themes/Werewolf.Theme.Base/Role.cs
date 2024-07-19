@@ -59,9 +59,9 @@ namespace Werewolf.Theme
             Theme.Game?.SendEvent(new Events.OnRoleInfoChanged(this));
         }
 
-        public Theme Theme { get; }
+        public GameMode Theme { get; }
 
-        public Role(Theme theme)
+        public Role(GameMode theme)
         {
             Theme = theme ?? throw new ArgumentNullException(nameof(theme));
         }

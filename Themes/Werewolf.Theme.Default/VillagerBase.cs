@@ -2,7 +2,7 @@
 {
     public abstract class VillagerBase : BaseRole
     {
-        protected VillagerBase(Theme theme) : base(theme)
+        protected VillagerBase(GameMode theme) : base(theme)
         {
         }
 

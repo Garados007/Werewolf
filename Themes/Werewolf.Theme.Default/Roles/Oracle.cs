@@ -2,7 +2,7 @@
 {
     public class Oracle : VillagerBase
     {
-        public Oracle(Theme theme) : base(theme)
+        public Oracle(GameMode theme) : base(theme)
         {
         }
 

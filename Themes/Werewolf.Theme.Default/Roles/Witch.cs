@@ -6,7 +6,7 @@
 
         public bool UsedDeathPotion { get; set; }
 
-        public Witch(Theme theme) : base(theme)
+        public Witch(GameMode theme) : base(theme)
         {
         }
 
