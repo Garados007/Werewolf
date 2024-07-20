@@ -2,11 +2,11 @@
 
 namespace Werewolf.Theme;
 
-public delegate bool WinConditionCheck(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner);
+public delegate bool WinConditionCheck(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner);
 
 public class WinCondition
 {
-    public bool Check(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+    public bool Check(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner)
     {
         // first execute the theme win conditions. These are expected to return faster
         if (game.Theme != null)
@@ -27,9 +27,9 @@ public class WinCondition
         yield return OnlyOneFaction;
     }
 
-    private bool OnlyOneFaction(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+    private bool OnlyOneFaction(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner)
     {
-        static bool IsSameFaction(Role role1, Role role2)
+        static bool IsSameFaction(Character role1, Character role2)
         {
             var check = role1.IsSameFaction(role2);
             if (check == null)
@@ -37,7 +37,7 @@ public class WinCondition
             return check ?? false;
         }
 
-        Span<Role> player = game.AliveRoles.ToArray();
+        Span<Character> player = game.AliveRoles.ToArray();
         for (int i = 0; i < player.Length; ++i)
             for (int j = i + 1; j < player.Length; ++j)
                 if (!IsSameFaction(player[i], player[j]))
@@ -47,7 +47,7 @@ public class WinCondition
                 }
 
         // game is finished, now get all players that won
-        var list = new List<Role>(player.ToArray());
+        var list = new List<Character>(player.ToArray());
         if (list.Count == 0)
         {
             winner = list.ToArray();

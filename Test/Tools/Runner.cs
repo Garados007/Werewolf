@@ -89,7 +89,7 @@ namespace Test.Tools
         }
 
         public Runner<T> InitRoles<TRole>(TRole role, int count)
-            where TRole : Role
+            where TRole : Character
         {
             if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -110,7 +110,7 @@ namespace Test.Tools
                 GameRoom.AddParticipant(user);
                 GameRoom.Users[user.Id].Role = role.CreateNew();
             }
-            Role? key = GameRoom.RoleConfiguration.Keys
+            Character? key = GameRoom.RoleConfiguration.Keys
                 .Where(x => x is TRole)
                 .FirstOrDefault();
             if (key is null)
@@ -120,7 +120,7 @@ namespace Test.Tools
         }
 
         public Runner<T> InitRoles<TRole>(int count)
-            where TRole : Role
+            where TRole : Character
         {
             var prototype = (TRole?)Activator.CreateInstance(
                 typeof(TRole),

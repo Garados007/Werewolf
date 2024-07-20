@@ -9,10 +9,10 @@ public class DefaultTheme : GameMode
     {
     }
 
-    public override Role GetBasicRole()
+    public override Character GetBasicRole()
         => new Roles.Unknown(this);
 
-    public override IEnumerable<Role> GetRoleTemplates()
+    public override IEnumerable<Character> GetRoleTemplates()
     {
         yield return new Roles.Villager(this);
         yield return new Roles.Hunter(this);
@@ -32,7 +32,7 @@ public class DefaultTheme : GameMode
         yield return new Roles.Angel(this);
     }
 
-    public override PhaseFlow GetPhases(IDictionary<Role, int> roles)
+    public override PhaseFlow GetPhases(IDictionary<Character, int> roles)
     {
         // init stages
         var nightStage = new Stages.NightStage();
@@ -58,7 +58,7 @@ public class DefaultTheme : GameMode
             return phases.BuildGroup() ?? throw new InvalidOperationException();
         }
 
-        static PhaseFlow.PhaseGroup DailyLoop(Stage night, Stage morning, Stage day, Stage afternoon, IDictionary<Role, int> roles)
+        static PhaseFlow.PhaseGroup DailyLoop(Stage night, Stage morning, Stage day, Stage afternoon, IDictionary<Character, int> roles)
         {
             var phases = new PhaseFlowBuilder();
 
@@ -139,17 +139,17 @@ public class DefaultTheme : GameMode
         yield return OnlyEnchanted;
     }
 
-    public static bool AngelDied(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+    public static bool AngelDied(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner)
     {
         winner = game.Users
             .Select(x => x.Value.Role)
             .Where(x => x is Roles.Angel angel && !angel.Enabled && !angel.MissedFirstRound)
-            .Cast<Role>()
+            .Cast<Character>()
             .ToArray();
         return winner.Value.Length > 0;
     }
 
-    private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+    private static bool OnlyLovedOnes(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner)
     {
         winner = null;
         foreach (var player in game.AliveRoles)
@@ -167,7 +167,7 @@ public class DefaultTheme : GameMode
         return true;
     }
 
-    private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Role>? winner)
+    private static bool OnlyEnchanted(GameRoom game, [NotNullWhen(true)] out ReadOnlyMemory<Character>? winner)
     {
         var flutistWon = new List<Roles.Flutist>();
         foreach (var player in game.Users.Values)
@@ -201,7 +201,7 @@ public class DefaultTheme : GameMode
         }
     }
 
-    public override bool CheckRoleUsage(Role role, ref int count, int oldCount, [NotNullWhen(false)] out string? error)
+    public override bool CheckRoleUsage(Character role, ref int count, int oldCount, [NotNullWhen(false)] out string? error)
     {
         if (role is Roles.TwoSisters)
         {

@@ -8,7 +8,7 @@ public class Villager : VillagerBase
 
     public override string Name => "Dorfbewohner";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Villager(Theme);
     }

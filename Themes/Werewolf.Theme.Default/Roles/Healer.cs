@@ -8,7 +8,7 @@ public class Healer : VillagerBase
 
     public override string Name => "Heiler";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Healer(Theme);
     }

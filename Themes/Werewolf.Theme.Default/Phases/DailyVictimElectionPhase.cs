@@ -9,9 +9,9 @@ public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhas
 {
     public class DailyVote : PlayerVotingBase
     {
-        internal readonly HashSet<Role>? allowedVoter;
+        internal readonly HashSet<Character>? allowedVoter;
 
-        internal DailyVote(GameRoom game, IEnumerable<UserId>? participants, HashSet<Role>? allowedVoter)
+        internal DailyVote(GameRoom game, IEnumerable<UserId>? participants, HashSet<Character>? allowedVoter)
             : this(game, participants)
         {
             this.allowedVoter = allowedVoter;
@@ -24,12 +24,12 @@ public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhas
             ))
         { }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return true;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             // special voting condition
             if (allowedVoter != null)
@@ -38,7 +38,7 @@ public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhas
             return voter.Enabled && (voter is not Roles.Idiot idiot || !idiot.IsRevealed);
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             if (role is Roles.Idiot idiot)
             {
@@ -87,17 +87,17 @@ public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhas
         {
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return true;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter.IsMajor && voter.Enabled;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             role.AddKillFlag(new Effects.KillInfos.KilledByMajor());
         }
@@ -150,7 +150,7 @@ public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhas
         }
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return true;
     }

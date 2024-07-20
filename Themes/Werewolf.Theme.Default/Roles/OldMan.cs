@@ -13,6 +13,6 @@ public class OldMan : VillagerBase
 
     public override string Name => "Der Alte";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
         => new OldMan(Theme);
 }

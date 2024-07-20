@@ -5,23 +5,23 @@ namespace Werewolf.Theme.Default.Effects;
 
 public class LovedEffect : IRoleEffect
 {
-    public Role Target { get; }
+    public Character Target { get; }
 
     public Amor Amor { get; }
 
-    public LovedEffect(Amor amor, Role target)
+    public LovedEffect(Amor amor, Character target)
     {
         Amor = amor;
         Target = target;
     }
 
-    public IEnumerable<string> GetSeenTags(GameRoom game, Role current, Role? viewer)
+    public IEnumerable<string> GetSeenTags(GameRoom game, Character current, Character? viewer)
     {
         if (CanSeeLove(game, current, viewer))
             yield return "loved";
     }
 
-    private bool CanSeeLove(GameRoom game, Role current, Role? viewer)
+    private bool CanSeeLove(GameRoom game, Character current, Character? viewer)
     {
         // if viewer is current role it can always see its loved state
         // same goes if viewer is not a player

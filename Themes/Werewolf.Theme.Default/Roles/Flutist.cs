@@ -9,10 +9,10 @@ public class Flutist : BaseRole
 
     public override string Name => "Der Flötenspieler";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
         => new Flutist(Theme);
 
-    public override bool? IsSameFaction(Role other)
+    public override bool? IsSameFaction(Character other)
     {
         return other is Flutist;
     }

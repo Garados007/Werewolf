@@ -19,7 +19,7 @@ public class Idiot : VillagerBase
     {
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return IsRevealed
             ? this
@@ -28,7 +28,7 @@ public class Idiot : VillagerBase
 
     public override string Name => "Dorfdepp";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Idiot(Theme);
     }

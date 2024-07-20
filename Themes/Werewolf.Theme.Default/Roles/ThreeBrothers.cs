@@ -8,13 +8,13 @@ public class ThreeBrothers : VillagerBase
 
     public bool HasSeenPartner { get; set; }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is ThreeBrothers && HasSeenPartner ? this : base.ViewRole(viewer);
     }
 
     public override string Name => "ThreeBrothers";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
         => new ThreeBrothers(Theme);
 }

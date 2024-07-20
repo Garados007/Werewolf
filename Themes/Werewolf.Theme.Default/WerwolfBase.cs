@@ -22,14 +22,14 @@ public abstract class WerwolfBase : BaseRole
     {
     }
 
-    public override bool? IsSameFaction(Role other)
+    public override bool? IsSameFaction(Character other)
     {
         return other is WerwolfBase
             ? true
             : null;
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is WerwolfBase || (viewer is Roles.Girl girl && IsSeenByGirl(girl))
             ? new Roles.Werwolf(Theme)

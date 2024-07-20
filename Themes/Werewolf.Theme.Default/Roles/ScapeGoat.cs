@@ -10,7 +10,7 @@ public class ScapeGoat : VillagerBase
 
     public override string Name => "Sündenbock";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new ScapeGoat(Theme);
     }

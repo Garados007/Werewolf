@@ -20,7 +20,7 @@ public abstract class AsyncActionPhaseBase : Scene
         base.Init(game);
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return false;
     }

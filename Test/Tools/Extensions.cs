@@ -13,7 +13,7 @@ namespace Test.Tools
         => value ? "" : "not ";
 
         public static GameUserEntry GetUserWithRole<TRole>(this GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
-            where TRole : Role
+            where TRole : Character
         {
             selector ??= x => true;
             if (index < 0)
@@ -31,7 +31,7 @@ namespace Test.Tools
         }
 
         public static TRole GetRole<TRole>(this GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
-            where TRole : Role
+            where TRole : Character
         {
             var entry = GetUserWithRole<TRole>(room, index, selector);
             if (entry?.Role is TRole role)
@@ -128,7 +128,7 @@ namespace Test.Tools
             phase.ExpectNoVoting(offset, verifier);
         }
 
-        public static void ExpectLiveState(this Role role, bool alive = true)
+        public static void ExpectLiveState(this Character role, bool alive = true)
         {
             if (role.Enabled != alive)
                 throw new InvalidOperationException(
@@ -136,7 +136,7 @@ namespace Test.Tools
                 );
         }
 
-        public static void ExpectNoKillFlag(this Role role)
+        public static void ExpectNoKillFlag(this Character role)
         {
             var effect = role.Effects.GetEffect<Werewolf.Theme.Effects.KillInfoEffect>();
             if (effect is not null)
@@ -145,7 +145,7 @@ namespace Test.Tools
                 );
         }
 
-        public static void ExpectKillFlag<T>(this Role role)
+        public static void ExpectKillFlag<T>(this Character role)
             where T : Werewolf.Theme.Effects.KillInfoEffect
         {
             var effect = role.Effects.GetEffect<T>();
@@ -155,7 +155,7 @@ namespace Test.Tools
                 );
         }
 
-        public static void ExpectTag(this Role role, GameRoom game, string tag)
+        public static void ExpectTag(this Character role, GameRoom game, string tag)
         {
             if (!role.GetTags(game, null).Contains(tag))
                 throw new InvalidOperationException(
@@ -173,7 +173,7 @@ namespace Test.Tools
                 );
         }
 
-        public static void ExpectWinner(this GameRoom game, Func<Role, bool>? verifier = null)
+        public static void ExpectWinner(this GameRoom game, Func<Character, bool>? verifier = null)
         {
             verifier ??= x => true;
             if (game.Winner is null)
@@ -197,7 +197,7 @@ namespace Test.Tools
             }
         }
 
-        public static void ExpectWinner(this GameRoom game, int winnerCount, Func<Role, bool>? verifier = null)
+        public static void ExpectWinner(this GameRoom game, int winnerCount, Func<Character, bool>? verifier = null)
         {
             ExpectWinner(game, verifier);
             if (game.Winner!.Value.winner.Length != winnerCount)
@@ -206,7 +206,7 @@ namespace Test.Tools
                 );
         }
 
-        public static void ExpectWinner(this GameRoom game, params Role[] winner)
+        public static void ExpectWinner(this GameRoom game, params Character[] winner)
         {
             ExpectWinner(game, winner.Length, role => winner.Contains(role));
         }
@@ -216,8 +216,8 @@ namespace Test.Tools
             ExpectWinner(game, winner.Length, role => winner.Any(x => x.Role == role));
         }
 
-        public static void ExpectVisibility<TExpectedRole>(this Role victim, Role viewer)
-            where TExpectedRole : Role
+        public static void ExpectVisibility<TExpectedRole>(this Character victim, Character viewer)
+            where TExpectedRole : Character
         {
             var shownRole = victim.ViewRole(viewer);
             if (shownRole is not TExpectedRole)

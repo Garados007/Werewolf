@@ -14,17 +14,17 @@ public class ElectMajorPhase : Scene, IDayPhase<ElectMajorPhase>
         }
 
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return true;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter.Enabled;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             role.IsMajor = true;
             game.SendEvent(new Events.PlayerNotification("new-voted-major", new[] { id }));
@@ -59,7 +59,7 @@ public class ElectMajorPhase : Scene, IDayPhase<ElectMajorPhase>
         }
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return true;
     }

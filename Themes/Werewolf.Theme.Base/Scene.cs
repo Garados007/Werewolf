@@ -17,7 +17,7 @@ public abstract class Scene
 
     public abstract bool CanExecute(GameRoom game);
 
-    public abstract bool CanMessage(GameRoom game, Role role);
+    public abstract bool CanMessage(GameRoom game, Character role);
 
     public virtual async Task InitAsync(GameRoom game)
     {

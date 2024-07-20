@@ -24,17 +24,17 @@ public class ScapeGoatPhase : SeperateVotingPhase<ScapeGoatPhase.ScapeGoatSelect
 
         private bool CanFinishVoting;
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return true;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter == ScapeGoat;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             game.Effects.Add(
                 new Werewolf.Theme.Effects.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
@@ -117,7 +117,7 @@ public class ScapeGoatPhase : SeperateVotingPhase<ScapeGoatPhase.ScapeGoatSelect
         }
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return true;
     }

@@ -16,17 +16,17 @@ public class WerwolfPhase : MultiPhase<WerwolfPhase.WerwolfVotingPhase, WerwolfP
         {
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return viewer is WerwolfBase;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter is WerwolfBase && voter.Enabled;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             role.AddKillFlag(new Effects.KillInfos.KilledByWerwolf());
         }
@@ -52,7 +52,7 @@ public class WerwolfPhase : MultiPhase<WerwolfPhase.WerwolfVotingPhase, WerwolfP
         protected override WerwolfVote Create(GameRoom game, IEnumerable<UserId>? ids = null)
             => new(game, ids);
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, Character role)
         {
             return role is WerwolfBase;
         }
@@ -74,10 +74,10 @@ public class WerwolfPhase : MultiPhase<WerwolfPhase.WerwolfVotingPhase, WerwolfP
             options.Add(new VoteOption("spy"));
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
             => viewer == Girl;
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
             => voter == Girl;
 
 #if DEBUG
@@ -137,7 +137,7 @@ public class WerwolfPhase : MultiPhase<WerwolfPhase.WerwolfVotingPhase, WerwolfP
         protected override Girl GetRole(GirlVote voting)
             => voting.Girl;
 
-        public override bool CanMessage(GameRoom game, Role role)
+        public override bool CanMessage(GameRoom game, Character role)
         {
             return role is WerwolfBase;
         }

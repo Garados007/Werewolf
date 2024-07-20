@@ -8,12 +8,12 @@ public class Unknown : BaseRole
 
     public override string Name => "unknown";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Unknown(Theme);
     }
 
-    public override bool? IsSameFaction(Role other)
+    public override bool? IsSameFaction(Character other)
     {
         return null;
     }

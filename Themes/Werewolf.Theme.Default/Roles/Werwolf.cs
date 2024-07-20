@@ -8,7 +8,7 @@ public class Werwolf : WerwolfBase
 
     public override string Name => "Werwolf";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Werwolf(Theme);
     }

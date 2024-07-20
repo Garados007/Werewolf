@@ -22,12 +22,12 @@ public class GameStart : GameEvent
                 writer.WriteNull(id);
             else
             {
-                var seenRole = Role.GetSeenRole(game, null, user,
+                var seenRole = Character.GetSeenRole(game, null, user,
                     id, participant.Role);
 
                 writer.WriteStartObject(id);
                 writer.WriteStartArray("tags");
-                foreach (var tag in Role.GetSeenTags(game, user, ownRole, participant.Role))
+                foreach (var tag in Character.GetSeenTags(game, user, ownRole, participant.Role))
                     writer.WriteStringValue(tag);
                 writer.WriteEndArray();
                 writer.WriteString("role", seenRole?.GetType().Name);

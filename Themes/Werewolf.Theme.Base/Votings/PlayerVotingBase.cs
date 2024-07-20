@@ -74,7 +74,7 @@ public abstract class PlayerVotingBase : Voting
     }
 
     protected static IEnumerable<UserId> GetDefaultParticipants(
-        GameRoom game, Func<Role, bool>? selector = null
+        GameRoom game, Func<Character, bool>? selector = null
     )
     {
         var @enum = game.Users.Where(x => x.Value.Role is not null);
@@ -109,7 +109,7 @@ public abstract class PlayerVotingBase : Voting
         game.Phase?.Current.ExecuteMultipleWinner(this, game);
     }
 
-    public abstract void Execute(GameRoom game, UserId id, Role role);
+    public abstract void Execute(GameRoom game, UserId id, Character role);
 
     public virtual void RemoveOption(UserId user)
     {

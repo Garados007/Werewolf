@@ -22,7 +22,7 @@ public class GameRoom
 
     public ConcurrentDictionary<UserId, GameUserEntry> Users { get; }
 
-    public ConcurrentDictionary<Role, int> RoleConfiguration { get; }
+    public ConcurrentDictionary<Character, int> RoleConfiguration { get; }
 
     private bool leaderIsPlayer;
     public bool LeaderIsPlayer
@@ -62,7 +62,7 @@ public class GameRoom
         {
             [leader.Id] = new GameUserEntry(leader),
         };
-        RoleConfiguration = new ConcurrentDictionary<Role, int>();
+        RoleConfiguration = new ConcurrentDictionary<Character, int>();
     }
 
     public bool AddParticipant(UserInfo user)
@@ -87,19 +87,19 @@ public class GameRoom
     /// <summary>
     /// Any existing roles that are consideres as alive. All close to death roles are excluded.
     /// </summary>
-    public IEnumerable<Role> AliveRoles
+    public IEnumerable<Character> AliveRoles
         => Users.Values
             .Select(x => x.Role)
             .Where(x => x != null)
-            .Cast<Role>()
+            .Cast<Character>()
             .Where(x => x.Enabled);
 
-    public Role? TryGetRole(UserId id)
+    public Character? TryGetRole(UserId id)
     {
         return Users.TryGetValue(id, out GameUserEntry? entry) ? entry.Role : null;
     }
 
-    public UserId? TryGetId(Role role)
+    public UserId? TryGetId(Character role)
     {
         foreach (var (id, entry) in Users)
             if (entry.Role == role)
@@ -144,7 +144,7 @@ public class GameRoom
         Theme?.PostInit(this);
     }
 
-    public async Task StopGameAsync(ReadOnlyMemory<Role>? winner)
+    public async Task StopGameAsync(ReadOnlyMemory<Character>? winner)
     {
         ExecutionRound++;
 

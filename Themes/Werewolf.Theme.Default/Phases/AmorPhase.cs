@@ -25,17 +25,17 @@ public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPh
 
         private bool CanFinishVoting;
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return viewer is Amor;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter == Amor;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             throw new InvalidOperationException("Narcissus mode not enabled.");
         }
@@ -91,7 +91,7 @@ public class AmorPhase : SeperateVotingPhase<AmorPhase.AmorPick, Amor>, INightPh
         }
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     => role is Amor;
 
     protected override AmorPick Create(Amor role, GameRoom game, IEnumerable<UserId>? ids = null)

@@ -13,12 +13,12 @@ public class Witch : VillagerBase
 
     public override string Name => "Hexe";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Witch(Theme);
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is Witch
             ? this

@@ -26,12 +26,12 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
             Flutist = flutist;
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return viewer == Flutist;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter == Flutist;
         }
@@ -43,7 +43,7 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
             return canFinish ? 0 : 1;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             role.Effects.Add(new Effects.FlutistEnchantEffect(Flutist));
             role.SendRoleInfoChanged();
@@ -85,7 +85,7 @@ public class FlutistPhase : SeperateVotingPhase<FlutistPhase.FlutistPick, Flutis
         base.Init(game);
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return role is Roles.Flutist;
     }

@@ -8,12 +8,12 @@ public class Oracle : VillagerBase
 
     public override string Name => "alte Seherin";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Oracle(Theme);
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is Oracle
             ? this

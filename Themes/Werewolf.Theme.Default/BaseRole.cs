@@ -1,6 +1,6 @@
 ﻿namespace Werewolf.Theme.Default;
 
-public abstract class BaseRole : Role
+public abstract class BaseRole : Character
 {
     protected BaseRole(GameMode theme) : base(theme)
     {
@@ -9,13 +9,13 @@ public abstract class BaseRole : Role
 
     public bool IsSelectedByHealer { get; set; }
 
-    public override IEnumerable<string> GetTags(GameRoom game, Role? viewer)
+    public override IEnumerable<string> GetTags(GameRoom game, Character? viewer)
     {
         foreach (var tag in base.GetTags(game, viewer))
             yield return tag;
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         var trueShown = Effects.GetEffect<Effects.TrueIdentityShownEffect>(
             x => x.Viewer == viewer

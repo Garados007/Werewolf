@@ -12,7 +12,7 @@ public abstract class KillInfoEffect : IRoleEffect
         }
     }
 
-    public virtual IEnumerable<string> GetSeenTags(GameRoom game, Role current, Role? viewer)
+    public virtual IEnumerable<string> GetSeenTags(GameRoom game, Character current, Character? viewer)
     {
         yield break;
     }

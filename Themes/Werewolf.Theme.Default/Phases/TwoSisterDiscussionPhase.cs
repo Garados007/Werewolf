@@ -17,15 +17,15 @@ public class TwoSisterDiscussionPhase : DiscussionPhase
             user.HasSeenPartner = true;
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
         => CanVote(role);
 
-    protected override bool CanView(Role viewer)
+    protected override bool CanView(Character viewer)
     {
         return viewer is Roles.TwoSisters;
     }
 
-    protected override bool CanVote(Role voter)
+    protected override bool CanVote(Character voter)
     {
         return voter is Roles.TwoSisters && voter.Enabled;
     }

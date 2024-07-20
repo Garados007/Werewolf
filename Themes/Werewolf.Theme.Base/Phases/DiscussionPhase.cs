@@ -17,10 +17,10 @@ public abstract class DiscussionPhase : Scene
         public override IEnumerable<(int id, VoteOption option)> Options
             => Enumerable.Repeat((0, option), 1);
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
             => phase.CanView(viewer);
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
             => phase.CanVote(voter);
 
         public override void Execute(GameRoom game, int id)
@@ -28,9 +28,9 @@ public abstract class DiscussionPhase : Scene
         }
     }
 
-    protected abstract bool CanView(Role viewer);
+    protected abstract bool CanView(Character viewer);
 
-    protected abstract bool CanVote(Role voter);
+    protected abstract bool CanVote(Character voter);
 
     public override bool CanExecute(GameRoom game)
     {

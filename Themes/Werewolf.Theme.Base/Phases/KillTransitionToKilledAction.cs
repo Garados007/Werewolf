@@ -13,7 +13,7 @@ public class KillTransitionToKilledAction : AsyncActionPhaseBase
                         if (otherRole != null)
                             game.SendEvent(new Events.OnRoleInfoChanged(otherRole, target: id));
             }
-        if (new WinCondition().Check(game, out ReadOnlyMemory<Role>? winner))
+        if (new WinCondition().Check(game, out ReadOnlyMemory<Character>? winner))
         {
             await game.StopGameAsync(winner);
         }

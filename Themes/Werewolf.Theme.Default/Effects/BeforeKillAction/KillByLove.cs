@@ -4,7 +4,7 @@ namespace Werewolf.Theme.Default.Effects.BeforeKillAction;
 
 public class KillByLove : BeforeKillActionEffect
 {
-    public override void Execute(GameRoom game, Role current)
+    public override void Execute(GameRoom game, Character current)
     {
         var ownTargets = current.Effects.GetEffects<LovedEffect>()
             .Select(x => x.Target)

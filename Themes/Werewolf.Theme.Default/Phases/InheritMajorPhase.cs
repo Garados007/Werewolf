@@ -15,17 +15,17 @@ public class InheritMajorPhase : SingleVotingPhase<InheritMajorPhase.InheritMajo
         {
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return viewer.IsMajor;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter.IsMajor && !voter.Enabled;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             foreach (var entry in game.Users.Select(x => x.Value.Role))
                 if (entry != null)
@@ -49,7 +49,7 @@ public class InheritMajorPhase : SingleVotingPhase<InheritMajorPhase.InheritMajo
     protected override InheritMajor Create(GameRoom game, IEnumerable<UserId>? ids = null)
         => new(game, ids);
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return true;
     }

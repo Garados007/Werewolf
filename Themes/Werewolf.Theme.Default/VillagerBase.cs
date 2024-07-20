@@ -6,7 +6,7 @@ public abstract class VillagerBase : BaseRole
     {
     }
 
-    public override bool? IsSameFaction(Role other)
+    public override bool? IsSameFaction(Character other)
     {
         return other is VillagerBase
             ? true

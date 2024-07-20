@@ -6,7 +6,7 @@ public class KilledByWerwolf : KillInfoEffect
 {
     public override string NotificationId => "night-kills";
 
-    public override IEnumerable<string> GetSeenTags(GameRoom game, Role current, Role? viewer)
+    public override IEnumerable<string> GetSeenTags(GameRoom game, Character current, Character? viewer)
     {
         foreach (var tag in base.GetSeenTags(game, current, viewer))
             yield return tag;

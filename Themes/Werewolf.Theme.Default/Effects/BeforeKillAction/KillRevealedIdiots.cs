@@ -5,7 +5,7 @@ namespace Werewolf.Theme.Default.Effects.BeforeKillAction;
 
 public class KillRevealedIdiots : BeforeKillActionEffect
 {
-    public override void Execute(GameRoom game, Role current)
+    public override void Execute(GameRoom game, Character current)
     {
         var idiots = game.AliveRoles
             .Where(x => x is Idiot idiot && idiot.IsRevealed);

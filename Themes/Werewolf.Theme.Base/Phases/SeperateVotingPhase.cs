@@ -5,7 +5,7 @@ namespace Werewolf.Theme.Phases;
 
 public abstract class SeperateVotingPhase<TVoting, TRole> : SeperateVotingPhaseBase<TVoting, TRole>
     where TVoting : PlayerVotingBase
-    where TRole : Role
+    where TRole : Character
 {
     protected sealed override TVoting Create(TRole role, GameRoom game)
         => Create(role, game, null);

@@ -7,11 +7,11 @@ public abstract class GameMode
 {
     public string LanguageTheme { get; set; } = "default";
 
-    public abstract Role GetBasicRole();
+    public abstract Character GetBasicRole();
 
-    public abstract IEnumerable<Role> GetRoleTemplates();
+    public abstract IEnumerable<Character> GetRoleTemplates();
 
-    public abstract PhaseFlow GetPhases(IDictionary<Role, int> roles);
+    public abstract PhaseFlow GetPhases(IDictionary<Character, int> roles);
 
     public abstract IEnumerable<WinConditionCheck> GetWinConditions();
 
@@ -22,7 +22,7 @@ public abstract class GameMode
     public GameMode(GameRoom? game, UserFactory users)
         => (Game, Users) = (game, users ?? throw new ArgumentNullException(nameof(users)));
 
-    public virtual bool CheckRoleUsage(Role role, ref int count, int oldCount,
+    public virtual bool CheckRoleUsage(Character role, ref int count, int oldCount,
         [NotNullWhen(false)] out string? error
     )
     {

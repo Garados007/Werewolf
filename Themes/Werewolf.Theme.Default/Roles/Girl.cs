@@ -25,12 +25,12 @@ public class Girl : VillagerBase
 
     public override string Name => "Mädchen";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Girl(Theme);
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is WerwolfBase wolf && IsSeenByWolf(wolf)
             ? this

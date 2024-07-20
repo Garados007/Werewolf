@@ -17,17 +17,17 @@ public class HunterPhase : SeperateVotingPhase<HunterPhase.HunterKill, Hunter>
             Hunter = hunter;
         }
 
-        public override bool CanView(Role viewer)
+        public override bool CanView(Character viewer)
         {
             return viewer == Hunter;
         }
 
-        protected override bool CanVoteBase(Role voter)
+        protected override bool CanVoteBase(Character voter)
         {
             return voter == Hunter;
         }
 
-        public override void Execute(GameRoom game, UserId id, Role role)
+        public override void Execute(GameRoom game, UserId id, Character role)
         {
             role.AddKillFlag(new Effects.KillInfos.KilledByHunter());
             Hunter.HasKilled = true;
@@ -52,7 +52,7 @@ public class HunterPhase : SeperateVotingPhase<HunterPhase.HunterKill, Hunter>
     protected override bool FilterVoter(Hunter role)
         => role.Enabled && role.HasKillFlag && !role.HasKilled;
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return true;
     }

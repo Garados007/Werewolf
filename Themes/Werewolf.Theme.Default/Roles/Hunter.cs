@@ -10,12 +10,12 @@ public class Hunter : VillagerBase
 
     public override string Name => "Jäger";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Hunter(Theme);
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return viewer is Hunter
             ? this

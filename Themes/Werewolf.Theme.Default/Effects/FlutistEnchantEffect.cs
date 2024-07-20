@@ -12,13 +12,13 @@ public class FlutistEnchantEffect : IRoleEffect
         Flutist = flutist;
     }
 
-    public IEnumerable<string> GetSeenTags(GameRoom game, Role current, Role? viewer)
+    public IEnumerable<string> GetSeenTags(GameRoom game, Character current, Character? viewer)
     {
         if (CanSeeEnchant(game, current, viewer))
             yield return "enchant-flutist";
     }
 
-    private bool CanSeeEnchant(GameRoom game, Role current, Role? viewer)
+    private bool CanSeeEnchant(GameRoom game, Character current, Character? viewer)
     {
         // if viewer is current role it can always see its enchant state
         // same goes if viewer is not a player

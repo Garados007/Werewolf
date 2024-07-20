@@ -43,7 +43,7 @@ public abstract class MultiPhase<TPhase1, TPhase2> : Scene
         Phase2.ExecuteMultipleWinner(voting, game);
     }
 
-    public override bool CanMessage(GameRoom game, Role role)
+    public override bool CanMessage(GameRoom game, Character role)
     {
         return Phase1.CanMessage(game, role) || Phase2.CanMessage(game, role);
     }

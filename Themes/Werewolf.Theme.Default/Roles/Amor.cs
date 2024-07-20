@@ -8,7 +8,7 @@ public class Amor : VillagerBase
 
     public override string Name => "Amor";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Amor(Theme);
     }

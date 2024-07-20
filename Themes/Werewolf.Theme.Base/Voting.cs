@@ -20,7 +20,7 @@ public abstract class Voting
         if (overrideEffect is not null)
         {
             game.Effects.Remove(overrideEffect);
-            overrideVoter = new HashSet<Role>();
+            overrideVoter = new HashSet<Character>();
             foreach (var id in overrideEffect)
             {
                 var role = game.TryGetRole(id);
@@ -51,15 +51,15 @@ public abstract class Voting
 
     public abstract IEnumerable<(int id, VoteOption option)> Options { get; }
 
-    public abstract bool CanView(Role viewer);
+    public abstract bool CanView(Character viewer);
 
-    private readonly HashSet<Role>? overrideVoter;
-    public bool CanVote(Role voter)
+    private readonly HashSet<Character>? overrideVoter;
+    public bool CanVote(Character voter)
     {
         return overrideVoter is not null ? overrideVoter.Contains(voter) : CanVoteBase(voter);
     }
 
-    protected abstract bool CanVoteBase(Role voter);
+    protected abstract bool CanVoteBase(Character voter);
 
     protected virtual int GetMissingVotes(GameRoom game)
     {
@@ -115,7 +115,7 @@ public abstract class Voting
             game.Phase?.Current.ExecuteMultipleWinner(this, game);
         }
         AfterFinishExecute(game);
-        if (new WinCondition().Check(game, out ReadOnlyMemory<Role>? winner))
+        if (new WinCondition().Check(game, out ReadOnlyMemory<Character>? winner))
         {
             await game.StopGameAsync(winner);
         }
@@ -130,7 +130,7 @@ public abstract class Voting
 
     }
 
-    public IEnumerable<Role> GetVoter(GameRoom game)
+    public IEnumerable<Character> GetVoter(GameRoom game)
     {
         foreach (var role in game.Users.Select(x => x.Value.Role))
             if (role != null && CanVote(role))
@@ -196,7 +196,7 @@ public abstract class Voting
             _ = FinishVotingAsync(game);
     }
 
-    public static bool CanViewVoting(GameRoom game, UserInfo user, Role? ownRole, Voting voting)
+    public static bool CanViewVoting(GameRoom game, UserInfo user, Character? ownRole, Voting voting)
     {
         return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
             (ownRole != null && voting.CanView(ownRole));

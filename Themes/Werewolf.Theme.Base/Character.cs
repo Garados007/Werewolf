@@ -6,7 +6,7 @@ namespace Werewolf.Theme;
 /// <summary>
 /// The basic role every game user has. Any special state is encoded in this role.
 /// </summary>
-public abstract class Role
+public abstract class Character
 {
     public EffectCollection<IRoleEffect> Effects { get; } = new();
 
@@ -40,7 +40,7 @@ public abstract class Role
     /// <param name="game">The current game</param>
     /// <param name="viewer">The viewer of this role. null for the leader</param>
     /// <returns>a list of defined tags</returns>
-    public virtual IEnumerable<string> GetTags(GameRoom game, Role? viewer)
+    public virtual IEnumerable<string> GetTags(GameRoom game, Character? viewer)
     {
         if (!Enabled)
             yield return "not-alive";
@@ -58,19 +58,19 @@ public abstract class Role
 
     public GameMode Theme { get; }
 
-    public Role(GameMode theme)
+    public Character(GameMode theme)
     {
         Theme = theme ?? throw new ArgumentNullException(nameof(theme));
     }
 
-    public abstract bool? IsSameFaction(Role other);
+    public abstract bool? IsSameFaction(Character other);
 
-    public virtual Role ViewRole(Role viewer)
+    public virtual Character ViewRole(Character viewer)
     {
         return Theme.GetBasicRole();
     }
 
-    public abstract Role CreateNew();
+    public abstract Character CreateNew();
 
     public abstract string Name { get; }
 
@@ -103,7 +103,7 @@ public abstract class Role
             Enabled = false;
     }
 
-    public static Role? GetSeenRole(GameRoom game, uint? round, UserInfo user, UserId targetId, Role target)
+    public static Character? GetSeenRole(GameRoom game, uint? round, UserInfo user, UserId targetId, Character target)
     {
         var ownRole = game.TryGetRole(user.Id);
         return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
@@ -117,7 +117,7 @@ public abstract class Role
             null;
     }
 
-    public static IEnumerable<string> GetSeenTags(GameRoom game, UserInfo user, Role? viewer, Role target)
+    public static IEnumerable<string> GetSeenTags(GameRoom game, UserInfo user, Character? viewer, Character target)
     {
         if (viewer == null && game.Leader != user.Id)
             return Enumerable.Empty<string>();

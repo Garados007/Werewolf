@@ -6,13 +6,13 @@ public class PureSoul : VillagerBase
     {
     }
 
-    public override Role ViewRole(Role viewer)
+    public override Character ViewRole(Character viewer)
     {
         return this;
     }
 
     public override string Name => "pure-soul";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
         => new PureSoul(Theme);
 }

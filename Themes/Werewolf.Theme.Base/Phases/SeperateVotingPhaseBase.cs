@@ -2,7 +2,7 @@
 
 public abstract class SeperateVotingPhaseBase<TVoting, TRole> : Scene
     where TVoting : Voting
-    where TRole : Role
+    where TRole : Character
 {
     protected abstract TVoting Create(TRole role, GameRoom game);
 

@@ -10,7 +10,7 @@ public class Angel : VillagerBase
 
     public override string Name => "Angel";
 
-    public override Role CreateNew()
+    public override Character CreateNew()
     {
         return new Angel(Theme);
     }
