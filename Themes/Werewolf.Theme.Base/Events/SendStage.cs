@@ -5,9 +5,9 @@ namespace Werewolf.Theme.Events;
 
 public class SendStage : GameEvent
 {
-    public Stage Stage { get; }
+    public Phase Stage { get; }
 
-    public SendStage(Stage stage)
+    public SendStage(Phase stage)
         => Stage = stage;
 
     public override bool CanSendTo(GameRoom game, UserInfo user)
@@ -15,7 +15,7 @@ public class SendStage : GameEvent
 
     public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
     {
-        writer.WriteString("lang-id", Stage.LanguageId);
+        writer.WriteString("lang-id", (string)Stage.LanguageId);
         writer.WriteString("background-id", Stage.BackgroundId);
         writer.WriteString("theme", Stage.ColorTheme);
     }

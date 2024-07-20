@@ -4,28 +4,28 @@ namespace Werewolf.Theme;
 
 public class PhaseFlowBuilder
 {
-    private readonly List<OneOf<Stage, Scene, PhaseFlow.PhaseGroup>> phases
-        = new List<OneOf<Stage, Scene, PhaseFlow.PhaseGroup>>();
+    private readonly List<OneOf<Phase, Scene, PhaseFlow.PhaseGroup>> phases
+        = [];
 
-    public void Add(Scene phase)
+    public void Add(Scene scene)
+    {
+        phases.Add(scene);
+    }
+
+    public void Add(IEnumerable<Scene> scenes)
+    {
+        foreach (var scene in scenes)
+            this.phases.Add(scene);
+    }
+
+    public void Add(Func<IEnumerable<Scene>> scenes)
+    {
+        Add(scenes());
+    }
+
+    public void Add(Phase phase)
     {
         phases.Add(phase);
-    }
-
-    public void Add(IEnumerable<Scene> phases)
-    {
-        foreach (var phase in phases)
-            this.phases.Add(phase);
-    }
-
-    public void Add(Func<IEnumerable<Scene>> phases)
-    {
-        Add(phases());
-    }
-
-    public void Add(Stage stage)
-    {
-        phases.Add(stage);
     }
 
     public void Add(PhaseFlow.PhaseGroup group)
@@ -45,10 +45,10 @@ public class PhaseFlowBuilder
             return null;
 
         PhaseFlow.Step? last = null, init = null;
-        Stage? stage = null;
+        Phase? stage = null;
         foreach (var stagePhase in phases)
         {
-            if (stagePhase.TryPickT0(out Stage stage_, out OneOf<Scene, PhaseFlow.PhaseGroup> phaseOrPhaseGroup))
+            if (stagePhase.TryPickT0(out Phase stage_, out OneOf<Scene, PhaseFlow.PhaseGroup> phaseOrPhaseGroup))
             {
                 stage = stage_;
                 continue;

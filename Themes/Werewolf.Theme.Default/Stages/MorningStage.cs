@@ -1,6 +1,6 @@
 ﻿namespace Werewolf.Theme.Default.Stages;
 
-public class MorningStage : Stage
+public class MorningStage : Phase
 {
     public override string LanguageId => "morning";
 

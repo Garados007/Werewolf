@@ -40,7 +40,7 @@ public class DefaultTheme : GameMode
         var dayStage = new Stages.DayStage();
         var afternoonStage = new Stages.AfternoonStage();
 
-        static PhaseFlow.PhaseGroup KillHandling(Stage stage)
+        static PhaseFlow.PhaseGroup KillHandling(Phase stage)
         {
             var phases = new PhaseFlowBuilder();
             phases.Add(stage);
@@ -58,7 +58,7 @@ public class DefaultTheme : GameMode
             return phases.BuildGroup() ?? throw new InvalidOperationException();
         }
 
-        static PhaseFlow.PhaseGroup DailyLoop(Stage night, Stage morning, Stage day, Stage afternoon, IDictionary<Character, int> roles)
+        static PhaseFlow.PhaseGroup DailyLoop(Phase night, Phase morning, Phase day, Phase afternoon, IDictionary<Character, int> roles)
         {
             var phases = new PhaseFlowBuilder();
 

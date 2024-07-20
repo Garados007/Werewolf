@@ -22,20 +22,21 @@ public sealed class PhaseFlow
         }
     }
 
-    private sealed class InitialStage : Stage
+    private sealed class InitialStage : Phase
     {
         public override string LanguageId => "";
 
         public override string BackgroundId => "";
 
         public override string ColorTheme => "";
+
     }
 
     public sealed class Step
     {
         public OneOf<Scene, PhaseGroup> Phase { get; }
 
-        public Stage Stage { get; }
+        public Phase Stage { get; }
 
         public Step? Next { get; internal set; }
 
@@ -43,10 +44,10 @@ public sealed class PhaseFlow
 
         public Scene CurrentPhase => Phase.Match(x => x, x => x.Current.CurrentPhase);
 
-        internal Step(Stage stage, Scene phase)
+        internal Step(Phase stage, Scene phase)
             => (Stage, Phase) = (stage, phase);
 
-        internal Step(Stage stage, PhaseGroup group)
+        internal Step(Phase stage, PhaseGroup group)
             => (Stage, Phase) = (stage, group);
 
         public void SetExecute()
@@ -157,7 +158,7 @@ public sealed class PhaseFlow
 
     public Scene Current => CurrentStep.CurrentPhase;
 
-    public Stage Stage => CurrentStep.CurrentStep.Stage;
+    public Phase Stage => CurrentStep.CurrentStep.Stage;
 
     internal PhaseFlow(Step step)
         => InitialStep = CurrentStep = new Step(new InitialStage(), new InitialPhase())
