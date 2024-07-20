@@ -7,7 +7,7 @@ public sealed class PhaseFlow
     /// <summary>
     /// this phase is meant to be skipped durring startup
     /// </summary>
-    private sealed class InitialPhase : Phase
+    private sealed class InitialPhase : Scene
     {
         public override bool IsGamePhase => false;
 
@@ -33,7 +33,7 @@ public sealed class PhaseFlow
 
     public sealed class Step
     {
-        public OneOf<Phase, PhaseGroup> Phase { get; }
+        public OneOf<Scene, PhaseGroup> Phase { get; }
 
         public Stage Stage { get; }
 
@@ -41,9 +41,9 @@ public sealed class PhaseFlow
 
         public Step CurrentStep => Phase.TryPickT0(out _, out PhaseGroup phaseGroup) ? this : phaseGroup.Current.CurrentStep;
 
-        public Phase CurrentPhase => Phase.Match(x => x, x => x.Current.CurrentPhase);
+        public Scene CurrentPhase => Phase.Match(x => x, x => x.Current.CurrentPhase);
 
-        internal Step(Stage stage, Phase phase)
+        internal Step(Stage stage, Scene phase)
             => (Stage, Phase) = (stage, phase);
 
         internal Step(Stage stage, PhaseGroup group)
@@ -155,7 +155,7 @@ public sealed class PhaseFlow
 
     public Step CurrentStep { get; private set; }
 
-    public Phase Current => CurrentStep.CurrentPhase;
+    public Scene Current => CurrentStep.CurrentPhase;
 
     public Stage Stage => CurrentStep.CurrentStep.Stage;
 

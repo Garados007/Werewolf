@@ -1,6 +1,6 @@
 ﻿namespace Werewolf.Theme.Phases;
 
-public abstract class DiscussionPhase : Phase
+public abstract class DiscussionPhase : Scene
 {
     public class DiscussionEnd : Voting
     {

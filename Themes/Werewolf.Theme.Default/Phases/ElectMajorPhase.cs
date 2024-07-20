@@ -4,7 +4,7 @@ using Werewolf.Theme.Votings;
 
 namespace Werewolf.Theme.Default.Phases;
 
-public class ElectMajorPhase : Phase, IDayPhase<ElectMajorPhase>
+public class ElectMajorPhase : Scene, IDayPhase<ElectMajorPhase>
 {
     public class ElectMajor : PlayerVotingBase
     {

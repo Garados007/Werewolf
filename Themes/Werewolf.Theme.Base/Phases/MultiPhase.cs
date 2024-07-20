@@ -5,9 +5,9 @@
 /// </summary>
 /// <typeparam name="TPhase1">the logic of the first part</typeparam>
 /// <typeparam name="TPhase2">the logic of the second part</typeparam>
-public abstract class MultiPhase<TPhase1, TPhase2> : Phase
-    where TPhase1 : Phase, new()
-    where TPhase2 : Phase, new()
+public abstract class MultiPhase<TPhase1, TPhase2> : Scene
+    where TPhase1 : Scene, new()
+    where TPhase2 : Scene, new()
 {
     protected TPhase1 Phase1 { get; } = new TPhase1();
     protected TPhase2 Phase2 { get; } = new TPhase2();

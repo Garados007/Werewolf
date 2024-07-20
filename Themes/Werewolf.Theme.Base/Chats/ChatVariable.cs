@@ -49,6 +49,6 @@ public readonly struct ChatVariable
             data.option.Vars
         );
 
-    public static implicit operator ChatVariable(Phase phase)
+    public static implicit operator ChatVariable(Scene phase)
         => new ChatVariable(ChatVariableType.Phase, phase.LanguageId);
 }

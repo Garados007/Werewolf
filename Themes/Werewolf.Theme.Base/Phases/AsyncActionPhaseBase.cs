@@ -1,6 +1,6 @@
 ﻿namespace Werewolf.Theme.Phases;
 
-public abstract class AsyncActionPhaseBase : Phase
+public abstract class AsyncActionPhaseBase : Scene
 {
     public override bool CanExecute(GameRoom game)
         => true;

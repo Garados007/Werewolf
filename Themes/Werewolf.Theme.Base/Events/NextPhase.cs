@@ -6,9 +6,9 @@ namespace Werewolf.Theme.Events;
 
 public class NextPhase : GameEvent
 {
-    public Phase? Phase { get; }
+    public Scene? Phase { get; }
 
-    public NextPhase(Phase? phase)
+    public NextPhase(Scene? phase)
         => Phase = phase;
 
     public override ChatServiceMessage? GetLogMessage()

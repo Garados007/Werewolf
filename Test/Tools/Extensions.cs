@@ -56,7 +56,7 @@ namespace Test.Tools
         }
 
         public static void ExpectPhase<TPhase>(this GameRoom room, Func<TPhase, bool>? verifier = null)
-            where TPhase : Phase
+            where TPhase : Scene
         {
             verifier ??= x => true;
             if (room.Phase?.Current is not TPhase @phase || !verifier(@phase))
@@ -67,13 +67,13 @@ namespace Test.Tools
         }
 
         public static async Task ExpectNextPhaseAsync<TPhase>(this GameRoom room, Func<TPhase, bool>? verifier = null)
-            where TPhase : Phase
+            where TPhase : Scene
         {
             await room.NextPhaseAsync().ConfigureAwait(false);
             ExpectPhase<TPhase>(room, verifier);
         }
 
-        public static TVoting ExpectVoting<TVoting>(this Phase phase, int offset = 0, Func<TVoting, bool>? verifier = null)
+        public static TVoting ExpectVoting<TVoting>(this Scene phase, int offset = 0, Func<TVoting, bool>? verifier = null)
             where TVoting : Voting
         {
             verifier ??= x => true;
@@ -101,7 +101,7 @@ namespace Test.Tools
             return phase.ExpectVoting(offset, verifier);
         }
 
-        public static void ExpectNoVoting<TVoting>(this Phase phase, int offset = 0, Func<TVoting, bool>? verifier = null)
+        public static void ExpectNoVoting<TVoting>(this Scene phase, int offset = 0, Func<TVoting, bool>? verifier = null)
             where TVoting : Voting
         {
             verifier ??= x => true;

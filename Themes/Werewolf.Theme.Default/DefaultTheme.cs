@@ -67,7 +67,7 @@ public class DefaultTheme : GameMode
 
                 // add night phases
                 phases.Add(night);
-                phases.Add(new Phase[]
+                phases.Add(new Scene[]
                 {
                     new Phases.HealerPhase(),
                     new Phases.OraclePhase(),
@@ -88,7 +88,7 @@ public class DefaultTheme : GameMode
 
                 // add day phases
                 phases.Add(day);
-                phases.Add(new Phase[]
+                phases.Add(new Scene[]
                 {
                     new Phases.ElectMajorPhase(),
                     new Phases.DailyVictimElectionPhase(),

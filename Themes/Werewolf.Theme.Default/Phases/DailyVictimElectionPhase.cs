@@ -5,7 +5,7 @@ using Werewolf.Theme.Default.Roles;
 
 namespace Werewolf.Theme.Default.Phases;
 
-public class DailyVictimElectionPhase : Phase, IDayPhase<DailyVictimElectionPhase>
+public class DailyVictimElectionPhase : Scene, IDayPhase<DailyVictimElectionPhase>
 {
     public class DailyVote : PlayerVotingBase
     {

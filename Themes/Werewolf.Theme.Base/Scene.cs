@@ -1,6 +1,6 @@
 ﻿namespace Werewolf.Theme;
 
-public abstract class Phase
+public abstract class Scene
 {
 
     public Effects.EffectCollection<Effects.IPhaseEffect> Effects { get; } = new();
@@ -30,6 +30,8 @@ public abstract class Phase
         votings.Clear();
         this.game = game;
     }
+
+    public virtual void Exit(GameRoom game) { }
 
     public virtual bool IsGamePhase => true;
 
