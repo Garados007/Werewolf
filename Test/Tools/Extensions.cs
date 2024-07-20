@@ -138,7 +138,7 @@ namespace Test.Tools
 
         public static void ExpectNoKillFlag(this Character role)
         {
-            var effect = role.Effects.GetEffect<Werewolf.Theme.Effects.KillInfoEffect>();
+            var effect = role.Effects.GetEffect<Werewolf.Theme.Labels.KillInfoEffect>();
             if (effect is not null)
                 throw new InvalidOperationException(
                     $"The role {role.GetType().FullName} was expected to have no kill flag but got {effect.GetType().FullName}."
@@ -146,7 +146,7 @@ namespace Test.Tools
         }
 
         public static void ExpectKillFlag<T>(this Character role)
-            where T : Werewolf.Theme.Effects.KillInfoEffect
+            where T : Werewolf.Theme.Labels.KillInfoEffect
         {
             var effect = role.Effects.GetEffect<T>();
             if (effect is null)

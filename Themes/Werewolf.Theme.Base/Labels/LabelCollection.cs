@@ -1,11 +1,11 @@
-namespace Werewolf.Theme.Effects;
+namespace Werewolf.Theme.Labels;
 
 /// <summary>
-/// The current collection of all <see cref="IEffect" /> that are assigned.
+/// The current collection of all <see cref="ILabel" /> that are assigned.
 /// </summary>
 /// <typeparam name="T">the effect kind</typeparam>
-public class EffectCollection<T>
-    where T : IEffect
+public class LabelCollection<T>
+    where T : ILabel
 {
     private readonly LinkedList<T> items = new();
     private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);

@@ -1,9 +1,9 @@
-using Werewolf.Theme.Effects;
+using Werewolf.Theme.Labels;
 using Werewolf.Theme.Default.Roles;
 
 namespace Werewolf.Theme.Default.Effects;
 
-public class FlutistEnchantEffect : IRoleEffect
+public class FlutistEnchantEffect : ICharacterLabel
 {
     public Flutist Flutist { get; }
 

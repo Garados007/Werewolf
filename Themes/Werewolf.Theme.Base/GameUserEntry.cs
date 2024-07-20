@@ -20,7 +20,7 @@ public class GameUserEntry
     public DateTime LastConnectionUpdate { get; private set; }
 
 
-    public Effects.EffectCollection<Effects.IGameUserEntryEffect> Effects { get; } = new();
+    public Labels.LabelCollection<Labels.IGameUserEntryEffect> Effects { get; } = new();
 
     public GameUserEntry(UserInfo user)
     {

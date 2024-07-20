@@ -37,7 +37,7 @@ public class ScapeGoatPhase : SeperateVotingPhase<ScapeGoatPhase.ScapeGoatSelect
         public override void Execute(GameRoom game, UserId id, Character role)
         {
             game.Effects.Add(
-                new Werewolf.Theme.Effects.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
+                new Werewolf.Theme.Labels.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
                     (ReadOnlyMemory<UserId>)new[] { id }
                 )
             );
@@ -109,7 +109,7 @@ public class ScapeGoatPhase : SeperateVotingPhase<ScapeGoatPhase.ScapeGoatSelect
         if (voting is ScapeGoatSelect select)
         {
             game.Effects.Add(
-                new Werewolf.Theme.Effects.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
+                new Werewolf.Theme.Labels.OverrideVotingVoter<Phases.DailyVictimElectionPhase.DailyVote>(
                     select.GetResultUserIds()
                 )
             );

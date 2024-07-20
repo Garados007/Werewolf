@@ -9,7 +9,7 @@ public class GameRoom
 
     public uint ExecutionRound { get; private set; }
 
-    public Effects.EffectCollection<Effects.IGameRoomEffect> Effects { get; } = new();
+    public Labels.LabelCollection<Labels.IGameRoomEffect> Effects { get; } = new();
 
     private UserId leader;
     public UserId Leader

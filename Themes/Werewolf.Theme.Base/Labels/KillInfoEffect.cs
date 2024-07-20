@@ -1,6 +1,6 @@
-﻿namespace Werewolf.Theme.Effects;
+﻿namespace Werewolf.Theme.Labels;
 
-public abstract class KillInfoEffect : IRoleEffect
+public abstract class KillInfoEffect : ICharacterLabel
 {
     public virtual string NotificationId
     {

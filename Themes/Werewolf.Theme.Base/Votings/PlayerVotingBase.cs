@@ -33,7 +33,7 @@ public abstract class PlayerVotingBase : Voting
         // check if someone has overwritten the participant selection for this one time
 
         var ownType = GetType();
-        var overrideEffect = game.Effects.GetEffect<Effects.OverrideVotingParticipants>(
+        var overrideEffect = game.Effects.GetEffect<Labels.OverrideVotingParticipants>(
             x => ownType.IsAssignableTo(x.Voting)
         );
         if (overrideEffect is not null)

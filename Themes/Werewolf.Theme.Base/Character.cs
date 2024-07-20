@@ -1,5 +1,5 @@
 using Werewolf.User;
-using Werewolf.Theme.Effects;
+using Werewolf.Theme.Labels;
 
 namespace Werewolf.Theme;
 
@@ -8,7 +8,7 @@ namespace Werewolf.Theme;
 /// </summary>
 public abstract class Character
 {
-    public EffectCollection<IRoleEffect> Effects { get; } = new();
+    public LabelCollection<ICharacterLabel> Effects { get; } = new();
 
     private bool enabled = true;
     public bool Enabled

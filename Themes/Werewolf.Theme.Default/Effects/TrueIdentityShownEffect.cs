@@ -1,8 +1,8 @@
-using Werewolf.Theme.Effects;
+using Werewolf.Theme.Labels;
 
 namespace Werewolf.Theme.Default.Effects;
 
-public class TrueIdentityShownEffect : IRoleEffect
+public class TrueIdentityShownEffect : ICharacterLabel
 {
     public Character Viewer { get; }
 

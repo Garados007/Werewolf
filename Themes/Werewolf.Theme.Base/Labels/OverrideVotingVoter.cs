@@ -1,7 +1,7 @@
 using System.Collections;
 using Werewolf.User;
 
-namespace Werewolf.Theme.Effects;
+namespace Werewolf.Theme.Labels;
 
 /// <summary>
 /// Overrides the group of user that are eligible to vote for the next voting. This can ignore the
@@ -46,9 +46,9 @@ public class OverrideVotingVoter<T> : OverrideVotingVoter
 {
     public OverrideVotingVoter(ReadOnlyMemory<User.UserId> voter)
         : base(typeof(T), voter)
-    {}
+    { }
 
     public OverrideVotingVoter(IEnumerable<User.UserId> voter)
         : base(typeof(T), voter.ToArray())
-    {}
+    { }
 }

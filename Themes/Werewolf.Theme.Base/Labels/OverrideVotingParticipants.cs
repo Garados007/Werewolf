@@ -1,7 +1,7 @@
 using System.Collections;
 using Werewolf.User;
 
-namespace Werewolf.Theme.Effects;
+namespace Werewolf.Theme.Labels;
 
 /// <summary>
 /// Overrides the selection of the Participants of <see cref="Votings.PlayerVotingBase" /> a single
@@ -46,9 +46,9 @@ public class OverrideVotingParticipants<T> : OverrideVotingParticipants
 {
     public OverrideVotingParticipants(ReadOnlyMemory<User.UserId> participants)
         : base(typeof(T), participants)
-    {}
+    { }
 
     public OverrideVotingParticipants(IEnumerable<User.UserId> participants)
         : base(typeof(T), participants.ToArray())
-    {}
+    { }
 }

@@ -16,7 +16,7 @@ public class NotifyBeforeKilledRolesAction : ActionPhaseBase
                 if (entry.Role != null && !executed.Contains(entry.User.Id))
                 {
                     var hasOne = false;
-                    foreach (var flag in entry.Role.Effects.GetEffects<Effects.KillInfoEffect>())
+                    foreach (var flag in entry.Role.Effects.GetEffects<Labels.KillInfoEffect>())
                     {
                         var lid = flag.NotificationId;
                         if (!dict.TryGetValue(lid, out HashSet<UserId>? set))
@@ -26,7 +26,7 @@ public class NotifyBeforeKilledRolesAction : ActionPhaseBase
                     }
                     if (hasOne)
                     {
-                        foreach (var action in entry.Role.Effects.GetEffects<Effects.BeforeKillActionEffect>())
+                        foreach (var action in entry.Role.Effects.GetEffects<Labels.BeforeKillActionEffect>())
                         {
                             action.Execute(game, entry.Role);
                         }

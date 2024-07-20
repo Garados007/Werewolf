@@ -1,5 +1,5 @@
 using Werewolf.Theme.Default.Roles;
-using Werewolf.Theme.Effects;
+using Werewolf.Theme.Labels;
 
 namespace Werewolf.Theme.Default.Effects.BeforeKillAction;
 

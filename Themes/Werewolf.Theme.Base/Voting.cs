@@ -14,7 +14,7 @@ public abstract class Voting
 
         // load the one time override of voter
         var ownType = GetType();
-        var overrideEffect = game.Effects.GetEffect<Effects.OverrideVotingVoter>(
+        var overrideEffect = game.Effects.GetEffect<Labels.OverrideVotingVoter>(
             x => ownType.IsAssignableTo(x.Voting)
         );
         if (overrideEffect is not null)
@@ -30,7 +30,7 @@ public abstract class Voting
         }
     }
 
-    public Effects.EffectCollection<Effects.IVotingEffect> Effects { get; } = new();
+    public Labels.LabelCollection<Labels.IVotingLabel> Effects { get; } = new();
 
     public virtual string LanguageId
     {

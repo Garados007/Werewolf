@@ -1,9 +1,9 @@
-using Werewolf.Theme.Effects;
+using Werewolf.Theme.Labels;
 using Werewolf.Theme.Default.Roles;
 
 namespace Werewolf.Theme.Default.Effects;
 
-public class LovedEffect : IRoleEffect
+public class LovedEffect : ICharacterLabel
 {
     public Character Target { get; }
 

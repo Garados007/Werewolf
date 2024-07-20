@@ -3,7 +3,7 @@
 public abstract class Scene
 {
 
-    public Effects.EffectCollection<Effects.IPhaseEffect> Effects { get; } = new();
+    public Labels.LabelCollection<Labels.ISceneLabel> Effects { get; } = new();
 
     public virtual string LanguageId
     {
