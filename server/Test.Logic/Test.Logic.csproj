@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Test\Tools\Tools.csproj" />
+    <ProjectReference Include="..\..\Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Using Static="True" Include="Microsoft.VisualStudio.TestTools.UnitTesting.Assert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <LogicInput Include="**\*.w5logic" />
+    <LogicOutput Include="**\Logic.cs" />
+  </ItemGroup>
+
+  <Target Name="LogicBuild" BeforeTargets="BeforeBuild">
+    <Message Text="Rebuild Logic targets" Importance="high" />
+    <Exec
+      Command="dotnet run --project ..\..\tools\LogicCompiler\LogicCompiler.csproj --test --write-ast" />
+    <Exec
+      Command="dotnet run --project ..\..\tools\LogicCompiler\LogicCompiler.csproj -- -s ..\..\logic\werewolf -t Modes\Werewolf -n Theme.werewolf --write-ast" />
+  </Target>
+
+  <Target
+    Name="LogicClean" BeforeTargets="CoreClean">
+    <Delete Files="@(LogicOutput)" />
+  </Target>
+
+</Project>

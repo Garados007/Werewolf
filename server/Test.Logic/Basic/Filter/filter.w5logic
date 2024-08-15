@@ -1,0 +1,123 @@
+mode Mode {
+    character { User, User2, User3 }
+}
+phase Phase {
+    func start { true }
+    func next { phase Phase }
+    func background { "test-bg" }
+    func theme { "test-theme" }
+}
+// ====== setup ======
+scene Setup {
+    phase Phase;
+    func start {
+        if let $first = get(0, @character) {
+            if let $second = get(1, @character) {
+                if let $third = get(2, @character) {
+                    add($first, label A);
+                    add($second, label A);
+                    add($second, label B);
+                    add($third, label B);
+                }
+            }
+        }
+    }
+}
+character User {}  // 3 times
+character User2 {} // 1 time
+character User3 {} // 1 time
+label A { target { character } }
+label B { target { character } }
+// ====== checks ======
+scene Check {
+    phase Phase;
+    after { Setup }
+    func start {
+        // filter...
+        if length(@character | filter($x, has($x, label A))) == 2 {
+            add($game, label Check_Filter_Has);
+        }
+        if length(@character | filter($x, has($x, label A, label B))) == 3 {
+            add($game, label Check_Filter_Has2);
+        }
+        if length(@character | filter($x, has_not($x, label A))) == 3 {
+            add($game, label Check_Filter_HasNot);
+        }
+        if length(@character | filter($x, has_not($x, label A, label B))) == 4 {
+            add($game, label Check_Filter_HasNot2);
+        }
+        if length(@character | filter($x, has_character($x, character User))) == 3 {
+            add($game, label Check_Filter_Char1);
+        }
+        if length(@character | filter($x, has_character($x, character User2))) == 1 {
+            add($game, label Check_Filter_Char2);
+        }
+        if length(@character | filter($x, has_character($x, character User3))) == 1 {
+            add($game, label Check_Filter_Char3);
+        }
+        if length(@character | filter($x, has_not_character($x, character User))) == 2 {
+            add($game, label Check_Filter_NotChar1);
+        }
+        if length(@character | filter($x, has_not_character($x, character User2))) == 4 {
+            add($game, label Check_Filter_NotChar2);
+        }
+        if length(@character | filter($x, has_not_character($x, character User3))) == 4 {
+            add($game, label Check_Filter_NotChar3);
+        }
+        // pipe...
+        if length(@character | has(label A)) == 2 {
+            add($game, label Check_Piped_Has);
+        }
+        if length(@character | has(label A, label B)) == 3 {
+            add($game, label Check_Piped_Has2);
+        }
+        if length(@character | has_not(label A)) == 3 {
+            add($game, label Check_Piped_HasNot);
+        }
+        if length(@character | has_not(label A, label B)) == 4 {
+            add($game, label Check_Piped_HasNot2);
+        }
+        if length(@character | has_character(character User)) == 3 {
+            add($game, label Check_Piped_Char1);
+        }
+        if length(@character | has_character(character User2)) == 1 {
+            add($game, label Check_Piped_Char2);
+        }
+        if length(@character | has_character(character User3)) == 1 {
+            add($game, label Check_Piped_Char3);
+        }
+        if length(@character | has_not_character(character User)) == 2 {
+            add($game, label Check_Piped_NotChar1);
+        }
+        if length(@character | has_not_character(character User2)) == 4 {
+            add($game, label Check_Piped_NotChar2);
+        }
+        if length(@character | has_not_character(character User3)) == 4 {
+            add($game, label Check_Piped_NotChar3);
+        }
+        if empty(@character | filter($x, false)) {
+            add($game, label Check_Empty);
+        }
+    }
+}
+label Check_Filter_Has { target { mode } }
+label Check_Filter_Has2 { target { mode } }
+label Check_Filter_HasNot { target { mode } }
+label Check_Filter_HasNot2 { target { mode } }
+label Check_Filter_Char1 { target { mode } }
+label Check_Filter_Char2 { target { mode } }
+label Check_Filter_Char3 { target { mode } }
+label Check_Filter_NotChar1 { target { mode } }
+label Check_Filter_NotChar2 { target { mode } }
+label Check_Filter_NotChar3 { target { mode } }
+label Check_Piped_Has { target { mode } }
+label Check_Piped_Has2 { target { mode } }
+label Check_Piped_HasNot { target { mode } }
+label Check_Piped_HasNot2 { target { mode } }
+label Check_Piped_Char1 { target { mode } }
+label Check_Piped_Char2 { target { mode } }
+label Check_Piped_Char3 { target { mode } }
+label Check_Piped_NotChar1 { target { mode } }
+label Check_Piped_NotChar2 { target { mode } }
+label Check_Piped_NotChar3 { target { mode } }
+label Check_Empty { target { mode } }
