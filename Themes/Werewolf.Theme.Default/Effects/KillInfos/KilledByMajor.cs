@@ -1,8 +1,0 @@
-﻿using Werewolf.Theme.Labels;
-
-namespace Werewolf.Theme.Default.Effects.KillInfos;
-
-public class KilledByMajor : KillInfoEffect
-{
-    public override string NotificationId => "killed-by-major";
-}
