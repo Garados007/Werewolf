@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 public static class Extensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

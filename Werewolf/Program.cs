@@ -1,8 +1,16 @@
-﻿using Werewolf.Game;
+﻿using System.Net;
+using System.Text.RegularExpressions;
+using MaxLib.Ini;
+using MaxLib.Ini.Parser;
+using MaxLib.WebServer;
+using MaxLib.WebServer.Services;
+using Serilog;
+using Serilog.Events;
+using Werewolf.Game;
 
 namespace Werewolf;
 
-internal class Program
+internal partial class Program
 {
     public static bool MaintenanceMode { get; set; }
 
@@ -20,6 +28,8 @@ internal class Program
                 outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
         WebServerLog.LogPreAdded += WebServerLog_LogPreAdded;
+
+        LoadPlugins(config);
 
         using var db = new Database(config.GetGroup("db") ?? new IniGroup("db"));
 
@@ -126,10 +136,10 @@ internal class Program
         serverCloser.Cancel();
     }
 
-    private static readonly Regex urlRegex = new Regex(
-        @"^(?<domain>(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]):(?<port>\d+)$",
-        RegexOptions.Compiled
-    );
+    private static readonly Regex urlRegex = CreateUrlRegex();
+
+    [GeneratedRegex(@"^(?<domain>(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]):(?<port>\d+)$", RegexOptions.Compiled)]
+    private static partial Regex CreateUrlRegex();
 
     private static async Task<IPEndPoint?> GetEndpointAsync(string value)
     {
@@ -233,5 +243,49 @@ internal class Program
             }
         }
         return sb.ToString();
+    }
+
+    private static void LoadPlugins(IniFile file)
+    {
+        LoadPlugins(file["game-server"].GetString("plugins", "").Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        if (File.Exists("plugins.txt"))
+            LoadPlugins(
+                File.ReadAllLines("plugins.txt")
+                    .Where(x => x.Length > 0 && x[0] != '#')
+            );
+    }
+
+    private static void LoadPlugins(IEnumerable<string> names)
+    {
+        var existing = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var name in names)
+        {
+            var rawName = Path.GetFileNameWithoutExtension(name);
+            if (AppDomain.CurrentDomain.GetAssemblies().Any(x => x.GetName().Name == rawName))
+                continue;
+            var fileName = FindFile(name);
+            if (fileName is null)
+            {
+                Log.Error("Plugin not found: {name}", name);
+                continue;
+            }
+            Log.Information("Load Plugin {name} at {path}", name, fileName);
+            // _ = AppDomain.CurrentDomain.Load(name);
+            _ = System.Reflection.Assembly.LoadFile(fileName);
+        }
+    }
+
+    private static string? FindFile(string name)
+    {
+        if (File.Exists(name))
+            return Path.GetFullPath(name);
+        var mainExec = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var dir = Path.GetDirectoryName(mainExec);
+        if (dir is null)
+            return null;
+        var also = Path.Combine(dir, name);
+        if (File.Exists(also))
+            return Path.GetFullPath(also);
+        return null;
     }
 }

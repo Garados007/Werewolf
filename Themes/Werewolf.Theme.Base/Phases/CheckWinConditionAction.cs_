@@ -1,5 +1,6 @@
 ﻿namespace Werewolf.Theme.Phases;
 
+[Obsolete]
 public class CheckWinConditionAction : AsyncActionPhaseBase
 {
     public override async Task ExecuteAsync(GameRoom game)

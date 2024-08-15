@@ -1,3 +1,6 @@
+using System.Text.Json;
+using MaxLib.WebServer.WebSocket;
+
 namespace Werewolf.Game.Events;
 
 public abstract class TaggedEvent : EventBase

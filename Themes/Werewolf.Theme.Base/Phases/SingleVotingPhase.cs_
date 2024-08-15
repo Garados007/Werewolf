@@ -3,6 +3,7 @@ using Werewolf.User;
 
 namespace Werewolf.Theme.Phases;
 
+[Obsolete]
 public abstract class SingleVotingPhase<T> : Scene
     where T : PlayerVotingBase
 {

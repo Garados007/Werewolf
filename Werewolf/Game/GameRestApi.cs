@@ -1,4 +1,8 @@
-﻿using Werewolf.User;
+﻿using System.Text.Json;
+using MaxLib.WebServer;
+using MaxLib.WebServer.Api.Rest;
+using MaxLib.WebServer.Post;
+using Werewolf.User;
 
 namespace Werewolf.Game;
 
@@ -153,7 +157,7 @@ public class GameRestApi
         };
     }
 
-    private static Stream UserToJson(Werewolf.User.UserInfo? user)
+    private static MemoryStream UserToJson(Werewolf.User.UserInfo? user)
     {
         var s = new MemoryStream();
         var w = new Utf8JsonWriter(s);

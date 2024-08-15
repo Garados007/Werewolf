@@ -3,6 +3,7 @@ using Werewolf.Theme.Votings;
 
 namespace Werewolf.Theme.Phases;
 
+[Obsolete]
 public abstract class SeperateVotingPhase<TVoting, TRole> : SeperateVotingPhaseBase<TVoting, TRole>
     where TVoting : PlayerVotingBase
     where TRole : Character

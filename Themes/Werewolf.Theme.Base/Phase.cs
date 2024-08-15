@@ -1,10 +1,14 @@
+using Werewolf.Theme.Labels;
+
 namespace Werewolf.Theme;
 
-public abstract class Phase
+public abstract class Phase : ILabelHost<IPhaseLabel>
 {
     public List<Scene> EnabledScenes { get; } = [];
 
     public int SceneIndex { get; private set; } = -1;
+
+    public Scene? CurrentScene => SceneIndex < 0 || SceneIndex >= EnabledScenes.Count ? null : EnabledScenes[SceneIndex];
 
     /// <summary>
     /// Navigates to the next available scene. Returns false if no scene is available for the
@@ -21,9 +25,10 @@ public abstract class Phase
         }
         for (SceneIndex++; SceneIndex < EnabledScenes.Count; SceneIndex++)
         {
+            Serilog.Log.Verbose("Core: Check scene {name}", EnabledScenes[SceneIndex].LanguageId);
             if (EnabledScenes[SceneIndex].CanExecute(game))
             {
-                EnabledScenes[SceneIndex].InitAsync(game).Wait();
+                EnabledScenes[SceneIndex].Init(game);
                 return true;
             }
         }
@@ -31,13 +36,13 @@ public abstract class Phase
         return false;
     }
 
-    public Phase? Next { get; set; }
-
-    public Labels.LabelCollection<Labels.IPhaseLabel> Labels { get; } = new();
+    public LabelCollection<IPhaseLabel> Labels { get; } = new();
 
     public abstract string LanguageId { get; }
 
     public abstract string BackgroundId { get; }
 
     public abstract string ColorTheme { get; }
+
+    public abstract Phase? Next(GameRoom game);
 }

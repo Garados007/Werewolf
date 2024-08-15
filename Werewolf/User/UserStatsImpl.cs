@@ -1,3 +1,5 @@
+using MongoDB.Driver;
+
 namespace Werewolf.User;
 
 public sealed class UserStatsImpl(UserInfoImpl info) : UserStats

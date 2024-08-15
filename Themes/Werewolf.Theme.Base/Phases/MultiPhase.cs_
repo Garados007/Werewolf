@@ -1,5 +1,6 @@
 ﻿namespace Werewolf.Theme.Phases;
 
+[Obsolete]
 /// <summary>
 /// This phase binds the logic of two phases and make them available as one
 /// </summary>

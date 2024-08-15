@@ -1,14 +1,15 @@
+using System.Collections;
+
 namespace Werewolf.Theme.Labels;
 
 /// <summary>
 /// The current collection of all <see cref="ILabel" /> that are assigned.
 /// </summary>
-/// <typeparam name="T">the effect kind</typeparam>
-public class LabelCollection<T>
-    where T : ILabel
+/// <typeparam name="THostLabel">the effect kind</typeparam>
+public class LabelCollection<THostLabel> : IEnumerable<THostLabel>
+    where THostLabel : class, ILabel
 {
-    private readonly LinkedList<T> items = new();
-    private readonly ReaderWriterLockSlim @lock = new(LockRecursionPolicy.SupportsRecursion);
+    private readonly ThreadsafeCollection<THostLabel> items = [];
 
     /// <summary>
     /// The total number of all effects in this collection
@@ -18,36 +19,25 @@ public class LabelCollection<T>
     /// <summary>
     /// This event is called every time when an event is added.
     /// </summary>
-    public event Action<T>? Added;
+    public event Action<THostLabel>? Added;
 
     /// <summary>
     /// Add an effect to the collection
     /// </summary>
     /// <param name="item">the effect to add</param>
-    /// <typeparam name="U">the type of the effect</typeparam>
-    public void Add<U>(U item)
-        where U : T
+    /// <typeparam name="TLabel">the type of the effect</typeparam>
+    public TLabel Add<TLabel>(TLabel item)
+        where TLabel : THostLabel
     {
-        try
-        {
-            @lock.EnterWriteLock();
-            var node = items.First;
-            while (node is not null)
-            {
-                if (Equals(node.Value, item))
-                {
-                    node.Value = item;
-                    return;
-                }
-                node = node.Next;
-            }
-            items.AddLast(item);
-        }
-        finally
-        {
-            @lock.ExitWriteLock();
-            Added?.Invoke(item);
-        }
+        items.Add(item);
+        Added?.Invoke(item);
+        return item;
+    }
+
+    public THostLabel? Add(Type labelType)
+    {
+        var label = Activator.CreateInstance(labelType) as THostLabel;
+        return label is not null ? Add(label) : default;
     }
 
     /// <summary>
@@ -55,192 +45,144 @@ public class LabelCollection<T>
     /// </summary>
     public void Clear()
     {
-        try
-        {
-            @lock.EnterWriteLock();
-            items.Clear();
-        }
-        finally
-        {
-            @lock.ExitWriteLock();
-        }
+        items.Clear();
+        Removed?.Invoke(null);
     }
 
     /// <summary>
     /// Checks if this specific effect is already contained in the collection
     /// </summary>
     /// <param name="item">the item to search for</param>
-    /// <typeparam name="U">the type of the effect</typeparam>
+    /// <typeparam name="TLabel">the type of the effect</typeparam>
     /// <returns>true if found</returns>
-    public bool Contains<U>(U item)
-        where U : T
+    public bool Contains<TLabel>(TLabel item)
+        where TLabel : THostLabel
     {
-        try
-        {
-            @lock.EnterReadLock();
-            return items.Contains(item);
-        }
-        finally
-        {
-            @lock.ExitReadLock();
-        }
+        return items.Contains(item);
     }
 
     /// <summary>
-    /// Checks if any effect with the type <typeparamref name="U"/> is contained in the collection.
+    /// Checks if any effect with the type <typeparamref name="TLabel"/> is contained in the collection.
     /// </summary>
-    /// <typeparam name="U">the type of the effect</typeparam>
+    /// <typeparam name="TLabel">the type of the effect</typeparam>
     /// <returns>true if found</returns>
-    public bool Contains<U>()
-    => GetEffect<U>() is not null;
+    public bool Contains<TLabel>()
+        where TLabel : THostLabel
+    => GetEffect<TLabel>() is not null;
 
     /// <summary>
     /// This event is called every time when an event is removed. This wont be called if the
     /// collection was cleared.
     /// </summary>
-    public event Action<T>? Removed;
+    public event Action<THostLabel?>? Removed;
 
     /// <summary>
     /// Removes all effects of the specified type
     /// </summary>
-    /// <typeparam name="U">the type of the effect to remove</typeparam>
+    /// <typeparam name="TLabel">the type of the effect to remove</typeparam>
     /// <returns>the number of effects removed</returns>
-    public int Remove<U>()
+    public int Remove<TLabel>()
+        where TLabel : THostLabel
     {
-        try
-        {
-            @lock.EnterWriteLock();
-            int count = 0;
-            var node = items.First;
-            while (node is not null)
-            {
-                var next = node.Next;
-                if (node.Value is U)
-                {
-                    count++;
-                    items.Remove(node);
-                    Removed?.Invoke(node.Value);
-                }
-                node = next;
-            }
-            return count;
-        }
-        finally
-        {
-            @lock.ExitWriteLock();
-        }
+        List<THostLabel>? publish = Removed is null ? null : [];
+        int removed = items.RemoveAll(x => x is TLabel, publish);
+        publish?.ForEach(x => Removed?.Invoke(x));
+        return removed;
+    }
+
+    public int Remove(Type type)
+    {
+        List<THostLabel>? publish = Removed is null ? null : [];
+        int removed = items.RemoveAll(x => x.GetType() == type, publish);
+        publish?.ForEach(x => Removed?.Invoke(x));
+        return removed;
     }
 
     /// <summary>
     /// Remove a single effect from the collection
     /// </summary>
     /// <param name="item">the effect to remove</param>
-    /// <typeparam name="U">the type of the effect</typeparam>
+    /// <typeparam name="TLabel">the type of the effect</typeparam>
     /// <returns>true if removed</returns>
-    public bool Remove<U>(U item)
-        where U : T
+    public bool Remove<TLabel>(TLabel item)
+        where TLabel : THostLabel
     {
-        try
-        {
-            @lock.EnterWriteLock();
-            var success = items.Remove(item);
-            if (success)
-                Removed?.Invoke(item);
-            return success;
-        }
-        finally
-        {
-            @lock.ExitWriteLock();
-        }
+        if (!items.Remove(item))
+            return false;
+        Removed?.Invoke(item);
+        return true;
     }
 
     /// <summary>
     /// Get a single effect from this collection
     /// </summary>
-    /// <typeparam name="U">the type that should be searched for</typeparam>
+    /// <typeparam name="TLabel">the type that should be searched for</typeparam>
     /// <returns>the effect if found</returns>
-    public U? GetEffect<U>()
+    public TLabel? GetEffect<TLabel>()
+        where TLabel : THostLabel
     {
-        try
+        foreach (var node in items)
         {
-            @lock.EnterReadLock();
-            foreach (var node in items)
-            {
-                if (node is U item)
-                    return item;
-            }
-            return default;
+            if (node is TLabel item)
+                return item;
         }
-        finally
-        {
-            @lock.ExitReadLock();
-        }
+        return default;
     }
 
     /// <summary>
     /// Get a single effect from this collection.
     /// </summary>
-    /// <param name="selector">Selects which of the <typeparamref name="U"/> should be used.</param>
-    /// <typeparam name="U">the type that should be searched for</typeparam>
+    /// <param name="selector">Selects which of the <typeparamref name="TLabel"/> should be used.</param>
+    /// <typeparam name="TLabel">the type that should be searched for</typeparam>
     /// <returns>the effect if found</returns>
-    public U? GetEffect<U>(Func<U, bool> selector)
+    public TLabel? GetEffect<TLabel>(Func<TLabel, bool> selector)
+        where TLabel : THostLabel
     {
-        try
+        foreach (var node in items)
         {
-            @lock.EnterReadLock();
-            foreach (var node in items)
-            {
-                if (node is U item && selector(item))
-                    return item;
-            }
-            return default;
+            if (node is TLabel item && selector(item))
+                return item;
         }
-        finally
-        {
-            @lock.ExitReadLock();
-        }
+        return default;
     }
 
     /// <summary>
     /// Return all stored effects
     /// </summary>
     /// <returns>all effects</returns>
-    public IEnumerable<T> GetEffects()
+    public IEnumerable<THostLabel> GetEffects()
     {
-        try
+        foreach (var node in items)
         {
-            @lock.EnterReadLock();
-            foreach (var node in items)
-            {
-                yield return node;
-            }
-        }
-        finally
-        {
-            @lock.ExitReadLock();
+            yield return node;
         }
     }
 
     /// <summary>
     /// Search for all effects in this collection that matches the given type
     /// </summary>
-    /// <typeparam name="U">the type that should be searched for</typeparam>
+    /// <typeparam name="TLabel">the type that should be searched for</typeparam>
     /// <returns>the found effects</returns>
-    public IEnumerable<U> GetEffects<U>()
+    public IEnumerable<TLabel> GetEffects<TLabel>()
     {
-        try
+        foreach (var node in items)
         {
-            @lock.EnterReadLock();
-            foreach (var node in items)
-            {
-                if (node is U item)
-                    yield return item;
-            }
-        }
-        finally
-        {
-            if (@lock.IsReadLockHeld)
-                @lock.ExitReadLock();
+            if (node is TLabel item)
+                yield return item;
         }
     }
+
+    public IEnumerator<THostLabel> GetEnumerator()
+    {
+        foreach (var node in items)
+        {
+            yield return node;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
 }

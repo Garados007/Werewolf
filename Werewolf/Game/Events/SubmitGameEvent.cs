@@ -1,3 +1,8 @@
+using System.Text.Json;
+using MaxLib.WebServer.WebSocket;
+using Werewolf.Theme;
+using Werewolf.User;
+
 namespace Werewolf.Game.Events;
 
 public sealed class SubmitGameEvents(GameEvent gameEvent, GameRoom room, UserInfo user) : EventBase

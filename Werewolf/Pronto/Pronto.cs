@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Werewolf.Pronto;
 
 public class Pronto : IDisposable

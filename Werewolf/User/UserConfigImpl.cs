@@ -1,3 +1,5 @@
+using MongoDB.Driver;
+
 namespace Werewolf.User;
 
 public sealed class UserConfigImpl(UserInfoImpl info) : UserConfig

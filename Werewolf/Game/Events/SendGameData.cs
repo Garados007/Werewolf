@@ -1,3 +1,7 @@
+using System.Text.Json;
+using Werewolf.Theme;
+using Werewolf.User;
+
 namespace Werewolf.Game.Events;
 
 public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFactory) : TaggedEvent
@@ -36,31 +40,33 @@ public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFact
 
         writer.WriteStartArray("theme");
         writer.WriteStringValue(GameRoom.Theme?.GetType().FullName ??
-            typeof(Werewolf.Theme.Default.DefaultTheme).FullName);
+            GameController.Current.DefaultGameMode?.FullName);
         writer.WriteStringValue(GameRoom.Theme?.LanguageTheme ?? "default");
         writer.WriteEndArray(); // end of theme
+
+        new Werewolf.Theme.Events.SendSequences().WriteContent(writer, GameRoom, User);
 
         writer.WriteEndObject(); // game
 
     }
 
-    private void WritePhaseInfo(Utf8JsonWriter writer, Role? ownRole)
+    private void WritePhaseInfo(Utf8JsonWriter writer, Character? ownRole)
     {
-        if (GameRoom.Phase == null)
+        if (GameRoom.Phase?.CurrentScene == null)
             writer.WriteNull("phase");
         else
         {
             writer.WriteStartObject("phase"); // phase
-            writer.WriteString("lang-id", GameRoom.Phase.Current.LanguageId);
+            writer.WriteString("lang-id", GameRoom.Phase.CurrentScene.LanguageId);
 
             writer.WriteStartObject("stage");
-            writer.WriteString("lang-id", GameRoom.Phase.Stage.LanguageId);
-            writer.WriteString("background-id", GameRoom.Phase.Stage.BackgroundId);
-            writer.WriteString("theme", GameRoom.Phase.Stage.ColorTheme);
+            writer.WriteString("lang-id", GameRoom.Phase.CurrentScene.LanguageId);
+            writer.WriteString("background-id", GameRoom.Phase.BackgroundId);
+            writer.WriteString("theme", GameRoom.Phase.ColorTheme);
             writer.WriteEndObject();
 
             writer.WriteStartArray("voting"); // voting
-            foreach (var voting in GameRoom.Phase.Current.Votings)
+            foreach (var voting in GameRoom.Votings)
             {
                 if (!Voting.CanViewVoting(GameRoom, User, ownRole, voting))
                     continue;
@@ -71,7 +77,7 @@ public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFact
         }
     }
 
-    private void WriteGameUserEntries(Utf8JsonWriter writer, Role? ownRole,
+    private void WriteGameUserEntries(Utf8JsonWriter writer, Character? ownRole,
         (uint round, ReadOnlyMemory<UserId> winner)? winner
     )
     {
@@ -79,18 +85,18 @@ public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFact
         foreach (var (id, entry) in GameRoom.Users.ToArray())
         {
             writer.WriteStartObject(id);
-            if (entry.Role is null)
+            if (entry.Character is null)
                 writer.WriteNull("role");
             else
             {
-                var seenRole = Role.GetSeenRole(GameRoom, winner?.round, User, id, entry.Role);
+                var seenRole = Character.GetSeenRole(GameRoom, winner?.round, User, id, entry.Character);
 
                 writer.WriteStartObject("role");
                 writer.WriteStartArray("tags");
-                foreach (var tag in Role.GetSeenTags(GameRoom, User, ownRole, entry.Role))
+                foreach (var tag in Character.GetSeenTags(GameRoom, User, ownRole, entry.Character))
                     writer.WriteStringValue(tag);
                 writer.WriteEndArray(); // tags
-                writer.WriteString("role", seenRole?.GetType().Name);
+                writer.WriteString("role", seenRole is null ? null : GameRoom.Theme?.GetCharacterName(seenRole));
 
                 writer.WriteEndObject(); // role
             }
@@ -127,7 +133,7 @@ public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFact
         writer.WriteStartObject("config");
         foreach (var (role, amount) in GameRoom.RoleConfiguration.ToArray())
         {
-            writer.WriteNumber(role.GetType().Name, amount);
+            writer.WriteNumber(role, amount);
         }
         writer.WriteEndObject();
     }

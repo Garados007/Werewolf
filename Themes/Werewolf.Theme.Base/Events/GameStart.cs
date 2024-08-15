@@ -18,19 +18,19 @@ public class GameStart : GameEvent
         writer.WriteStartObject("participants");
         foreach (var (id, participant) in game.Users.ToArray())
         {
-            if (participant.Role == null)
+            if (participant.Character == null)
                 writer.WriteNull(id);
             else
             {
                 var seenRole = Character.GetSeenRole(game, null, user,
-                    id, participant.Role);
+                    id, participant.Character);
 
                 writer.WriteStartObject(id);
                 writer.WriteStartArray("tags");
-                foreach (var tag in Character.GetSeenTags(game, user, ownRole, participant.Role))
+                foreach (var tag in Character.GetSeenTags(game, user, ownRole, participant.Character))
                     writer.WriteStringValue(tag);
                 writer.WriteEndArray();
-                writer.WriteString("role", seenRole?.GetType().Name);
+                writer.WriteString("role", seenRole is null ? null : game.Theme?.GetCharacterName(seenRole));
                 writer.WriteEndObject();
             }
         }

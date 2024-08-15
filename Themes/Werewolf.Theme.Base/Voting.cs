@@ -1,9 +1,10 @@
 ﻿using System.Text.Json;
+using Werewolf.Theme.Labels;
 using Werewolf.User;
 
 namespace Werewolf.Theme;
 
-public abstract class Voting
+public abstract class Voting : ILabelHost<IVotingLabel>
 {
     private static ulong nextId;
     public ulong Id { get; }
@@ -11,36 +12,11 @@ public abstract class Voting
     public Voting(GameRoom game)
     {
         Id = unchecked(nextId++);
-
-        // load the one time override of voter
-        var ownType = GetType();
-        var overrideEffect = game.Effects.GetEffect<Labels.OverrideVotingVoter>(
-            x => ownType.IsAssignableTo(x.Voting)
-        );
-        if (overrideEffect is not null)
-        {
-            game.Effects.Remove(overrideEffect);
-            overrideVoter = new HashSet<Character>();
-            foreach (var id in overrideEffect)
-            {
-                var role = game.TryGetRole(id);
-                if (role is not null)
-                    overrideVoter.Add(role);
-            }
-        }
     }
 
-    public Labels.LabelCollection<Labels.IVotingLabel> Effects { get; } = new();
+    public LabelCollection<IVotingLabel> Labels { get; } = new();
 
-    public virtual string LanguageId
-    {
-        get
-        {
-            var name = GetType().FullName ?? "";
-            var ind = name.LastIndexOf('.');
-            return ind >= 0 ? name[(ind + 1)..] : name;
-        }
-    }
+    public abstract string LanguageId { get; }
 
     public bool Started { get; set; }
 
@@ -51,20 +27,19 @@ public abstract class Voting
 
     public abstract IEnumerable<(int id, VoteOption option)> Options { get; }
 
-    public abstract bool CanView(Character viewer);
+    public abstract bool CanView(GameRoom game, Character viewer);
 
-    private readonly HashSet<Character>? overrideVoter;
-    public bool CanVote(Character voter)
+    public bool CanVote(GameRoom game, Character voter)
     {
-        return overrideVoter is not null ? overrideVoter.Contains(voter) : CanVoteBase(voter);
+        return voter.Enabled && CanVoteBase(game, voter);
     }
 
-    protected abstract bool CanVoteBase(Character voter);
+    protected abstract bool CanVoteBase(GameRoom game, Character voter);
 
     protected virtual int GetMissingVotes(GameRoom game)
     {
         return game.Users
-            .Where(x => x.Value.Role is not null && CanVote(x.Value.Role))
+            .Where(x => x.Value.Character is not null && CanVote(game, x.Value.Character))
             .Where(x => !Options.Any(y => y.option.Users.Contains(x.Key)))
             .Count();
     }
@@ -75,7 +50,7 @@ public abstract class Voting
 
         if (count <= 0)
         {
-            _ = FinishVotingAsync(game);
+            FinishVoting(game);
             return true;
         }
 
@@ -94,35 +69,36 @@ public abstract class Voting
             if (game.ExecutionRound == gameStep && Timeout.Value == timeout)
             {
                 // Timeout exceeded, can now skip
-                await FinishVotingAsync(game);
+                FinishVoting(game);
             }
         });
         return true;
     }
 
-    public async Task FinishVotingAsync(GameRoom game)
+    public void Abort()
     {
         if (Interlocked.Exchange(ref finished, 1) > 0)
             return;
-        var vote = GetResult();
-        if (vote != null)
+        Timeout = new DateTime();
+    }
+
+    public void FinishVoting(GameRoom game)
+    {
+        if (Interlocked.Exchange(ref finished, 1) > 0)
+            return;
+        var votes = GetResults().ToList();
+        if (votes.Count == 1)
         {
-            Execute(game, vote.Value);
-            game.Phase?.Current.RemoveVoting(this);
+            Execute(game, votes[0]);
         }
         else
         {
-            game.Phase?.Current.ExecuteMultipleWinner(this, game);
+            Execute(game, votes.Count == 0 ? Options.Select(x => x.id) : votes);
         }
+        _ = game.Votings.Remove(this);
+        game.SendEvent(new Events.RemoveVoting(Id));
         AfterFinishExecute(game);
-        if (new WinCondition().Check(game, out ReadOnlyMemory<Character>? winner))
-        {
-            await game.StopGameAsync(winner);
-        }
-        if (game.AutoFinishRounds && (!game.Phase?.Current.Votings.Any() ?? false))
-        {
-            await game.NextPhaseAsync();
-        }
+        game.Continue();
     }
 
     protected virtual void AfterFinishExecute(GameRoom game)
@@ -132,30 +108,24 @@ public abstract class Voting
 
     public IEnumerable<Character> GetVoter(GameRoom game)
     {
-        foreach (var role in game.Users.Select(x => x.Value.Role))
-            if (role != null && CanVote(role))
-                yield return role;
+        return game.AllCharacters.Where(x => CanVote(game, x));
     }
 
-    public virtual int? GetResult()
-    {
-        var options = GetResults().ToArray();
-        return options.Length == 1 ? options[0] : (int?)null;
-    }
-
-    public virtual IEnumerable<int> GetResults()
+    private IEnumerable<int> GetResults()
     {
         var hasEntries = Options.Any();
         if (!hasEntries)
-            return Options.Select(x => x.id);
+            return [];
         int max = Options.Max(x => x.option.Users.Count);
         return max == 0
-            ? Enumerable.Empty<int>()
+            ? []
             : Options.Where(x => x.option.Users.Count == max)
             .Select(x => x.id);
     }
 
-    public abstract void Execute(GameRoom game, int id);
+    protected abstract void Execute(GameRoom game, int id);
+
+    protected abstract void Execute(GameRoom game, IEnumerable<int> ids);
 
     public virtual string? Vote(GameRoom game, UserId voter, int id)
     {
@@ -193,13 +163,13 @@ public abstract class Voting
             _ = SetTimeout(game, true);
 
         if (game.AutoFinishVotings && GetMissingVotes(game) == 0)
-            _ = FinishVotingAsync(game);
+            FinishVoting(game);
     }
 
     public static bool CanViewVoting(GameRoom game, UserInfo user, Character? ownRole, Voting voting)
     {
         return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
-            (ownRole != null && voting.CanView(ownRole));
+            (ownRole != null && voting.CanView(game, ownRole));
     }
 
     private static readonly System.Globalization.NumberFormatInfo format =
@@ -212,7 +182,7 @@ public abstract class Voting
         writer.WriteString("id", Id.ToString(format));
         writer.WriteString("lang-id", LanguageId);
         writer.WriteBoolean("started", Started);
-        writer.WriteBoolean("can-vote", ownRole != null && CanVote(ownRole));
+        writer.WriteBoolean("can-vote", ownRole != null && CanVote(game, ownRole));
         writer.WriteNumber("max-voter", GetVoter(game).Count());
         if (Timeout != null)
             writer.WriteString("timeout", Timeout.Value);

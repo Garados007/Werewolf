@@ -6,30 +6,24 @@ namespace Werewolf.Theme;
 /// <summary>
 /// The basic role every game user has. Any special state is encoded in this role.
 /// </summary>
-public abstract class Character
+public abstract class Character : ILabelHost<ICharacterLabel>
 {
-    public LabelCollection<ICharacterLabel> Effects { get; } = new();
+    public Character(GameMode mode)
+    {
+        Mode = mode;
+        Labels.Added += _ => SendRoleInfoChanged();
+        Labels.Removed += _ => SendRoleInfoChanged();
+    }
+
+    public LabelCollection<ICharacterLabel> Labels { get; } = new();
 
     private bool enabled = true;
     public bool Enabled
     {
         get => enabled;
-        private set
-        {
-            enabled = value;
-            SendRoleInfoChanged();
-        }
-    }
-
-    public bool HasKillFlag => Effects.GetEffect<KillInfoEffect>() is not null;
-
-    private bool isMajor;
-    public bool IsMajor
-    {
-        get => isMajor;
         set
         {
-            isMajor = value;
+            enabled = value;
             SendRoleInfoChanged();
         }
     }
@@ -43,86 +37,66 @@ public abstract class Character
     public virtual IEnumerable<string> GetTags(GameRoom game, Character? viewer)
     {
         if (!Enabled)
-            yield return "not-alive";
-        if (IsMajor)
-            yield return "major";
-        foreach (var effect in Effects.GetEffects())
-            foreach (var tag in effect.GetSeenTags(game, this, viewer))
-                yield return tag;
+            yield return "disabled";
+
+        foreach (var effect in Labels.GetEffects())
+            if (effect.CanLabelBeSeen(game, this, viewer))
+                yield return effect.Name;
     }
 
     public void SendRoleInfoChanged()
     {
-        Theme.Game?.SendEvent(new Events.OnRoleInfoChanged(this));
+        Mode.Game?.SendEvent(new Events.OnRoleInfoChanged(this));
     }
 
-    public GameMode Theme { get; }
+    public GameMode Mode { get; }
 
-    public Character(GameMode theme)
-    {
-        Theme = theme ?? throw new ArgumentNullException(nameof(theme));
-    }
+    public virtual bool? IsSameFaction(Character other) => null;
 
-    public abstract bool? IsSameFaction(Character other);
+    /// <summary>
+    /// List of all character that can see the true identity of this character regardless of the
+    /// usual rules.
+    /// </summary>
+    public List<Character> Visible { get; } = [];
 
-    public virtual Character ViewRole(Character viewer)
-    {
-        return Theme.GetBasicRole();
-    }
-
-    public abstract Character CreateNew();
+    public abstract Type ViewRole(GameRoom game, Character viewer);
 
     public abstract string Name { get; }
 
-    /// <summary>
-    /// Add the kill effect to the list. Mark this as to be killed somewhere in the future.
-    /// </summary>
-    /// <param name="info">the kill info</param>
-    public void AddKillFlag(KillInfoEffect info)
-    {
-        if (!Enabled)
-            return;
-        Effects.Add(info);
-    }
-
-    /// <summary>
-    /// Remove any kill effects. This role wont be killed so far.
-    /// </summary>
-    public void RemoveKillFlag()
-    {
-        Effects.Remove<KillInfoEffect>();
-    }
-
-    /// <summary>
-    /// Mark this role as killed. This will also remove any kill flags. If no kill flags were
-    /// attached nothing will happen.
-    /// </summary>
-    public void ChangeToKilled()
-    {
-        if (Effects.Remove<KillInfoEffect>() > 0)
-            Enabled = false;
-    }
-
-    public static Character? GetSeenRole(GameRoom game, uint? round, UserInfo user, UserId targetId, Character target)
+    public static Type? GetSeenRole(GameRoom game, uint? round, UserInfo user, UserId targetId, Character target)
     {
         var ownRole = game.TryGetRole(user.Id);
-        return (game.Leader == user.Id && !game.LeaderIsPlayer) ||
+        return  // viewer is gm without a character
+                (game.Leader == user.Id && !game.LeaderIsPlayer) ||
+                // viewer is the character itself
                 targetId == user.Id ||
+                // the game is over
                 round == game.ExecutionRound ||
+                // target is disabled and it is allowed to see details
                 (game.AllCanSeeRoleOfDead && !target.Enabled) ||
-                (ownRole != null && game.DeadCanSeeAllRoles && !ownRole.Enabled) ?
-            target :
+                // viewer is disabled and is allowed to see details
+                (ownRole != null && game.DeadCanSeeAllRoles && !ownRole.Enabled) ||
+                // viewer was explicitely whitelisted to see this character
+                (ownRole is not null && target.Visible.Contains(ownRole)) ?
+            // show real type
+            target.GetType() :
             ownRole != null ?
-            target.ViewRole(ownRole) :
+            // let the character decide
+            target.ViewRole(game, ownRole) :
+            // viewer is a guest
             null;
     }
 
     public static IEnumerable<string> GetSeenTags(GameRoom game, UserInfo user, Character? viewer, Character target)
     {
+        // check if viewer is just a guest
         if (viewer == null && game.Leader != user.Id)
-            return Enumerable.Empty<string>();
+            return [];
+        // let disabled player see the same as the gm
         if (viewer != null && game.DeadCanSeeAllRoles && !viewer.Enabled)
             viewer = null;
         return target.GetTags(game, viewer);
     }
+
+    public virtual void Init(GameRoom game) { }
 }

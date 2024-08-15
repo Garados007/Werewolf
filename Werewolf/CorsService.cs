@@ -1,3 +1,5 @@
+using MaxLib.WebServer;
+
 namespace Werewolf;
 
 public class CorsService : WebService

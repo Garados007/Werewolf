@@ -3,16 +3,14 @@ using System.Text.Json;
 
 namespace Werewolf.Theme.Events;
 
-public class OnRoleInfoChanged : GameEvent
+public class OnRoleInfoChanged(Character role, uint? executionRound = null, UserId? target = null) : GameEvent
 {
-    public Character Role { get; }
+    public Character Role { get; } = role;
 
-    public uint? ExecutionRound { get; }
+    public uint? ExecutionRound { get; } = executionRound;
 
-    public UserId? Target { get; }
+    public UserId? Target { get; } = target;
 
-    public OnRoleInfoChanged(Character role, uint? executionRound = null, UserId? target = null)
-        => (Role, ExecutionRound, Target) = (role, executionRound, target);
 
     public override bool CanSendTo(GameRoom game, UserInfo user)
         => Target is null || Target == user.Id;
@@ -24,10 +22,11 @@ public class OnRoleInfoChanged : GameEvent
         var seenRole = id is not null ?
             Character.GetSeenRole(game, ExecutionRound, user, id.Value, Role) : null;
         writer.WriteString("id", id);
+        writer.WriteBoolean("enabled", Role.Enabled);
         writer.WriteStartArray("tags");
         foreach (var tag in Character.GetSeenTags(game, user, ownRole, Role))
             writer.WriteStringValue(tag);
         writer.WriteEndArray();
-        writer.WriteString("role", seenRole?.GetType().Name);
+        writer.WriteString("role", seenRole is null ? null : game.Theme?.GetCharacterName(seenRole));
     }
 }

@@ -1,3 +1,5 @@
+using MaxLib.Ini;
+
 namespace Werewolf.Pronto;
 
 public class ProntoConfig

@@ -1,4 +1,6 @@
-﻿namespace Werewolf.Game;
+﻿using MaxLib.WebServer;
+
+namespace Werewolf.Game;
 
 public class GameService : WebService
 {

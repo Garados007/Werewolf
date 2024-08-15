@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Werewolf.User;
+
 namespace Werewolf.Game.Events;
 
 public class KickUser : TaggedEvent

@@ -1,3 +1,6 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace Werewolf.User.DB;
 
 [BsonIgnoreExtraElements]

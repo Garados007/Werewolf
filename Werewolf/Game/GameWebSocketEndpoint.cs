@@ -1,3 +1,6 @@
+using MaxLib.WebServer;
+using MaxLib.WebServer.WebSocket;
+
 namespace Werewolf.Game;
 
 public class GameWebSocketEndpoint : WebSocketEndpoint<GameWebSocketConnection>

@@ -5,9 +5,9 @@ namespace Werewolf.Theme.Events;
 
 public class SetGameConfig : GameEvent
 {
-    public Type DefaultTheme { get; }
+    public Type? DefaultTheme { get; }
 
-    public SetGameConfig(Type defaultTheme)
+    public SetGameConfig(Type? defaultTheme)
     {
         DefaultTheme = defaultTheme;
     }
@@ -20,7 +20,7 @@ public class SetGameConfig : GameEvent
         writer.WriteStartObject("config");
         foreach (var (role, amount) in game.RoleConfiguration.ToArray())
         {
-            writer.WriteNumber(role.GetType().Name, amount);
+            writer.WriteNumber(role, amount);
         }
         writer.WriteEndObject();
 
@@ -33,7 +33,7 @@ public class SetGameConfig : GameEvent
         writer.WriteBoolean("autofinish-rounds", game.AutoFinishRounds);
 
         writer.WriteStartArray("theme");
-        writer.WriteStringValue(game.Theme?.GetType().FullName ?? DefaultTheme.FullName);
+        writer.WriteStringValue(game.Theme?.GetType().FullName ?? DefaultTheme?.FullName);
         writer.WriteStringValue(game.Theme?.LanguageTheme ?? "default");
         writer.WriteEndArray();
     }

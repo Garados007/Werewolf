@@ -1,9 +1,11 @@
-﻿namespace Werewolf.Theme;
+﻿using Werewolf.Theme.Labels;
 
-public abstract class Scene
+namespace Werewolf.Theme;
+
+public abstract class Scene : ILabelHost<ISceneLabel>
 {
 
-    public Labels.LabelCollection<Labels.ISceneLabel> Effects { get; } = new();
+    public LabelCollection<ISceneLabel> Labels { get; } = new();
 
     public virtual string LanguageId
     {
@@ -19,46 +21,10 @@ public abstract class Scene
 
     public abstract bool CanMessage(GameRoom game, Character role);
 
-    public virtual async Task InitAsync(GameRoom game)
+    public virtual void Init(GameRoom game)
     {
-        Init(game);
-        await Task.CompletedTask;
-    }
-
-    protected virtual void Init(GameRoom game)
-    {
-        votings.Clear();
-        this.game = game;
+        game.ClearVotings();
     }
 
     public virtual void Exit(GameRoom game) { }
-
-    public virtual bool IsGamePhase => true;
-
-    private readonly List<Voting> votings = new List<Voting>();
-    public virtual IEnumerable<Voting> Votings => votings.ToArray();
-
-    private GameRoom? game;
-
-    protected virtual void AddVoting(Voting voting)
-    {
-        if (!voting.Options.Any())
-            return;
-        votings.Add(voting);
-        voting.Started = game?.AutostartVotings ?? false;
-        if (game?.UseVotingTimeouts ?? false)
-            _ = voting.SetTimeout(game, true);
-        game?.SendEvent(new Events.AddVoting(voting));
-    }
-
-    public virtual void RemoveVoting(Voting voting)
-    {
-        _ = votings.Remove(voting);
-        game?.SendEvent(new Events.RemoveVoting(voting.Id));
-    }
-
-    public virtual void ExecuteMultipleWinner(Voting voting, GameRoom game)
-    {
-
-    }
 }

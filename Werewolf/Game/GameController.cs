@@ -1,3 +1,8 @@
+using System.Collections.Concurrent;
+using System.Security.Cryptography;
+using Werewolf.Theme;
+using Werewolf.User;
+
 namespace Werewolf.Game;
 
 public class GameController : IDisposable
@@ -18,8 +23,13 @@ public class GameController : IDisposable
 
     private RSA rsa;
 
+    public HashSet<Type> GameModes { get; } = [];
+
+    public Type? DefaultGameMode { get; }
+
     private GameController()
     {
+        // setup rsa keys
         var rsa = this.rsa = RSA.Create();
         if (System.IO.File.Exists("keys/game-controller.xml"))
         {
@@ -31,6 +41,34 @@ public class GameController : IDisposable
                 System.IO.Directory.CreateDirectory("keys");
             System.IO.File.WriteAllText("keys/game-controller.xml", rsa.ToXmlString(true));
         }
+        // collect game modes
+        var baseType = typeof(GameMode);
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            Serilog.Log.Debug("Game Controller: Search in assembly {name}", assembly.FullName);
+            foreach (var type in assembly.GetTypes())
+                if (!type.IsAbstract && type.IsAssignableTo(baseType))
+                {
+                    _ = GameModes.Add(type);
+                    Serilog.Log.Information("Game Controller: Add game mode {mode}", type.FullName);
+                }
+        }
+        var scores = new List<(string part, int score)>
+        {
+            ("werewolf", 1),
+            ("base", 2),
+            ("basic", 2),
+            ("default", 3),
+        };
+        DefaultGameMode = GameModes
+            .Select(x => (x, scores
+                .Where(y => x.FullName?.Contains(y.part, StringComparison.OrdinalIgnoreCase) ?? false)
+                .Sum(y => y.score))
+            )
+            .OrderByDescending(x => x.Item2)
+            .Select(x => x.x)
+            .FirstOrDefault(defaultValue: null);
+        Serilog.Log.Information("Game Controller: Default game mode is {mode}", DefaultGameMode?.FullName);
     }
 
     private readonly ConcurrentDictionary<int, GameRoomEntry> rooms
@@ -90,7 +128,8 @@ public class GameController : IDisposable
             UseVotingTimeouts = true,
             AutoFinishRounds = true,
         };
-        room.Theme = new Theme.Default.DefaultTheme(room, UserFactory);
+        if (DefaultGameMode is not null)
+            room.Theme = Activator.CreateInstance(DefaultGameMode, room, UserFactory) as GameMode;
         rooms.TryAdd(id, new GameRoomEntry(room));
         room.OnEvent += OnGameEvent;
         return id;

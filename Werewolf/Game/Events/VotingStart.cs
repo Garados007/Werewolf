@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Werewolf.Game.Events;
 
 public class VotingStart : TaggedEvent

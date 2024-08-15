@@ -1,5 +1,6 @@
 ﻿namespace Werewolf.Theme.Phases;
 
+[Obsolete]
 public abstract class SeperateVotingPhaseBase<TVoting, TRole> : Scene
     where TVoting : Voting
     where TRole : Character

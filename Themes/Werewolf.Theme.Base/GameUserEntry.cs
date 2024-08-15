@@ -4,7 +4,7 @@ namespace Werewolf.Theme;
 
 public class GameUserEntry
 {
-    public Character? Role { get; set; }
+    public Character? Character { get; set; }
 
     public UserInfo User { get; set; }
 

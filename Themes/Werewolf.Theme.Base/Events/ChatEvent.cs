@@ -20,12 +20,12 @@ public class ChatEvent : GameEvent
     {
         if (user.Id == Sender)
             return true;
-        if (!CanSend || game.Phase?.Current.LanguageId != Phase)
+        if (!CanSend || game.Phase?.CurrentScene?.LanguageId != Phase)
             return false;
-        if (game.Phase == null)
+        if (game.Phase?.CurrentScene == null)
             return true;
         var role = game.TryGetRole(user.Id);
-        return role != null && game.Phase.Current.CanMessage(game, role);
+        return role != null && game.Phase.CurrentScene.CanMessage(game, role);
     }
 
     public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)

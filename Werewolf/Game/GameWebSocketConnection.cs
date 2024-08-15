@@ -1,3 +1,8 @@
+using System.Text.RegularExpressions;
+using MaxLib.WebServer.WebSocket;
+using Werewolf.Theme;
+using Werewolf.User;
+
 namespace Werewolf.Game;
 
 public class GameWebSocketConnection : EventConnection
@@ -85,7 +90,7 @@ public class GameWebSocketConnection : EventConnection
                 case Events.GameNext gameNext:
                     await SendResult(
                         gameNext,
-                        await Handle(gameNext).CAF(),
+                        Handle(gameNext),
                         false
                     ).CAF();
                     break;
@@ -120,7 +125,7 @@ public class GameWebSocketConnection : EventConnection
                 case Events.VotingFinish votingFinish:
                     await SendResult(
                         votingFinish,
-                        await Handle(votingFinish).CAF(),
+                        Handle(votingFinish),
                         false
                     ).CAF();
                     break;
@@ -167,15 +172,17 @@ public class GameWebSocketConnection : EventConnection
             });
     }
 
-    private async Task Handle(Events.FetchRoles fetchRoles)
+    private Task Handle(Events.FetchRoles fetchRoles)
     {
         var send = new Events.SubmitRoles();
-        var theme = new Werewolf.Theme.Default.DefaultTheme(null, UserFactory);
-        var list = new List<string>();
-        send.Roles.Add(theme.GetType().FullName ?? "", list);
-        foreach (var template in theme.GetRoleTemplates())
-            list.Add(template.GetType().Name);
-        await SendFrame(send);
+        foreach (var mode in GameController.Current.GameModes)
+        {
+            if (Activator.CreateInstance(mode, null, UserFactory) is not GameMode theme)
+                continue;
+            var list = new List<string>(theme.GetCharacterNames());
+            send.Roles.Add(theme.GetType().FullName ?? "", list);
+        }
+        return SendFrame(send);
     }
 
     private string? Handle(Events.SetGameConfig gameConfig)
@@ -188,33 +195,32 @@ public class GameWebSocketConnection : EventConnection
         if (gameConfig.Leader is not null && !Game.Users.ContainsKey(gameConfig.Leader.Value))
             return "new leader is not a member of the group";
 
-        var known = (Game.Theme?.GetRoleTemplates() ?? Enumerable.Empty<Role>())
-            .ToDictionary(x => x.GetType().Name);
-        Dictionary<Role, int>? roleConfig = null;
+        var known = Game.Theme?.GetCharacterNames().ToList() ?? [];
+        Dictionary<string, int>? roleConfig = null;
         if (gameConfig.RoleConfig is not null)
         {
-            roleConfig = new Dictionary<Role, int>();
-            foreach (var (key, count) in gameConfig.RoleConfig)
+            roleConfig = [];
+            foreach (var (name, count) in gameConfig.RoleConfig)
             {
-                if (!known.TryGetValue(key, out Role? role))
-                    return $"unknown role '{role}'";
+                if (!known.Contains(name))
+                    return $"unknown character '{name}'";
                 if (count < 0)
-                    return $"invalid number for role '{key}'";
+                    return $"invalid number for character '{name}'";
                 var newCount = count;
 
                 if (!Game.Theme!.CheckRoleUsage(
-                    role: role,
+                    character: name,
                     count: ref newCount,
-                    oldCount: Game.RoleConfiguration.TryGetValue(role, out int oldValue)
+                    oldCount: Game.RoleConfiguration.TryGetValue(name, out int oldValue)
                         ? oldValue : 0,
                     error: out string? error))
                     return error;
 
-                roleConfig.Add(role, newCount);
+                roleConfig.Add(name, newCount);
             }
         }
 
-        Theme.Theme? theme = null;
+        Theme.GameMode? mode = null;
         if (gameConfig.Theme is not null)
         {
             static Type? LoadType(string name)
@@ -230,13 +236,13 @@ public class GameWebSocketConnection : EventConnection
             var type = LoadType(gameConfig.Theme);
             if (type is null)
                 return $"theme implementation {gameConfig.Theme} not found";
-            if (!type.IsSubclassOf(typeof(Theme.Theme)))
+            if (!type.IsSubclassOf(typeof(Theme.GameMode)))
                 return $"theme implementation {gameConfig.Theme} is not a valid theme";
             if (type.FullName != Game.Theme?.GetType().FullName)
             {
                 try
                 {
-                    theme = (Theme.Theme)Activator.CreateInstance(type, Game)!;
+                    mode = (Theme.GameMode)Activator.CreateInstance(type, Game)!;
                 }
                 catch (Exception e)
                 {
@@ -287,18 +293,18 @@ public class GameWebSocketConnection : EventConnection
         Game.AutoFinishVotings = gameConfig.AutoFinishVotings ?? Game.AutoFinishVotings;
         Game.UseVotingTimeouts = gameConfig.UseVotingTimeouts ?? Game.UseVotingTimeouts;
         Game.AutoFinishRounds = gameConfig.AutoFinishRounds ?? Game.AutoFinishRounds;
-        if (theme is not null)
+        if (mode is not null)
         {
             if (Game.Theme is not null)
-                theme.LanguageTheme = Game.Theme.LanguageTheme;
-            Game.Theme = theme;
+                mode.LanguageTheme = Game.Theme.LanguageTheme;
+            Game.Theme = mode;
             foreach (var entry in Game.Users.Values)
-                entry.Role = null;
+                entry.Character = null;
             Game.RoleConfiguration.Clear();
         }
         if (Game.Theme is not null)
             Game.Theme.LanguageTheme = gameConfig.ThemeLang ?? Game.Theme.LanguageTheme;
-        Game.SendEvent(new Theme.Events.SetGameConfig(typeof(Werewolf.Theme.Default.DefaultTheme)));
+        Game.SendEvent(new Theme.Events.SetGameConfig(GameController.Current.DefaultGameMode));
 
         return null;
     }
@@ -357,7 +363,7 @@ public class GameWebSocketConnection : EventConnection
         var random = new Random();
         var roles = Game.RoleConfiguration
             .SelectMany(x => Enumerable.Repeat(x.Key, x.Value))
-            .Select(x => x.CreateNew())
+            .Select(x => Game.Theme!.CreateCharacter(x))
             .ToList();
         var players = Game.Users.Values
             .Where(x => Game.LeaderIsPlayer || x.User.Id != UserEntry.User.Id)
@@ -366,7 +372,7 @@ public class GameWebSocketConnection : EventConnection
         foreach (var player in players)
         {
             var index = random.Next(roles.Count);
-            player.Role = roles[index];
+            player.Character = roles[index];
             roles.RemoveAt(index);
         }
 
@@ -374,7 +380,7 @@ public class GameWebSocketConnection : EventConnection
         return null;
     }
 
-    private async Task<string?> Handle(Events.GameNext gameNext)
+    private string? Handle(Events.GameNext gameNext)
     {
         if (UserEntry.User.Id != Game.Leader)
             return "you are not the leader of the group";
@@ -382,7 +388,7 @@ public class GameWebSocketConnection : EventConnection
         if (Game.Phase == null)
             return "there is no current phase";
 
-        await Game.NextPhaseAsync().CAF();
+        Game.Continue(force: true);
 
         return null;
     }
@@ -408,7 +414,7 @@ public class GameWebSocketConnection : EventConnection
         if (Game.LeaderIsPlayer)
             return "as a player you cannot start a voting";
 
-        var voting = Game.Phase?.Current.Votings
+        var voting = Game.Votings
             .Where(x => x.Id == votingStart.VotingId)
             .FirstOrDefault();
 
@@ -427,7 +433,7 @@ public class GameWebSocketConnection : EventConnection
 
     private string? Handle(Events.Vote vote)
     {
-        var voting = Game.Phase?.Current.Votings
+        var voting = Game.Votings
             .Where(x => x.Id == vote.VotingId)
             .FirstOrDefault();
         if (voting == null)
@@ -435,8 +441,8 @@ public class GameWebSocketConnection : EventConnection
 
         if (!Game.Users.TryGetValue(UserEntry.User.Id, out GameUserEntry? entry))
             entry = null;
-        var ownRole = entry?.Role;
-        if (ownRole == null || !voting.CanVote(ownRole))
+        var ownRole = entry?.Character;
+        if (ownRole == null || !voting.CanVote(Game, ownRole))
             return "you are not allowed to vote";
 
         if (!voting.Started)
@@ -447,7 +453,7 @@ public class GameWebSocketConnection : EventConnection
 
     private string? Handle(Events.VotingWait votingWait)
     {
-        var voting = Game.Phase?.Current.Votings
+        var voting = Game.Votings
             .Where(x => x.Id == votingWait.VotingId)
             .FirstOrDefault();
         if (voting == null)
@@ -455,9 +461,9 @@ public class GameWebSocketConnection : EventConnection
 
         if (!Game.Users.TryGetValue(UserEntry.User.Id, out GameUserEntry? entry))
             entry = null;
-        var ownRole = entry?.Role;
+        var ownRole = entry?.Character;
         if ((UserEntry.User.Id != Game.Leader || Game.LeaderIsPlayer)
-            && (ownRole == null || !voting.CanVote(ownRole)))
+            && (ownRole == null || !voting.CanVote(Game, ownRole)))
             return "you are not allowed to vote";
 
         if (!voting.Started)
@@ -472,7 +478,7 @@ public class GameWebSocketConnection : EventConnection
         return null;
     }
 
-    private async Task<string?> Handle(Events.VotingFinish votingFinish)
+    private string? Handle(Events.VotingFinish votingFinish)
     {
         if (UserEntry.User.Id != Game.Leader)
             return "you are not the leader of the group";
@@ -480,7 +486,7 @@ public class GameWebSocketConnection : EventConnection
         if (Game.LeaderIsPlayer)
             return "as a player you cannot finish a voting";
 
-        var voting = Game.Phase?.Current.Votings
+        var voting = Game.Votings
             .Where(x => x.Id == votingFinish.VotingId)
             .FirstOrDefault();
         if (voting == null)
@@ -489,7 +495,7 @@ public class GameWebSocketConnection : EventConnection
         if (!voting.Started)
             return "voting is not started";
 
-        await voting.FinishVotingAsync(Game).CAF();
+        voting.FinishVoting(Game);
 
         return null;
     }
@@ -500,7 +506,7 @@ public class GameWebSocketConnection : EventConnection
             return "you are not the leader of the group";
 
         if (!Game.Users.TryGetValue(kickUser.User, out GameUserEntry? entry)
-            || entry.Role is null)
+            || entry.Character is null)
             return "player is not a participant";
 
         Game.RemoveParticipant(entry.User);
@@ -511,12 +517,12 @@ public class GameWebSocketConnection : EventConnection
 
     private string? Handle(Events.Message message)
     {
-        var currentPhase = Game.Phase?.Current;
+        var currentPhase = Game.Phase?.CurrentScene;
         var current = currentPhase?.LanguageId;
-        var role = Game.TryGetRole(UserEntry.User.Id);
+        var character = Game.TryGetRole(UserEntry.User.Id);
         var allowed = (UserEntry.User.Id == Game.Leader && !Game.LeaderIsPlayer) ||
             currentPhase == null ||
-            (current == message.Phase && role != null && currentPhase.CanMessage(Game, role));
+            (current == message.Phase && character != null && currentPhase.CanMessage(Game, character));
         Game.SendEvent(new Theme.Events.ChatEvent(
             UserEntry.User.Id,
             message.Phase,

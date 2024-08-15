@@ -1,3 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using MongoDB.Bson;
+using MongoDB.Driver;
+
 namespace Werewolf.User;
 
 public class UserController(Database database, string oAuthUserInfoEndpoint) : UserFactory, IDisposable

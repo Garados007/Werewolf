@@ -37,7 +37,7 @@ public class WinCondition
             return check ?? false;
         }
 
-        Span<Character> player = game.AliveRoles.ToArray();
+        Span<Character> player = game.EnabledCharacters.ToArray();
         for (int i = 0; i < player.Length; ++i)
             for (int j = i + 1; j < player.Length; ++j)
                 if (!IsSameFaction(player[i], player[j]))
@@ -53,7 +53,7 @@ public class WinCondition
             winner = list.ToArray();
             return true;
         }
-        foreach (var role in game.Users.Select(x => x.Value.Role))
+        foreach (var role in game.Users.Select(x => x.Value.Character))
             if (role != null && !role.Enabled)
             {
                 // check if has same faction with all players

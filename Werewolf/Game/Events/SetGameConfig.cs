@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Werewolf.User;
+
 namespace Werewolf.Game.Events;
 
 public class SetGameConfig : TaggedEvent
@@ -30,7 +33,7 @@ public class SetGameConfig : TaggedEvent
             Leader = new UserId(element.GetString() ?? throw new InvalidOperationException());
         if (json.TryGetProperty("config", out element))
         {
-            RoleConfig = new Dictionary<string, int>();
+            RoleConfig = [];
             foreach (var entry in element.EnumerateObject())
                 RoleConfig.Add(entry.Name, entry.Value.GetInt32());
         }
