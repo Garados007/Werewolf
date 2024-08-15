@@ -20,7 +20,7 @@
             "TwoSisters": "Zwei Schwestern",
             "ThreeBrothers": "Drei Brüder",
             "Villager": "Dorfbewohner",
-            "Werwolf": "Werwolf",
+            "Werewolf": "Werwolf",
             "Witch": "Hexe",
             "Unknown": "???"
         },
@@ -39,8 +39,8 @@
             "ThreeBrothers": "Die drei Brüder sind normale Dorfbewohner. Sie können in der Nacht eine strategische Besprechung in einer extra Phase durchführen.",
             "TwoSisters": "Die zwei Schwester sind normale Dorfbewohner. Sie können in der Nacht eine strategische Besprechung in einer extra Phase durchführen.",
             "Villager": "Ein normaler Dorfbewohner ohne besonderen Fähigkeiten.",
-            "Werwolf": "Ein Werwolf dessen Ziel es ist alle Dorfbewohner auszurotten.\nDie Werwölfe werden jede Nacht einmal aufgerufen um für ihr Opfer zu stimmen.",
-            "Witch": "Die Hexe hat zwei besondere Tränke im Spiel, welche sie jeweils nur einmal benutzen darf.\nDer eine ist der Lebenstrank. Mit diesen kann sie das aktuelle Opfer der Werwölfe vor dem Tod beschützen.\nDer andere ist der Todestrank. Mit diesen kann sie einen anderen Spiel umbringen.\nSie kann in der Nacht einen, beide oder keinen der Tränke nutzen."  
+            "Werewolf": "Ein Werwolf dessen Ziel es ist alle Dorfbewohner auszurotten.\nDie Werwölfe werden jede Nacht einmal aufgerufen um für ihr Opfer zu stimmen.",
+            "Witch": "Die Hexe hat zwei besondere Tränke im Spiel, welche sie jeweils nur einmal benutzen darf.\nDer eine ist der Lebenstrank. Mit diesen kann sie das aktuelle Opfer der Werwölfe vor dem Tod beschützen.\nDer andere ist der Todestrank. Mit diesen kann sie einen anderen Spiel umbringen.\nSie kann in der Nacht einen, beide oder keinen der Tränke nutzen."
         },
         "phases": {
             "AmorPhase": "Amor sucht das Liebespaar",
@@ -104,8 +104,7 @@
             }
         },
         "logs": {
-            "Werewolf.Theme.Default.Chats.PlayerKillLog":
-                "{user} ist gestorben."
+            "Werewolf.Theme.Default.Chats.PlayerKillLog": "{user} ist gestorben."
         }
     }
 }
