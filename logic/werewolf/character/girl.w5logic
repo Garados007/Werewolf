@@ -1,0 +1,54 @@
+character Girl {
+    func view { character Unknown }
+}
+voting GirlSpy {
+    target each;
+    func targets {
+        if empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage)) {
+            @character | has_character(character Girl)
+        } else {
+            {}
+        }
+    }
+    func voting_option {
+        { option None, option Spy }
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func choice {
+        if $choice == option Spy {
+            // spying is a two edged sword - the girl can see the identity of a wolf with a chance
+            // that she will be herself revealed. The chance that a girl can see a specific wolf is
+            // `number of wolves / number of player`. It is expected, that after a single round she
+            // knows the identity of `(number of wolves)^2 / number of player` wolves. This is a
+            // good amount - if we have few wolves and lots of player, the girl is unlikely to find
+            // a wolf. On the other hand, if we have few player and most of them are wolves it is
+            // very likely she will find most of them.
+            //
+            // The chance that a wolf caught this girl spying on them is very low and always
+            // `1 / number of player`. Its like the wolf randomly looks to a player and if it
+            // happens to be a spying girl, she will be caught. After a round a girl will be
+            // revealed to `number of wolves / number of player` wolves.
+            //
+            // Its up to the player to decide what to do...
+            let $wolves = @character | has_character(character Werewolf);
+            let $wolfCount = length($wolves);
+            let $aliveCount = length(@character);
+            for let $wolf = $wolves {
+                // make wolf visible to the girl
+                if rand($aliveCount) < $wolfCount {
+                    set_visible($wolf, $target)
+                }
+                // make the girl visible to the wolf
+                if rand($aliveCount) == 0 {
+                    set_visible($target, $wolf)
+                }
+            }
+        }
+    }
+}
+option Spy;

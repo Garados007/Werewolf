@@ -1,0 +1,43 @@
+character ScapeGoat {
+    func view { character Unknown }
+}
+label ScapeGoatWasKilledByVillage {
+    target { character }
+    func view { false }
+}
+label HasRestrictedVoteRights {
+    target { mode }
+}
+label IsAllowedToVote {
+    target { character }
+    func view { true }
+}
+sequence ScapeGoatKill {
+    step vote {
+        if empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage)) {
+            spawn voting ScapeGoat with targets({$target});
+        }
+    }
+    step die {
+        enabled($target, false);
+    }
+}
+voting ScapeGoat {
+    target multi_each;
+    func voting_option {
+        @character | filter($x, $x != $target) | has_not(label Killed)
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        true
+    }
+    func unanimous {
+        for let $char = $characters {
+            add($char, label IsAllowedToVote);
+        }
+        add($game, label HasRestrictedVoteRights);
+        notify character ScapegoatVoted($characters);
+    }
+}

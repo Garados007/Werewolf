@@ -1,0 +1,45 @@
+// this label is a helper to trigger kill scenarios like hunter at a single place
+label Killed {
+    target { character }
+    func view { true }
+    func attach_character {
+        let $handled = false;
+        // inherit Major
+        if has($target, label Major) {
+            let $handled = true;
+            spawn sequence MajorInheritance($target);
+        }
+        // Hunter kill
+        if $target == character Hunter {
+            let $handled = true;
+            spawn sequence HunterKill($target);
+        }
+        if has($target, label ScapeGoatWasKilledByVillage) {
+            let $handled = true;
+            spawn sequence ScapeGoatKill($target);
+        }
+        if !$handled {
+            // just disable him
+            enabled($target, false);
+        }
+        // let the lover also die
+        for let $crush = labels($target) | filter($x, $x == label LovedCrush) {
+            if let $partner = get_with($crush, LovedCrush, partner) {
+                // add kill label and potentially trigger a chain reaction
+                add($partner, label Killed);
+                notify character KilledByLove({$partner});
+            }
+        }
+        // let the idiot also die if the old man was killed
+        if $target == character OldMan {
+            let $idiots = @character
+                | has_character(character Idiot)
+                | has_not(label Killed)
+                | has(label IdiotShowToVillage);
+            for let $idiot = $idiots {
+                add($idiot, label Killed);
+            }
+            notify character OldManAndIdiotKilled($idiots);
+        }
+    }
+}

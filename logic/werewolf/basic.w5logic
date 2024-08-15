@@ -1,0 +1,72 @@
+mode BasicWerewolf {
+    character {
+        // core characters
+        Villager, Werewolf,
+
+        // group: Villager
+        Amor, Angel, Girl, Healer, Hunter, Idiot, OldMan, Oracle, PureSoul, ScapeGoat,
+        ThreeBrothers, TwoSisters, Witch,
+
+        // group: Flutist
+        Flutist
+    }
+    win {
+        // edge case
+        Empty,
+        // flutist
+        FlutistWin,
+        // only a single party
+        OnlyVillager, OnlyWolves,
+        // special roles
+        LoveWins, AngelWon
+    }
+}
+option None;
+// checks if only villager are left in this game
+win OnlyVillager {
+    func check {
+        empty(
+            @character
+                | has_not_character(character Amor)
+                | has_not_character(character Angel)
+                | has_not_character(character Girl)
+                | has_not_character(character Healer)
+                | has_not_character(character Hunter)
+                | has_not_character(character Idiot)
+                | has_not_character(character OldMan)
+                | has_not_character(character Oracle)
+                | has_not_character(character PureSoul)
+                | has_not_character(character ScapeGoat)
+                | has_not_character(character ThreeBrothers)
+                | has_not_character(character TwoSisters)
+                | has_not_character(character Villager)
+                | has_not_character(character Witch)
+        ) && any(@character | has_not(label Killed))
+    }
+    func winner {
+        @all_character | has_character(
+            character Amor, character Angel, character Girl, character Healer, character Hunter,
+            character Idiot, character OldMan, character Oracle, character PureSoul,
+            character ScapeGoat, character ThreeBrothers, character TwoSisters, character Villager,
+            character Witch
+        )
+
+    }
+}
+
+// checks if only werewolfes are left in this game
+win OnlyWolves {
+    func check {
+        empty(
+            @character
+                | has_not_character(character Werewolf)
+        ) && any(@character | has_not(label Killed))
+    }
+    func winner {
+        @all_character | has_character(character Werewolf)
+    }
+}
+// no one win this game
+win Empty {
+    func check { empty(@character) }
+}

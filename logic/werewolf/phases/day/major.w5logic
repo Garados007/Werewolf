@@ -1,0 +1,66 @@
+scene Major {
+    phase Day;
+    func enable { true }
+    func run_on {
+        empty(@character | has(label Major))
+    }
+    func can_message { true }
+    func start {
+        spawn voting MajorSelection;
+    }
+}
+label Major {
+    target { character }
+    func view { true }
+}
+voting MajorSelection {
+    func voting_option {
+        @character
+            // this should not happen but if so, here we are...
+            | has_not(label Major)
+            // a revealed idiot is not allowed to become major
+            | has_not(label IdiotShowToVillage)
+    }
+    func can_vote { true }
+    func choice {
+        if let $char = $character {
+            add($char, label Major);
+            notify character NewMajorVoted({$char});
+        }
+    }
+    func unanimous {
+        spawn voting MajorSelection with choices($choices);
+    }
+}
+
+sequence MajorInheritance {
+    step vote {
+        // Cannot inherit major if the current major is a revealed Idiot. If so, the major is lost
+        // and not inherited. At the next day we will have a new voting for a new major.
+        if has_not($target, label IdiotShowToVillage) {
+            spawn voting InheritMajor;
+        }
+    }
+    step die {
+        enabled($target, false);
+        remove($target, label Major);
+    }
+}
+voting InheritMajor {
+    func voting_option {
+        @character | has_not(label Major)
+    }
+    func can_vote {
+        has($voter, label Major)
+    }
+    func can_view { true }
+    func choice {
+        if let $char = $character {
+            add($char, label Major);
+            notify character NewMajorInherited({$char});
+        }
+    }
+    func unanimous {
+        spawn voting InheritMajor with choices($choices);
+    }
+}

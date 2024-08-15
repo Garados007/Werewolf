@@ -1,0 +1,3 @@
+character PureSoul {
+    func view { character PureSoul }
+}

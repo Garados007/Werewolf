@@ -1,0 +1,20 @@
+character OldMan {
+    func view { character Unknown }
+    func create {
+        add($this, label OldManAdditionalLive);
+    }
+}
+label OldManAdditionalLive {
+    target { character }
+    func view {
+        if let $_ = $viewer {
+            false
+        } else {
+            true
+        }
+    }
+}
+label OldManKilledByVillage {
+    target { character }
+    func view { true }
+}

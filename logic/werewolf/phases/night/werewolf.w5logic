@@ -1,0 +1,51 @@
+scene Werewolf {
+    phase Night;
+    after { OracleView }
+    before { Witch }
+    func enable {
+        any(@all_character | has_character(character Werewolf))
+    }
+    func run_on {
+        any(@character | has_character(character Werewolf))
+    }
+    func can_message {
+        $character == character Werewolf
+    }
+    func start {
+        spawn voting Werewolf_SelectTarget;
+        spawn voting GirlSpy;
+    }
+}
+voting Werewolf_SelectTarget {
+    func voting_option {
+        @character | has_not_character(character Werewolf)
+    }
+    func can_vote {
+        $voter == character Werewolf
+    }
+    func can_view {
+        $viewer == character Werewolf
+    }
+    func choice {
+        if let $ch = $character {
+            add($ch, label WerewolfSelectedTarget);
+        }
+        // Stop all existing girl votings. At this point its already to late.
+        for let $voting = @voting | filter($x, $x == voting GirlSpy) {
+            cancel($voting)
+        }
+    }
+    func unanimous {
+        spawn voting Werewolf_SelectTarget with choices($choices);
+    }
+}
+label WerewolfSelectedTarget {
+    target { character }
+    func view {
+        if let $ch = $viewer {
+            $ch == character Werewolf || $ch == character Witch
+        } else {
+            false
+        }
+    }
+}

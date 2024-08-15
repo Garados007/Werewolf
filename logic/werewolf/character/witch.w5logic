@@ -1,0 +1,26 @@
+character Witch {
+    func create {
+        add($this, label HasHealPotion);
+        add($this, label HasDeathPotion);
+    }
+    func view {
+        if $viewer == character Witch {
+            character Witch
+        } else {
+            character Unknown
+        }
+    }
+}
+abstract label WitchLabel {
+    func view {
+        if let $target = $viewer {
+            $target == character Witch
+        } else {
+            true
+        }
+    }
+}
+label HasHealPotion : WitchLabel {target { character }}
+label HasDeathPotion : WitchLabel {target { character }}
+label HealPotionTarget : WitchLabel {target { character }}
+label DeathPotionTarget : WitchLabel {target { character }}

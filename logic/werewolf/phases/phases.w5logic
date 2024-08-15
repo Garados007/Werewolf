@@ -1,0 +1,26 @@
+phase Night {
+    func start {
+        empty(@character | has_character(character Angel))
+    }
+    func next { phase Morning }
+    func background { "/content/img/stage/Werewolf.Theme.Default.Stages.NightStage/background-night.png" }
+    func theme { "#000911" }
+}
+phase Morning {
+    func next { phase Day }
+    func background { "/content/img/stage/Werewolf.Theme.Default.Stages.MorningStage/background-sunrising.png" }
+    func theme { "#34a3fe" }
+}
+phase Day {
+    func start {
+        any(@character | has_character(character Angel))
+    }
+    func next { phase Afternoon }
+    func background { "/content/img/stage/Werewolf.Theme.Default.Stages.DayStage/background-day.png" }
+    func theme { "#34a3fe" }
+}
+phase Afternoon {
+    func next { phase Night }
+    func background { "/content/img/stage/Werewolf.Theme.Default.Stages.AfternoonStage/background-nightfall.png" }
+    func theme { "#34a3fe" }
+}

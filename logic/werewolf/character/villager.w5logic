@@ -1,0 +1,5 @@
+character Villager {
+    func view {
+        character Unknown
+    }
+}

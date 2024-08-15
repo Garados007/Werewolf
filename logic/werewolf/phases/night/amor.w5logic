@@ -1,0 +1,55 @@
+scene Amor {
+    phase Night;
+    before { Werewolf, Healer }
+    func enable {
+        any(@all_character | has_character(character Amor))
+    }
+    func run_on {
+        any(@character | has_character(character Amor) | has(label AmorVoteRight))
+    }
+    func can_message {
+        $character == character Amor
+    }
+    func start {
+        spawn voting AmorSelection;
+    }
+}
+voting AmorSelection {
+    target multi_each;
+    func targets {
+        @character | has_character(character Amor)
+    }
+    func voting_option {
+        @character | filter($x,
+            empty(labels($x) | filter($y,
+                if let $amor = get_with($y, label LovedOne, amor) {
+                    $amor == $target
+                } else {
+                    false
+                }
+            ))
+        )
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func can_finish {
+        length($characters) == 2
+    }
+    func unanimous {
+        for let $first = $characters {
+            for let $second = $characters | filter($x, $x != $first) {
+                // add lovers
+                add($first, label LovedOne, amor=$target);
+                add($second, label LovedOne, amor=$target);
+                // add crush
+                add($first, label LovedCrush, amor=$target, partner=$second);
+                add($second, label LovedCrush, amor=$target, partner=$first);
+            }
+        }
+        remove($target, label AmorVoteRight);
+    }
+}

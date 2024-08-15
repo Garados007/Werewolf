@@ -1,0 +1,9 @@
+character Werewolf {
+    func view {
+        if $viewer == character Werewolf {
+            character Werewolf
+        } else {
+            character Unknown
+        }
+    }
+}

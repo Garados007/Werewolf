@@ -1,0 +1,38 @@
+character TwoSisters {
+    func view {
+        if $viewer == character TwoSisters {
+            character TwoSisters
+        } else {
+            character Unknown
+        }
+    }
+}
+scene TwoSisters {
+    phase Night;
+    after { Werewolf, Flutist }
+    before { ThreeBrothers }
+    func enable {
+        any(@all_character | has_character(character TwoSisters))
+    }
+    func run_on {
+        any(@character | has_character(character TwoSisters)) &&
+        empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage))
+    }
+    func can_message {
+        $character == character TwoSisters
+    }
+    func start {
+        spawn voting TwoSisters;
+    }
+}
+voting TwoSisters {
+    func voting_option {
+        { option Continue }
+    }
+    func can_vote {
+        $voter == character TwoSisters
+    }
+    func can_view {
+        $viewer == character TwoSisters
+    }
+}

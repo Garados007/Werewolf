@@ -1,0 +1,18 @@
+scene DayKills {
+    phase Afternoon;
+    func enable { true }
+    func run_on { true }
+    func can_message { true }
+    func start {
+        for let $victim = @character | has(label DailyVictim) {
+            // if we have the old man
+            if $victim == character OldMan {
+                add($victim, label OldManKilledByVillage);
+            }
+            // just kill him
+            remove($victim, label DailyVictim);
+            add($victim, label Killed);
+        }
+        // continue with next scene ...
+    }
+}

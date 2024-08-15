@@ -1,0 +1,81 @@
+scene Witch {
+    phase Night;
+    after { Werewolf }
+    before { Flutist }
+    func enable {
+        any(@all_character | has_character(character Witch))
+    }
+    func run_on {
+        any(@character | has_character(character Witch)) &&
+        empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage))
+    }
+    func can_message {
+        $character == character Witch
+    }
+    func start {
+        spawn voting Witch_HealPotion;
+        spawn voting Witch_DeathPotion;
+    }
+}
+voting Witch_HealPotion {
+    target each;
+    func targets {
+        if empty(@character | has(label WerewolfSelectedTarget)) {
+            {}
+        } else {
+            @character | has_character(character Witch) | has(label HasHealPotion)
+        }
+    }
+    func voting_option {
+        flatten({
+            {option None},
+            @character | has(label WerewolfSelectedTarget)
+        })
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func choice {
+        if let $char = $character {
+            remove($target, label HasHealPotion);
+            add($char, label HealPotionTarget);
+        }
+    }
+}
+voting Witch_DeathPotion {
+    target each;
+    func targets {
+        @character | has_character(character Witch) | has(label HasDeathPotion)
+    }
+    func voting_option {
+        flatten({
+            {option None},
+            @character | has_not(label WerewolfSelectedTarget)
+        })
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func choice {
+        if let $char = $character {
+            remove($target, label HasDeathPotion);
+            add($char, label WitchSelectedTarget);
+        }
+    }
+}
+label WitchSelectedTarget {
+    target { character }
+    func view {
+        if let $view = $viewer {
+            $view == character Witch
+        } else {
+            true
+        }
+    }
+}
