@@ -1,104 +1,82 @@
 {
+    "banner": {
+        "maintenance": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet."
+    },
+    "chat": {
+        "not-allowed": "Die Nachricht durfte nicht gesendet werden."
+    },
     "fallback": "Die Übersetzung für die Sprache \"{lang}\" konnte leider nicht gefunden werden. Von daher siehst du nun alles auf Deutsch.",
+    "game": {
+        "loading": {
+            "go-back": "Zurück zur Lobbyauswahl",
+            "not-found": "Spiel nicht gefunden."
+        },
+        "phase": {
+            "end": "Spiel beenden",
+            "next": "Nächste Runde"
+        },
+        "voting": {
+            "button": {
+                "add-time": "Zeitzugabe ({time-left})",
+                "add-time-hint": "In {time-left} Sekunden wird das Voting automatisch beendet. Hier klicken um auf {max-time} Sekunden zurückzusetzen.",
+                "end": "Beenden",
+                "start": "Starten"
+            },
+            "can-vote": "Darf abstimmen",
+            "cannot-vote": "Darf nicht abstimmen",
+            "has-voted-list": "Bisher so abgestimmt haben: {list}",
+            "nobody-has-voted": "Niemand hat bisher so abgestimmt",
+            "not-started": "Nicht gestarted",
+            "started": "Gestarted"
+        }
+    },
     "init": {
-        "title": "Werwölfe von Düsterwald",
-        "reset-user": "Nutzer zurücksetzen",
+        "guest-input": {
+            "continue": "Als Gast fortfahren",
+            "image-code": "Bildcode",
+            "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
+            "name": "Name"
+        },
+        "lobby-input": {
+            "create": "Lobby erstellen",
+            "hint": "Bitte Code eingeben",
+            "join": "Lobby beitreten",
+            "start": "Spiel starten"
+        },
         "lost-token": "Der Nutzertoken konnte leider nicht aktualisiert werden. Es ist eine erneute Anmeldung erforderlich oder man spielt als Gast weiter.",
+        "reset-user": "Nutzer zurücksetzen",
+        "title": "Werwölfe von Düsterwald",
         "user-mode": {
-            "play-login": "Mit Account spielen",
-            "play-guest": "Als Gast spielen",
             "continue-login": "Anmelden oder Registrieren",
+            "guest": {
+                "1": "Spiele sofort und direkt",
+                "2": "Deine Daten werden nach dem Spiel gelöscht"
+            },
             "login": {
                 "1": "Erhalte Statistiken",
                 "2": "Steige im Level auf",
                 "3": "Speichere deine Einstellungen Geräte übergreifend"
             },
-            "guest": {
-                "1": "Spiele sofort und direkt",
-                "2": "Deine Daten werden nach dem Spiel gelöscht"
-            }
-        },
-        "guest-input": {
-            "name": "Name",
-            "image-code": "Bildcode",
-            "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
-            "continue": "Als Gast fortfahren"
-        },
-        "lobby-input": {
-            "create": "Lobby erstellen",
-            "join": "Lobby beitreten",
-            "start": "Spiel starten",
-            "hint": "Bitte Code eingeben"
+            "play-guest": "Als Gast spielen",
+            "play-login": "Mit Account spielen"
         }
     },
-    "settings": {
-        "game-room": {
-            "leader-is-player": "Spielleiter ist auch ein Mitspieler",
-            "dead-can-see-all-roles": "Gestorbene können alle Rollen sehen",
-            "all-can-see-role-of-dead": "Alle können die Rolle der Toten sehen",
-            "auto-start-votings": "Votings automatisch starten",
-            "auto-finish-votings": "Votings automatisch beenden",
-            "votings-timeout": "Votings automatisch nach einen Timeout beenden",
-            "auto-finish-rounds": "Runden automatisch beenden wenn kein Voting mehr existiert",
-            "start": "Start"
-        },
-        "page": {
-            "theme": "Thema",
-            "roles": "Rollen",
-            "options": "Optionen"
-        },
-        "bar": {
-            "stats": "Rollen: {roles}/{player}"
-        }
-    },
-    "game": {
-        "voting": {
-            "started": "Gestarted",
-            "not-started": "Nicht gestarted",
-            "can-vote": "Darf abstimmen",
-            "cannot-vote": "Darf nicht abstimmen",
-            "nobody-has-voted": "Niemand hat bisher so abgestimmt",
-            "has-voted-list": "Bisher so abgestimmt haben: {list}",
-            "button": {
-                "start": "Starten",
-                "end": "Beenden",
-                "add-time-hint": "In {time-left} Sekunden wird das Voting automatisch beendet. Hier klicken um auf {max-time} Sekunden zurückzusetzen.",
-                "add-time": "Zeitzugabe ({time-left})"
-            }
-        },
-        "phase": {
-            "end": "Spiel beenden",
-            "next": "Nächste Runde"
-        },  
-        "loading": {
-            "not-found": "Spiel nicht gefunden.",
-            "go-back": "Zurück zur Lobbyauswahl"
-        }
-    },
-    "banner": {
-        "maintenance": "Der aktuelle Server wird in {minute}:{sec-prefix}{sec} neugestartet."
+    "join-token": {
+        "copied": "Kopiert!",
+        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren",
+        "description": "Gib den Code deinen Mitspielern weiter:",
+        "hint": "Zeigen",
+        "refetch": "Neu anfordern",
+        "stream-replacement": "Klicken!",
+        "streamer-mode": "Streamer Mode",
+        "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
+        "title": "Spieler hinzufügen"
     },
     "modals": {
-        "theme-editor": {
-            "title": "Theme Einstellungen",
-            "background-url": "Hintergrundbild (URL)",
-            "go-back": "Zurück zur Lobbyauswahl"
-        },
-        "winner": {
-            "title": "Sieger"
-        },
-        "player-notification": {
-            "title": "Spielerbenachrichtigung"
-        },
-        "maintenance": {
-            "title": "Serverwartung",
-            "desc": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
-            "reason": "Grund:"
-        },
         "connection": {
             "close": {
-                "title": "Keine Verbindung zum Server",
-                "desc": "Es konnte keine Verbindung zum Spieleserver hergestellt werden. Das kann daran liegen, dass der Server derzeit Offline ist oder dass die Lobby nicht mehr existiert. Bitte versuche eine neue Lobby zu erstellen."
+                "desc": "Es konnte keine Verbindung zum Spieleserver hergestellt werden. Das kann daran liegen, dass der Server derzeit Offline ist oder dass die Lobby nicht mehr existiert. Bitte versuche eine neue Lobby zu erstellen.",
+                "title": "Keine Verbindung zum Server"
             },
             "code": {
                 "1000": {
@@ -109,6 +87,42 @@
                 }
             },
             "go-back": "Zurück zur Lobbyauswahl"
+        },
+        "maintenance": {
+            "desc": "Der Server muss gewartet werden und wird daher bald neugestartet. Bitte beendet jetzt euer Spiel und erstellt danach eine neue Lobby.",
+            "reason": "Grund:",
+            "title": "Serverwartung"
+        },
+        "player-notification": {
+            "title": "Spielerbenachrichtigung"
+        },
+        "theme-editor": {
+            "background-url": "Hintergrundbild (URL)",
+            "go-back": "Zurück zur Lobbyauswahl",
+            "title": "Theme Einstellungen"
+        },
+        "winner": {
+            "title": "Sieger"
+        }
+    },
+    "settings": {
+        "bar": {
+            "stats": "Rollen: {roles}/{player}"
+        },
+        "game-room": {
+            "all-can-see-role-of-dead": "Alle können die Rolle der Toten sehen",
+            "auto-finish-rounds": "Runden automatisch beenden wenn kein Voting mehr existiert",
+            "auto-finish-votings": "Votings automatisch beenden",
+            "auto-start-votings": "Votings automatisch starten",
+            "dead-can-see-all-roles": "Gestorbene können alle Rollen sehen",
+            "leader-is-player": "Spielleiter ist auch ein Mitspieler",
+            "start": "Start",
+            "votings-timeout": "Votings automatisch nach einen Timeout beenden"
+        },
+        "page": {
+            "options": "Optionen",
+            "roles": "Rollen",
+            "theme": "Thema"
         }
     },
     "theme": {
@@ -117,46 +131,36 @@
                 "offline-player-left": "Ein Spieler wurde automatisch aus dem Spiel gekickt, der er 30 Sekunden offline ist."
             }
         },
-        "voting-title": {
-            "default-logs": "der Abstimmung"
-        },
         "logs": {
-            "Werewolf.Theme.Chats.AddParticipantLog":
-                "{user} tritt der Lobby bei.",
-            "Werewolf.Theme.Chats.RemoveParticipantLog":
-                "{user} hat die Lobby wieder verlassen.",
-            "Werewolf.Theme.Chats.GameStartLog":
-                "Das Spiel wurde gestartet.",
-            "Werewolf.Theme.Chats.NextPhaseLog":
-                "Eine neue Phase bricht an: {phase}",
-            "Werewolf.Theme.Chats.SetVotingVoteLog":
-                "{voter} hat für {option} in {voting} gestimmt.",
-            "Werewolf.Theme.Chats.GameEndLog":
-                "Das Spiel wurde beendet."
+            "Werewolf.Theme.Chats.AddParticipantLog": "{user} tritt der Lobby bei.",
+            "Werewolf.Theme.Chats.GameEndLog": "Das Spiel wurde beendet.",
+            "Werewolf.Theme.Chats.GameStartLog": "Das Spiel wurde gestartet.",
+            "Werewolf.Theme.Chats.NextPhaseLog": "Eine neue Phase bricht an: {phase}",
+            "Werewolf.Theme.Chats.RemoveParticipantLog": "{user} hat die Lobby wieder verlassen.",
+            "Werewolf.Theme.Chats.SetVotingVoteLog": "{voter} hat für {option} in {voting} gestimmt."
+        },
+        "roles": {
+            "unknown": "???"
+        },
+        "voting": {
+            "default": {
+                "options": {
+                    "character": "{name}"
+                }
+            },
+            "default-logs": {
+                "title": "der Abstimmung"
+            }
         }
     },
     "user-stats": {
-        "won-games": "gewonnene Spiele",
         "died": "gestorben",
-        "played-games": "gespielte Spiele",
+        "guest": "Gast",
         "leader": "Spielleiter",
         "level": "Level",
+        "offline": "(offline)",
+        "played-games": "gespielte Spiele",
         "player-kick": "Spieler kicken",
-        "guest": "Gast",
-        "offline": "(offline)"
-    },
-    "join-token": {
-        "title": "Spieler hinzufügen",
-        "description": "Gib den Code deinen Mitspielern weiter:",
-        "hint": "Zeigen",
-        "refetch": "Neu anfordern",
-        "time": "Der Code ist noch {minute}:{second-leading}{second} gültig.",
-        "copied": "Kopiert!",
-        "copy-hint": "Klicken, um in die Zwischenablage zu kopieren",
-        "streamer-mode": "Streamer Mode",
-        "stream-replacement": "Klicken!"
-    },
-    "chat": {
-        "not-allowed": "Die Nachricht durfte nicht gesendet werden."
+        "won-games": "gewonnene Spiele"
     }
 }

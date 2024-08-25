@@ -1,0 +1,12 @@
+character Idiot {
+    func view {
+        if has($this, label IdiotShowToVillage) {
+            character Idiot
+        } else {
+            character Unknown
+        }
+    }
+}
+label IdiotShowToVillage {
+    target { character }
+}

@@ -1,0 +1,81 @@
+character Healer {
+    func view {
+        if $viewer == character Healer {
+            character Healer
+        } else {
+            character Unknown
+        }
+    }
+}
+label ProtectedByHealer {
+    target { character }
+    with character healer;
+    func view {
+        if let $target = $viewer {
+            if let $healer = get_with($this, label ProtectedByHealer, healer) {
+                $healer == $target
+            } else {
+                false
+            }
+        } else {
+            true
+        }
+    }
+}
+scene Healer {
+    phase Night;
+    before { OracleView, Werewolf }
+    func enable {
+        any(@all_character | has_character(character Healer))
+    }
+    func run_on {
+        any(@character | has_character(character Healer)) &&
+        empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage))
+    }
+    func can_message {
+        $character == character Healer
+    }
+    func start {
+        spawn voting HealerProtection;
+    }
+}
+voting HealerProtection {
+    target each;
+    func targets {
+        @character | has_character(character Healer)
+    }
+    func voting_option {
+        @character | filter($x,
+            empty(labels($x) | filter($label,
+                if let $healer = get_with($label, label ProtectedByHealer, healer) {
+                    $healer == $target
+                } else {
+                    false
+                }
+            ))
+        )
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func create {
+        for let $char = @character {
+            for let $label = labels($char) {
+                if let $healer = get_with($label, label ProtectedByHealer, healer) {
+                    if $healer == $target {
+                        remove($char, $label)
+                    }
+                }
+            }
+        }
+    }
+    func choice {
+        if let $char = $character {
+            // add new protected one
+            add($char, label ProtectedByHealer, healer=$target)
+        }
+    }
+}

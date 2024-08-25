@@ -1,0 +1,43 @@
+mode TestMode {
+    // all defined characters
+    character {
+        Villager, Wolf
+    }
+    // all win conditions
+    win {
+        AllVillager,
+        AllWolf
+    }
+}
+phase Day {
+    after { Night }
+    before { Night }
+    trigger start { has_character(Angle) }
+}
+abstract event HalveOfThePlayerAreAllowedToVote {
+    trigger enable { true }
+
+    // Will be executed right now
+    target now {
+        step init {
+            add({$mode}, {LimitedDailyVoter});
+            let $groups = split(2, shuffle(@character | has(Alive)));
+            add(get(0, $groups), {AllowedToVote})
+        }
+    }
+    // Will be executed the next time we have this phase
+    target phase Night {
+        step cleanup {
+            remove({$mode}, {LimitedDailyVoter});
+            remove(@character, {AllowedToVote})
+        }
+    }
+}
+scene TriggerDailyEvent {
+    phase Day;
+    before { MajorVote }
+
+    hook start {
+        spawn event *;
+    }
+}

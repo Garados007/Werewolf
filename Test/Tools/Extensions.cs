@@ -1,230 +1,199 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 using Werewolf.Theme;
+using Werewolf.Theme.Labels;
 using Werewolf.User;
 
-namespace Test.Tools
+namespace Test.Tools;
+
+public static class Extensions
 {
-    public static class Extensions
+    private static string Prefix(bool value)
+    => value ? "" : "not ";
+
+    private static GameUserEntry GetUserWithCharacter<TRole>(GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
+        where TRole : Character
     {
-        private static string Prefix(bool value)
-        => value ? "" : "not ";
+        selector ??= x => true;
+        ArgumentOutOfRangeException.ThrowIfNegative(index, nameof(index));
+        var entry = room.Users
+            .Select(x => x.Value)
+            .Where(x => x.Character is TRole role && selector(role))
+            .Skip(index)
+            .FirstOrDefault();
+        IsNotNull(entry, $"Character {typeof(TRole).FullName} at index {index} and specified rules not found");
+        return entry;
+    }
 
-        public static GameUserEntry GetUserWithRole<TRole>(this GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
-            where TRole : Role
-        {
-            selector ??= x => true;
-            if (index < 0)
-                throw new ArgumentOutOfRangeException(nameof(index));
-            var entry = room.Users
-                .Select(x => x.Value)
-                .Where(x => x.Role is TRole role && selector(role))
-                .Skip(index)
-                .FirstOrDefault();
-            if (entry is null)
-                throw new KeyNotFoundException(
-                    $"Role {typeof(TRole).FullName} at index {index} and specified rules not found"
-                );
-            return entry;
-        }
+    [return: NotNull]
+    public static TChar GetCharacter<TChar>(this GameRoom room, int index = 0, Func<TChar, bool>? selector = null)
+        where TChar : notnull, Character
+    {
+        var character = GetUserWithCharacter(room, index, selector)?.Character as TChar;
+        IsNotNull(character, $"Character {typeof(TChar).Name} at index {index} not found");
+        return character;
+    }
 
-        public static TRole GetRole<TRole>(this GameRoom room, int index = 0, Func<TRole, bool>? selector = null)
-            where TRole : Role
-        {
-            var entry = GetUserWithRole<TRole>(room, index, selector);
-            if (entry?.Role is TRole role)
-                return role;
-            else 
-                throw new KeyNotFoundException(
-                    $"Role {typeof(TRole).FullName} at index {index} and specified rules not found"
-                );
-        }
+    public static string? Vote(this Werewolf.Theme.Voting voting, GameRoom game, Character voter, Character target)
+    {
+        var voterId = game.TryGetId(voter);
+        IsNotNull(voterId, $"Character {voter.Name} has no id");
+        var targetId = voting.Options.Where(x => x.option is CharacterOption opt && opt.Character == target)
+            .Select(x => x.id)
+            .ToArray();
+        AreEqual(1, targetId.Length, $"Target {target.Name} is not part of the voting");
+        return voting.Vote(game, voterId.Value, targetId[0]);
+    }
 
-        public static string? Vote(this Werewolf.Theme.Votings.PlayerVotingBase voting, GameRoom room, UserId voter, UserId target)
-        {
-            var optId = voting.GetOptionIndex(target);
-            if (optId is null)
-                throw new KeyNotFoundException($"cannot find target {target}");
-            return voting.Vote(room, voter, optId.Value);
-        }
+    public static string? Vote(this Werewolf.Theme.Voting voting, GameRoom game, Character voter, int target)
+    {
+        var voterId = game.TryGetId(voter);
+        IsNotNull(voterId, $"Character {voter.Name} has no id");
+        return voting.Vote(game, voterId.Value, target);
+    }
 
-        public static string? Vote(this Werewolf.Theme.Votings.PlayerVotingBase voting, GameRoom room, GameUserEntry voter, GameUserEntry target)
-        {
-            return Vote(voting, room, voter.User.Id, target.User.Id);
-        }
+    public static string? Vote<TTarget>(this Werewolf.Theme.Voting voting, GameRoom game, Character voter)
+        where TTarget : VoteOption
+    {
+        var voterId = game.TryGetId(voter);
+        IsNotNull(voterId, $"Character {voter.Name} has no id");
+        var targetId = voting.Options.Where(x => x.option is TTarget)
+            .Select(x => x.id)
+            .ToArray();
+        AreEqual(1, targetId.Length, $"Target {typeof(TTarget).Name} is not part of the voting");
+        return voting.Vote(game, voterId.Value, targetId[0]);
+    }
 
-        public static void ExpectPhase<TPhase>(this GameRoom room, Func<TPhase, bool>? verifier = null)
-            where TPhase : Phase
-        {
-            verifier ??= x => true;
-            if (room.Phase?.Current is not TPhase @phase || !verifier(@phase))
-                throw new InvalidOperationException(
-                    $"The current phase is expected to be {typeof(TPhase).FullName} but is " + 
-                    $"{room.Phase?.Current?.GetType().FullName ?? "null"}."
-                );
-        }
+    public static void CannotVote(this Voting voting, GameRoom game, Character voter, Character target)
+    {
+        var voterId = game.TryGetId(voter);
+        if (voterId is null)
+            return;
+        var targetId = voting.Options.Where(x => x.option is CharacterOption opt && opt.Character == target)
+            .Select(x => x.id)
+            .ToArray();
+        if (targetId.Length != 1)
+            return;
+        IsNotNull(voting.Vote(game, voterId.Value, targetId[0]), "A vote could be made but it was expected that it wouldn't work");
+    }
 
-        public static async Task ExpectNextPhaseAsync<TPhase>(this GameRoom room, Func<TPhase, bool>? verifier = null)
-            where TPhase : Phase
-        {
-            await room.NextPhaseAsync().ConfigureAwait(false);
-            ExpectPhase<TPhase>(room, verifier);
-        }
+    public static void ExpectNextPhase<TPhase>(this GameRoom room)
+        where TPhase : Scene
+    {
+        room.NextScene();
+        IsInstanceOfType<TPhase>(room.Phase);
+    }
 
-        public static TVoting ExpectVoting<TVoting>(this Phase phase, int offset = 0, Func<TVoting, bool>? verifier = null)
-            where TVoting : Voting
-        {
-            verifier ??= x => true;
-            var voting = phase.Votings
-                .Where(x => x is TVoting)
-                .Cast<TVoting>()
-                .Where(verifier)
-                .Skip(offset)
-                .FirstOrDefault();
-            if (voting is null)
-                throw new InvalidOperationException(
-                    $"It was expected that a voting {typeof(TVoting).FullName} (offset: {offset}) exists but not found."
-                );
-            return voting;
-        }
+    public static TVoting ExpectVoting<TVoting>(this GameRoom game, int offset = 0, Func<TVoting, bool>? verifier = null)
+        where TVoting : Voting
+    {
+        verifier ??= x => true;
+        var voting = game.Votings
+            .Where(x => x is TVoting)
+            .Cast<TVoting>()
+            .Where(verifier)
+            .Skip(offset)
+            .FirstOrDefault();
+        IsNotNull(voting, $"It was expected that a voting {typeof(TVoting).FullName} (offset: {offset}) exists but not found.");
+        return voting;
+    }
 
-        public static TVoting ExpectVoting<TVoting>(this GameRoom room, int offset = 0, Func<TVoting, bool>? verifier = null)
-            where TVoting : Voting
-        {
-            var phase = room.Phase?.Current;
-            if (phase is null)
-                throw new InvalidOperationException(
-                    $"A phase with the voting {typeof(TVoting).FullName} was expected but they are no phases right now"
-                );
-            return phase.ExpectVoting(offset, verifier);
-        }
+    public static void ExpectNoVoting<TVoting>(this GameRoom game, int offset = 0, Func<TVoting, bool>? verifier = null)
+        where TVoting : Voting
+    {
+        verifier ??= x => true;
+        var voting = game.Votings
+            .Where(x => x is TVoting)
+            .Cast<TVoting>()
+            .Where(verifier)
+            .Skip(offset)
+            .FirstOrDefault();
+        IsNull(voting, $"It was expected that a voting {typeof(TVoting).FullName} (offset: {offset}) doesn't exists but it was found.");
+    }
 
-        public static void ExpectNoVoting<TVoting>(this Phase phase, int offset = 0, Func<TVoting, bool>? verifier = null)
-            where TVoting : Voting
-        {
-            verifier ??= x => true;
-            var voting = phase.Votings
-                .Where(x => x is TVoting)
-                .Cast<TVoting>()
-                .Where(verifier)
-                .Skip(offset)
-                .FirstOrDefault();
-            if (voting is not null)
-                throw new InvalidOperationException(
-                    $"It was expected that a voting {typeof(TVoting).FullName} (offset: {offset}) doesn't exists but it was found."
-                );
-        }
+    [Obsolete("use Assert.IsTrue()", true)]
+    public static void ExpectLiveState(this Character role, bool alive = true)
+    {
+        if (role.Enabled != alive)
+            throw new InvalidOperationException(
+                $"The role {role.GetType().FullName} was expected to be {Prefix(alive)}alive but is {Prefix(role.Enabled)}alive."
+            );
+    }
 
-        public static void ExpectNoVoting<TVoting>(this GameRoom room, int offset = 0, Func<TVoting, bool>? verifier = null)
-            where TVoting : Voting
-        {
-            var phase = room.Phase?.Current;
-            if (phase is null)
-                throw new InvalidOperationException(
-                    $"A phase without the voting {typeof(TVoting).FullName} was expected but they are no phases right now"
-                );
-            phase.ExpectNoVoting(offset, verifier);
-        }
+    public static void ExpectLabel<THostLabel, TLabel>(this ILabelHost<THostLabel> host, int offset = 0, Func<TLabel, bool>? filter = null)
+        where THostLabel : class, ILabel
+        where TLabel : THostLabel
+    {
+        var label = host.Labels.GetEffects<TLabel>()
+            .Where(filter ?? (_ => true))
+            .Skip(offset)
+            .FirstOrDefault();
+        IsNotNull(label, $"The host {host.GetType().FullName} was expected to have a label {typeof(TLabel).Name} but hasn't.");
+    }
 
-        public static void ExpectLiveState(this Role role, bool alive = true)
-        {
-            if (role.IsAlive != alive)
-                throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to be {Prefix(alive)}alive but is {Prefix(role.IsAlive)}alive."
-                );
-        }
+    public static void ExpectNoLabel<THostLabel, TLabel>(this ILabelHost<THostLabel> host, int offset = 0, Func<TLabel, bool>? filter = null)
+        where THostLabel : class, ILabel
+        where TLabel : THostLabel
+    {
+        var label = host.Labels.GetEffects<TLabel>()
+            .Where(filter ?? (_ => true))
+            .Skip(offset)
+            .FirstOrDefault();
+        IsNull(label, $"The host {host.GetType().FullName} was expected to have no label {typeof(TLabel).Name} but found.");
+    }
 
-        public static void ExpectNoKillFlag(this Role role)
+    public static void ExpectWinner(this GameRoom game, params Character[] winners)
+    {
+        IsTrue(game.Winner.HasValue);
+        var currentWinner = game.Winner.Value.winner;
+        var cw = currentWinner.ToArray().ToList()
+            .Select(x => game.TryGetRole(x))
+            .Where(x => x != null)
+            .Select(x => x!.Name);
+        var suffix = $"Current winner: {{{string.Join(", ", cw)}}}";
+        var all = new HashSet<UserId>();
+        foreach (var winner in winners)
         {
-            var effect = role.Effects.GetEffect<Werewolf.Theme.Effects.KillInfoEffect>();
-            if (effect is not null)
-                throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to have no kill flag but got {effect.GetType().FullName}."
-                );
+            var id = game.TryGetId(winner);
+            IsTrue(id.HasValue, $"Character {winner.Name} was expected to have an id. {suffix}");
+            _ = all.Add(id.Value);
+            var found = false;
+            foreach (var w in currentWinner.Span)
+                found |= w == id.Value;
+            IsTrue(found, $"Character {winner.Name} was expected to be a winner. {suffix}");
         }
+        foreach (var current in currentWinner.Span)
+        {
+            IsTrue(all.Contains(current), $"The user {current} was marked as winner but this wasn't expected. {suffix}");
+        }
+    }
 
-        public static void ExpectKillFlag<T>(this Role role)
-            where T : Werewolf.Theme.Effects.KillInfoEffect
-        {
-            var effect = role.Effects.GetEffect<T>();
-            if (effect is null)
-                throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to have kill flag {typeof(T).FullName} but haven't."
-                );
-        }
+    public static void ExpectVisibility<TExpectedRole>(this Character victim, GameRoom game, Character viewer)
+        where TExpectedRole : Character
+    {
+        var shownRole = victim.ViewRole(game, viewer);
+        IsTrue(
+            shownRole.IsAssignableTo(typeof(TExpectedRole)),
+            $"It was expected that {victim.GetType().FullName} is shown to {viewer.GetType().FullName} " +
+            $"as {typeof(TExpectedRole).FullName} but it is {shownRole.GetType().FullName}."
+        );
+    }
 
-        public static void ExpectTag(this Role role, GameRoom game, string tag)
-        {
-            if (!role.GetTags(game, null).Contains(tag))
-                throw new InvalidOperationException(
-                    $"The role {role.GetType().FullName} was expected to have the tag {tag} but hasn't."
-                );
-        }
+    public static void ExpectSequence<TSequence>(this GameRoom game)
+        where TSequence : Sequence
+    {
+        IsTrue(game.Sequences.Any(x => x is TSequence), $"Expect sequence {typeof(TSequence).Name}");
+    }
 
-        public static void ExpectStage<TStage>(this GameRoom game, Func<TStage, bool>? verifier = null)
-        {
-            verifier ??= x => true;
-            if (game.Phase?.CurrentStep.Stage is not TStage stage || !verifier(stage))
-                throw new InvalidOperationException(
-                    $"It was expected that the current stage is {typeof(TStage).FullName} but it is " +
-                    $"{game.Phase?.CurrentStep.Stage.GetType().FullName ?? "null"}"
-                );
-        }
-
-        public static void ExpectWinner(this GameRoom game, Func<Role, bool>? verifier = null)
-        {
-            verifier ??= x => true;
-            if (game.Winner is null)
-                throw new InvalidOperationException(
-                    $"The game is not finished but it was expected"
-                );
-            foreach (var id in game.Winner!.Value.winner.Span)
-            {
-                if (!game.Users.TryGetValue(id, out GameUserEntry? entry))
-                    throw new InvalidOperationException(
-                        $"They winner {id} has no matching user"
-                    );
-                if (entry.Role is null)
-                    throw new InvalidOperationException(
-                        $"The winner {id} has no associated role"
-                    );
-                if (!verifier(entry.Role))
-                    throw new InvalidOperationException(
-                        $"The winner {id} is invalid"
-                    );
-            }
-        }
-
-        public static void ExpectWinner(this GameRoom game, int winnerCount, Func<Role, bool>? verifier = null)
-        {
-            ExpectWinner(game, verifier);
-            if (game.Winner!.Value.winner.Length != winnerCount)
-                throw new InvalidOperationException(
-                    $"It was expected to have {winnerCount} but they are {game.Winner.Value.winner.Length} winner."
-                );
-        }
-
-        public static void ExpectWinner(this GameRoom game, params Role[] winner)
-        {
-            ExpectWinner(game, winner.Length, role => winner.Contains(role));
-        }
-
-        public static void ExpectWinner(this GameRoom game, params GameUserEntry[] winner)
-        {
-            ExpectWinner(game, winner.Length, role => winner.Any(x => x.Role == role));
-        }
-
-        public static void ExpectVisibility<TExpectedRole>(this Role victim, Role viewer)
-            where TExpectedRole : Role
-        {
-            var shownRole = victim.ViewRole(viewer);
-            if (shownRole is not TExpectedRole)
-                throw new InvalidOperationException(
-                    $"It was expected that {victim.GetType().FullName} is shown to {viewer.GetType().FullName} " +
-                    $"as {typeof(TExpectedRole).FullName} but it is {shownRole.GetType().FullName}."
-                );
-        }
+    public static Type? GetSeenRole(this Character target, GameRoom game, Character viewer)
+    {
+        var viewerId = game.TryGetId(viewer);
+        var targetId = game.TryGetId(target);
+        IsTrue(viewerId.HasValue);
+        IsTrue(targetId.HasValue);
+        IsTrue(game.Users.TryGetValue(viewerId.Value, out var viewerEntry));
+        return Character.GetSeenRole(game, null, viewerEntry.User, targetId.Value, target);
     }
 }

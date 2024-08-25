@@ -1,0 +1,41 @@
+scene NightKills {
+    phase Morning;
+    func enable { true }
+    func run_on { true }
+    func can_message { true }
+    func start {
+        // check if we have any victims of werewolves
+        for let $victim = @character | has(label WerewolfSelectedTarget) {
+            // use the additional live of the old man
+            if has($victim, label OldManAdditionalLive) {
+                remove($victim, label OldManAdditionalLive);
+                remove($victim, label WerewolfSelectedTarget);
+            }
+            // healer has protected him
+            if has($victim, label ProtectedByHealer) {
+                remove($victim, label WerewolfSelectedTarget);
+            }
+            // safe him using a witch potion
+            if has($victim, label HealPotionTarget) {
+                remove($victim, label HealPotionTarget);
+                remove($victim, label WerewolfSelectedTarget);
+            }
+        }
+        notify character KilledAtNight(
+            @character
+            | has(label WerewolfSelectedTarget, label WitchSelectedTarget)
+        );
+        for let $victim = @character | has(label WerewolfSelectedTarget) {
+            // just kill him
+            remove($victim, label WerewolfSelectedTarget);
+            add($victim, label Killed);
+        }
+        // check if we have any victims of the witch
+        for let $victim = @character | has(label WitchSelectedTarget) {
+            // just kill him
+            remove($victim, label WitchSelectedTarget);
+            add($victim, label Killed);
+        }
+        // continue with next scene ...
+    }
+}

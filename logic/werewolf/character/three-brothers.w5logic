@@ -1,0 +1,49 @@
+character ThreeBrothers {
+    func valid_usage {
+        if $count < 0 || $count > 3 {
+            $old
+        } else {
+            if $old < $count {
+                3
+            } else {
+                0
+            }
+        }
+    }
+    func view {
+        if $viewer == character ThreeBrothers {
+            character ThreeBrothers
+        } else {
+            character Unknown
+        }
+    }
+}
+scene ThreeBrothers {
+    phase Night;
+    after { Werewolf }
+    func enable {
+        any(@all_character | has_character(character ThreeBrothers))
+    }
+    func run_on {
+        any(@character | has_character(character ThreeBrothers)) &&
+        empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage))
+    }
+    func can_message {
+        $character == character ThreeBrothers
+    }
+    func start {
+        spawn voting ThreeBrothers;
+    }
+}
+option Continue;
+voting ThreeBrothers {
+    func voting_option {
+        { option Continue }
+    }
+    func can_vote {
+        $voter == character ThreeBrothers
+    }
+    func can_view {
+        $viewer == character ThreeBrothers
+    }
+}

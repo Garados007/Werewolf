@@ -1,0 +1,36 @@
+mode Mode {
+    character { User }
+}
+phase Phase {
+    func start { true }
+    func next { phase Phase }
+    func background { "test-bg" }
+    func theme { "test-theme" }
+}
+scene Scene1 {
+    phase Phase;
+    func start {
+        // disable one player
+        if let $user = @character | get(0) {
+            enabled($user, false);
+        }
+    }
+}
+scene Scene2 {
+    phase Phase;
+    after { Scene1 }
+    func start {
+        for let $user = @character {
+            add($user, label Marker1)
+        }
+        for let $user = @all_character {
+            add($user, label Marker2)
+        }
+        for let $user = @all_character | filter($x, !enabled($x)) {
+            enabled($user, true)
+        }
+    }
+}
+character User {}
+label Marker1 { target { character } }
+label Marker2 { target { character } }

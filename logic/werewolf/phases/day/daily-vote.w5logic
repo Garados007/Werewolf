@@ -1,0 +1,86 @@
+scene DailyVote {
+    phase Day;
+    after { Major }
+    func enable { true }
+    func run_on { true }
+    func can_message { true }
+    func start {
+        spawn voting DailyVoting;
+    }
+}
+label DailyVictim {
+    target { character }
+    func view { false }
+}
+voting DailyVoting {
+    func voting_option {
+        if empty(@all_character | has_character(character OldMan) | has(label Killed)) {
+            @character | has_not(label IdiotShowToVillage)
+        } else {
+            @character
+        }
+    }
+    func can_vote {
+        if has($game, label HasRestrictedVoteRights) {
+            has($voter, label IsAllowedToVote) && has_not($voter, label IdiotShowToVillage)
+        } else {
+            has_not($voter, label IdiotShowToVillage)
+        }
+    }
+    func choice {
+        remove($game, label HasRestrictedVoteRights);
+        if let $char = $character {
+            if $char == character Idiot
+                && empty(@all_character | has_character(character OldMan) | has(label Killed))
+            {
+                add($char, label IdiotShowToVillage);
+            } else {
+                add($char, label DailyVictim);
+                notify character KilledByVillage({$char});
+            }
+        }
+    }
+    func unanimous {
+        remove($game, label HasRestrictedVoteRights);
+        if any($choices) {
+            let $scapegoats = @character | has_character(character ScapeGoat);
+            if let $scapegoat = $scapegoats | get(rand(length($scapegoats))) {
+                add($scapegoat, label ScapeGoatWasKilledByVillage);
+                add($scapegoat, label Killed);
+                notify character KilledScapegoat({$scapegoat});
+            } else {
+                // perform major voting if we have a valid one
+                if any(@all_character | has(label Major) | has_not(label IdiotShowToVillage)) {
+                    spawn voting DailyVotingByMajor with choices($choices);
+                } else {
+                    spawn voting DailyVoting with choices($choices);
+                }
+            }
+        }
+    }
+}
+voting DailyVotingByMajor {
+    func can_vote {
+        has($voter, label Major) && has_not($voter, label IdiotShowToVillage)
+    }
+    func can_view {
+        true
+    }
+    func choice {
+        if let $char = $character {
+            if $char == character Idiot
+                && empty(@all_character | has_character(character OldMan) | has(label Killed))
+            {
+                add($char, label IdiotShowToVillage)
+            } else {
+                add($char, label DailyVictim);
+                notify character KilledByMajor({$char});
+            }
+        }
+    }
+    func unanimous {
+        if any($choices) {
+            spawn voting DailyVotingByMajor with choices($choices);
+        }
+    }
+}

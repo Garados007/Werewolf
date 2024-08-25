@@ -1,0 +1,74 @@
+character Amor {
+    func create {
+        add($this, label AmorVoteRight);
+    }
+    func view {
+        if $viewer == character Amor {
+            character Amor
+        } else {
+            character Unknown
+        }
+    }
+}
+label AmorVoteRight {
+    target { character }
+}
+// The label that is attached to each lover
+label LovedOne {
+    target { character }
+    with character amor;
+    func view {
+        if let $target = $viewer {
+            if let $amor = get_with($this, label LovedOne, amor) {
+                $target == $amor || $target == $current
+            } else {
+                false // error
+            }
+        } else {
+            true
+        }
+    }
+}
+// The label that is attached to the crush of the lover
+label LovedCrush {
+    target { character }
+    with character amor;
+    with character partner; // the partner that has the LovedOne label
+    func view {
+        if let $target = $viewer {
+            if let $amor = get_with($this, label LovedCrush, amor) {
+                if let $partner = get_with($this, label LovedCrush, partner) {
+                    // the current character is not allowed to see this label!
+                    $target == $amor || $target == $partner
+                } else {
+                    false // error
+                }
+            } else {
+                false // error
+            }
+        } else {
+            true
+        }
+    }
+}
+win LoveWins {
+    func check {
+        empty(@character | filter($x,
+            // all character has to have the label LovedOne
+            has_not($x, label LovedOne) ||
+            // they must have a partner that is alive
+            empty(@character | filter($y,
+                any(labels($y) | filter($lbl,
+                    if let $target = get_with($lbl, label LovedCrush, partner) {
+                        $target == $x
+                    } else {
+                        false
+                    }
+                ))
+            ))
+        ))
+    }
+    func winner {
+        @character
+    }
+}

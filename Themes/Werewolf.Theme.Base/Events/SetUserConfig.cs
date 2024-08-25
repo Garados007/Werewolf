@@ -1,32 +1,31 @@
 ﻿using System.Text.Json;
 using Werewolf.User;
 
-namespace Werewolf.Theme.Events
+namespace Werewolf.Theme.Events;
+
+public class SetUserConfig : GameEvent
 {
-    public class SetUserConfig : GameEvent
+    public UserInfo User { get; }
+
+    public SetUserConfig(UserInfo user)
+        => User = user;
+
+    public override bool CanSendTo(GameRoom game, UserInfo user)
     {
-        public UserInfo User { get; }
+        return user.Id == User.Id;
+    }
 
-        public SetUserConfig(UserInfo user)
-            => User = user;
-
-        public override bool CanSendTo(GameRoom game, UserInfo user)
+    public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
+    {
+        var userConfig = game.Theme?.Users.GetCachedUser(user.Id);
+        if (userConfig != null)
         {
-            return user.Id == User.Id;
+            writer.WriteStartObject("user-config");
+            writer.WriteString("theme", userConfig.Config.ThemeColor ?? "#333333");
+            writer.WriteString("background", userConfig.Config.BackgroundImage ?? "");
+            writer.WriteString("language", string.IsNullOrEmpty(userConfig.Config.Language) ? "de" : userConfig.Config.Language);
+            writer.WriteEndObject();
         }
-
-        public override void WriteContent(Utf8JsonWriter writer, GameRoom game, UserInfo user)
-        {
-            var userConfig = game.Theme?.Users.GetCachedUser(user.Id);
-            if (userConfig != null)
-            {
-                writer.WriteStartObject("user-config");
-                writer.WriteString("theme", userConfig.Config.ThemeColor ?? "#333333");
-                writer.WriteString("background", userConfig.Config.BackgroundImage ?? "");
-                writer.WriteString("language", string.IsNullOrEmpty(userConfig.Config.Language) ? "de" : userConfig.Config.Language);
-                writer.WriteEndObject();
-            }
-            else writer.WriteNull("user-config");
-        }
+        else writer.WriteNull("user-config");
     }
 }

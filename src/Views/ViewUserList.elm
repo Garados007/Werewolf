@@ -52,17 +52,17 @@ view lang now levels game myId joinToken codeCopyTimestamp streamerMode =
                                 |> Maybe.map
                                     (\rid ->
                                         Language.getTextOrPath lang
-                                            [ "theme", "roles", rid ]
+                                            [ "theme", "role", rid, "name" ]
                                     )
                                 |> Maybe.withDefault
                                     ( Language.getTextOrPath lang
-                                        [ "theme", "roles", "unknown" ]
+                                        [ "theme", "role", "unknown", "name" ]
                                     )
                             )
                         <| List.map
                             (\tag ->
                                 Language.getTextOrPath lang
-                                    [ "theme", "tags", tag ]
+                                    [ "theme", "label", tag ]
                             )
                         <| player.tags
 

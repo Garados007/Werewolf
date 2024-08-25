@@ -285,6 +285,8 @@ applyEventData event model =
                     newParticipant
                     Dict.empty
                 , winner = Nothing
+                , sequences = []
+                , autoSkip = False
                 }
             }
             []
@@ -448,6 +450,7 @@ applyEventData event model =
                 , autofinishRound = newConfig.autofinishRound
                 , theme = newConfig.theme
                 }
+            , editor = Dict.empty
             }
             <| List.map Network.NetReq
             <| LangConfig.verifyHasTheme
@@ -655,6 +658,21 @@ applyEventData event model =
                     )
                 <| List.take 30
                 <| model.chats
+            }
+            []
+        EventData.SendSequences sequences autoSkip -> Tuple.pair
+            { model
+            | state = Maybe.map
+                (\state ->
+                    { state
+                    | game = state.game |> \game ->
+                        { game
+                        | sequences = sequences
+                        , autoSkip = autoSkip
+                        }
+                    }
+                )
+                model.state
             }
             []
 

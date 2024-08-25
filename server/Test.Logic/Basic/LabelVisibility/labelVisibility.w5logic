@@ -1,0 +1,76 @@
+mode Mode {
+    character { User }
+}
+phase Phase {
+    func start { true }
+    func next { phase Phase }
+    func background { "test-bg" }
+    func theme { "test-theme" }
+}
+scene Scene {
+    phase Phase;
+    func start {
+        if let $single = get(0, @character) {
+            if let $second = get(1, @character) {
+                add($single, label VisibleToEveryone);
+                add($single, label VisibleToNoone);
+                add($single, label VisibleToSelf);
+                add($single, label VisibleToSpecific, target_character=$second);
+                let $lbl = add($single, label VisibleToCustom);
+                set_visible($lbl, $second);
+            }
+        }
+    }
+}
+scene Scene2 {
+    phase Phase;
+    after { Scene }
+    func start {
+        if let $single = get(0, @character) {
+            if let $second = @character | get(1) {
+                if let $lbl = labels($single) | filter($x, $x == label VisibleToCustom) | get(0) {
+                    set_visible($lbl, $single);
+                    set_invisible($lbl, $second);
+                }
+            }
+        }
+    }
+}
+character User {}
+label VisibleToEveryone {
+    target { character }
+    func view { true }
+}
+label VisibleToNoone {
+    target { character }
+    func view { false }
+}
+label VisibleToSelf {
+    target { character }
+    func view {
+        if let $single = $viewer {
+            $current == $single
+        } else {
+            false
+        }
+    }
+}
+label VisibleToSpecific {
+    target { character }
+    with character target_character;
+    func view {
+        if let $single = $viewer {
+            if let $target = get_with($this, label VisibleToSpecific, target_character) {
+                $single == $target
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
+}
+label VisibleToCustom {
+    target { character }
+    func view { false }
+}

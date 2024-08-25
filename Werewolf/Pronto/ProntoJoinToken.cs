@@ -1,19 +1,10 @@
-using System;
+namespace Werewolf.Pronto;
 
-namespace Werewolf.Pronto
+public class ProntoJoinToken(string token, DateTime aliveUntil)
 {
-    public class ProntoJoinToken
-    {
-        public string Token { get; }
+    public string Token { get; } = token;
 
-        public DateTime AliveUntil { get; }
+    public DateTime AliveUntil { get; } = aliveUntil;
 
-        public ProntoJoinToken(string token, DateTime aliveUntil)
-        {
-            Token = token;
-            AliveUntil = aliveUntil;
-        }
-
-        public bool Invalid => AliveUntil < DateTime.Now;
-    }
+    public bool Invalid => AliveUntil < DateTime.Now;
 }

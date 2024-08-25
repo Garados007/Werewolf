@@ -1,0 +1,135 @@
+{
+    "#date": "2021-09-17 19:04:09Z",
+    "#hint": "This language file is automaticly translated from de to en",
+    "theme": {
+        "event": {
+            "player-notification": {
+                "HunterKill": "The hunter shot.\n",
+                "KilledAtNight": "Unfortunately, not all your glasses have emptied.\n",
+                "KilledByLove": "The hunger became too big again.\n",
+                "KilledByMajor": "The mayor has decided to throw out the sober.\n",
+                "KilledByVillage": "The pub visitors have made someone out.\n",
+                "KilledScapegoat": "The comedian was thrown out because of excitement of public annoyance.\n",
+                "NewMajorInherited": "The mayor's title was inherited.\n",
+                "NewMajorVoted": "A new mayor was determined!\n",
+                "OldManAndIdiotKilled": "The pub visitors were drunk and could not think of clear\n",
+                "ScapegoatVoted": "The comedian has his last sketch.\n"
+            }
+        },
+        "label": {
+            "EnchantedByFlutist": "(Dancing)\n",
+            "Killed": "(sober)\n",
+            "LovedOne": "(full food)\n",
+            "Major": "(Mayor)\n",
+            "WerewolfSelectedTarget": "(Sober)\n"
+        },
+        "names": {
+            "game-leader": "Game master\n",
+            "member": "Player\n",
+            "player": "player\n"
+        },
+        "phases": {
+            "AmorPhase": "Waiter serves the food\n",
+            "DailyVote": "Still a round of beer\n",
+            "Flutist": "Musicians enchanted with his music\n",
+            "Healer": "Wirt gives one!\n",
+            "HunterPhase": "The hunter wants to be dense\n",
+            "InheritMajorPhase": "Inheritance of the mayor\n",
+            "Major": "Mayoral election\n",
+            "OracleView": "Find new friends in the Suff!\n",
+            "ScapeGoatPhase": "A good joke\n",
+            "Werewolf": "Pans of the beer\n",
+            "Witch": "Small business under 'Friends'\n"
+        },
+        "role": {
+            "Amor": {
+                "info": "In the war there are many dead, many lonely pastels and many who just do not want to die lonely.During the food, a comrade has helped his best to a love that is stronger than he thought.Both are happy and their fate is connected from now on.If one of the lovers die, the other dies immediately at grief.\n",
+                "name": "waiter\n"
+            },
+            "Angel": {
+                "info": "The goal of Brother Thomas is to leave the pub in the first round (1 day and night phase).If this arrives, then Brother Thomas wins immediately.\nShould be played with brother Thomas, the game starts with a day instead of the night phase.\nIf Brother Thomas do not manage to leave the pub in the first round, it will automatically become one of the other drunk pub visitors.\n",
+                "name": "Brother Thomas\n"
+            },
+            "Flutist": {
+                "info": "The spy has come in gathered to collect information for the opposing side.It turns out that there are people here too, who want to join him.Every night he finds a new trailer.The spy and all deserters are fighting for the opponents from now on.\nThe game is finished immediately if only deserters or the spy live.Then the spy wins.\nIf there are 7 or fewer teammates, the spy may only determine one deserter per night.\nTip for the other teammates: tries to get rid of the spy as early as possible.\n",
+                "name": "Musician\n"
+            },
+            "Girl": {
+                "info": "The secret police can follow them for a short time during the phase of the saboteurs to find out their identity.Due to poor workouts, there is the possibility that they are caught by the saboteurs.\nWith this cat and mouse game, the secret police can expose the saboters or noticed by them.\n",
+                "name": "Daughter from the host\n"
+            },
+            "Healer": {
+                "info": "The paramedic will be called at night to an emergency and kept the life of this comrade to preserve, this can not be killed this night by the sabers.\nThe paramedic can not protect the same comrades every night, so the same person is never sure in two consecutive nights.\n",
+                "name": "host\n"
+            },
+            "Hunter": {
+                "info": "The blackout can give away before he dies a last shot and so, thanks to its accuracy, bring one of the persons present to the route.He does not know if he lies right with his suspicion one of the saboters properly, so hope for a good observation.\n",
+                "name": "Hunter\n"
+            },
+            "Idiot": {
+                "info": "The dripping from the service can not be killed directly from the team.If the jerk will be selected by her, all it becomes clear that he just did not want to start an apprenticeship immediately and forgives him.\nBut he also loses his right to vote in the future appeals.If this Depp was in advance, the function of him is completely lost and the troupe has no commander anymore.\nWhen a veteran is present, the following comes into force: as soon as it dies, the jerk is automatically gently smelled by the team as soon as he was recognized.\n",
+                "name": "Drunken\n"
+            },
+            "OldMan": {
+                "info": "The veteran has served so long and briefly gained camphor experience that it can not be killed by a single fig of the saboteurs.Instead, these have to run twice.With all the others (Oberfeldarzt, sniper, team, etc.), his camphor experience brings him nothing.\nIf the jerk is played by the service: As soon as the veteran dies, the wisdom is lost from the team.This can then no longer hold back and brings the jerk when he was caught as what he is\n",
+                "name": "Trinking man\n"
+            },
+            "Oracle": {
+                "info": "The reconnaissance team is traveling again to explore the area.They often discover like their comrades really.In stress moments like such, you can see the right character of people to appear.\n",
+                "name": "Beerleich\n"
+            },
+            "PureSoul": {
+                "info": "The Schnapskobold is austerity guest of the pub.His everyday visits are known to everyone.However, it is unknown unknown when he's sober\n",
+                "name": "Snap\n"
+            },
+            "ScapeGoat": {
+                "info": "The Unofficor is automatically proclaimed as guilty if no clear guilty person is found in an Apell.Of course, this wants to avoid this.\nIf the Unofficier is proclaimed by a draw as a guilty and thereby killed by the team, then the Unofficor gets the right to determine the coming Apell who may vote and who is not.If only one determines one and he is killed directly by the sabeles, the next apell is eliminated.\n",
+                "name": "comedian\n"
+            },
+            "Unknown": {
+                "name": "???\n"
+            },
+            "Villager": {
+                "info": "No skills, no talent and do not have any special features!\nThe new ones are known to use only as a cannon feed.\n",
+                "name": "Pub visitors\n"
+            },
+            "Werewolf": {
+                "info": "A saboteur whose goal is to kill everyone in order to prevent the upcoming counterattack.\nThe saboters hit every night and seek a sleeping victim.\n",
+                "name": "Beerpanscher\n"
+            },
+            "Witch": {
+                "info": "The Oberfeldalk has medicine, but not much.In the war he often has to decide if someone suits his wounds or will see the home again.\nHe once has medicine to save one, for whom will he use it?But he too can kill, and with the saestest funds.He has an ace in the sleeve and with this one can tear into the dead, without the one knows that he was.\nHe can use in the night one, both or none of the drugs.\n",
+                "name": "Drug dealer\n"
+            }
+        },
+        "voting": {
+            "GirlSpy": {
+                "options": {
+                    "Spy": "Watch\n"
+                }
+            },
+            "ScapeGoat": {
+                "options": {
+                    "stop-voting": "All glasses empty\n"
+                },
+                "title": "Distribute voting rights\n"
+            },
+            "Witch_DeathPotion": {
+                "title": "Use death drug\n"
+            },
+            "Witch_HealPotion": {
+                "options": {
+                    "character": "Fill {player}"
+                },
+                "title": "Use life drug\n"
+            },
+            "default": {
+                "options": {
+                    "None": "Continue drinking\n",
+                    "character": "{name}"
+                },
+                "title": "Choose an option\n"
+            }
+        }
+    }
+}

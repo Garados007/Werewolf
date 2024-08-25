@@ -1,0 +1,135 @@
+{
+    "theme": {
+        "event": {
+            "player-notification": {
+                "HunterKill": "Die Polizei hat ihren letzten Akt vollführt.",
+                "KilledAtNight": "Leider hatten nicht alle eine spaßige Nacht gehabt.",
+                "KilledByMajor": "Der Zuhälter hat entschieden den Spieler zu töten.",
+                "KilledByVillage": "Der Strich hat den/die Spieler umgebracht.",
+                "KilledScapegoat": "Der Opfer musste sterben, da ihr euch nicht entscheiden konntet.",
+                "NewMajorInherited": "Der neue Zuhälter wurde bestimmt.",
+                "NewMajorVoted": "Ein neuer Zuhälter wurde bestimmt!",
+                "OldManAndIdiotKilled": "Das Dorf hatte seine Vernunft verloren und das Inzuchtskind gelyncht.",
+                "ScapegoatVoted": "Das Opfer hat entschieden, welche Spieler am kommenden Tag abstimmen dürfen."
+            }
+        },
+        "label": {
+            "EnchantedByFlutist": "(unterdrückt)",
+            "Killed": "(tot)",
+            "LovedOne": "(gematched)",
+            "Major": "(Zuhälter)",
+            "WerewolfSelectedTarget": "(AIDS Infizierter)"
+        },
+        "names": {
+            "game-leader": "Spielleiter",
+            "member": "Mitspieler",
+            "player": "Spieler"
+        },
+        "phases": {
+            "AmorPhase": "Tinder hat ein Match",
+            "DailyVote": "AIDS Auslöschung",
+            "Flutist": "Domina unterdrückt Menschen",
+            "Healer": "Kondome werden verteilt",
+            "HunterPhase": "Letzter Akt der Polizei",
+            "InheritMajorPhase": "Zuhälter bestimmt seinen Nachfolger",
+            "Major": "Zuhälterwahl",
+            "OracleView": "Stalker packt Fernglas aus",
+            "ScapeGoatPhase": "Entscheidung wer kommen darf",
+            "Werewolf": "AIDS Ausbreitung",
+            "Witch": "Verteilung der Medikamente"
+        },
+        "role": {
+            "Amor": {
+                "info": "Tinder kann am Anfang des Spiels zwei Verliebte bestimmen, dessen Schicksal von nun an verbunden ist. Sollte einer der Verliebten sterben, so stirbt der andere sofort an Sexentzug.",
+                "name": "Tinder"
+            },
+            "Angel": {
+                "info": "Das Ziel des Vergewohltätigtsen ist es in der ersten Runde (1 Tag- und Nachtphase) zu sterben. Sollte dies eintreffen, dann gewinnt der Vergewohltätigte sofort.\nSollte mit Vergewohltätigtem gespielt werden, so fängt das Spiel mit einer Tag- statt Nachtphase an.\nSollte der Vergewohltätigte es nicht schaffen in der ersten Runde zu sterben, so wird dieser automatisch zu einen normalen Dorfbewohner",
+                "name": "Vergewohltätigte"
+            },
+            "Flutist": {
+                "info": "Die Domina ist vor langer Zeit vom Dorf vertrieben wurden und will nun Rache ausüben. Sie stellt eine eigene Partei dar und bestimmt jede Nacht zwei Untergebene. Die Domina und alle Untergebenen kennen alle Untergebenen, aber die Untergebenen wissen nicht, wer die Domina ist.\nDas Spiel ist sofort beendet, wenn nur noch Untergebene oder die Domina leben. Dann gewinnt die Domina.\nGibt es 7 oder weniger Mitspieler, so darf die Domina nur einen Untergebenen pro Nacht bestimmen.\nTipp für die anderen Mitspieler: Versucht die Domina möglichst früh loszuwerden.",
+                "name": "Domina"
+            },
+            "Girl": {
+                "info": "Das kleine Kind der Prostituierten darf während der Phase der Personen mit AIDS versuchen die Augen leicht aufzumachen, um die Personen mit AIDS zu sehen. Gleichzeitig geht sie auch das Risiko ein, dass die Personen mit AIDS sie dabei erwischen.\nMit einer gewissen Wahrscheinlichkeit kann das Kind der Prostituierten einzelne Personen mit AIDS sehen. Mit einer gewissen Wahrscheinlichkeit wird das Kind der Prostituierten von einzelnen Personen mit AIDS erwischt und stirbt, da ihr Körper überhaupt micht mit diesen Krankheiten umgehen kann.",
+                "name": "Kind der Prostituierten"
+            },
+            "Healer": {
+                "info": "Der Kondomverteiler wird in der Nacht vor den Geschlechtskrankheiten aufgerufen und bestimmt einen Spieler, welcher diese Runde nicht von den Personen mit AIDS umgebracht werden kann. Dies wissen aber die Personen mit AIDS nicht.\nDer Kondomverteiler kann nicht ein und denselben Spieler in zwei aufeinander folgenden Nächten vor den Personen mit AIDS schützen.",
+                "name": "Kondomverteiler"
+            },
+            "Hunter": {
+                "info": "Die Polizei kann bevor sie sterben noch einen letzten Schuss abzugeben und so eventuell einen der Personen mit AIDS zur Strecke bringen.",
+                "name": "Polizei"
+            },
+            "Idiot": {
+                "info": "Das Inzuchtskind kann nicht vom Strich direkt umgebracht werden. Sollte das Inzuchtskind vom Strich ausgewählt werden, so deckt dieser seine Rolle auf und der Strich vergibt ihn. Gleichzeitig verliert das Inzuchtskind aber sein Wahlrecht bei zukünftigen Abstimmungen.\nWar das Inzuchtskind vorher Zuhälter, so ist die Funktion des Zuhälter endgültig verloren und kann nicht weitergegeben werden.\nWird mit den alten Sack gespielt, so tritt folgendes in Kraft: Sobald der alte Sack verstorben ist, wird das Inzuchtskind automatisch vom Strich gelyncht, sobald seine Rolle offen liegt.",
+                "name": "Inzuchtskind"
+            },
+            "OldMan": {
+                "info": "Der alte Sack hat so viel Lebenserfahrung gesammelt, dass dieser sich nicht von einer einzelnen Attacke der Personen mit AIDS umbringen lässt. Stattdessen müssen diese zweimal ran. Bei allen anderen (Apotheker, Polizei, Strich, etc.) bringt seine Lebenserfahrung keinen besonderen Vorteil.\nWird mit dem Inzuchtskind gespielt: Sobald der alte Sack stirbt, geht auch die Weisheit des Strichs verloren und kann sich nicht mehr zurückhalten, wenn die Rolle des Inzuchtskind aufgedeckt wird und bringt ihn sofort um.",
+                "name": "Alter Sack"
+            },
+            "Oracle": {
+                "info": "Der Stalker darf in jeder Nacht eine Person auswählen, dessen Rolle er sehen darf.",
+                "name": "Stalker"
+            },
+            "PureSoul": {
+                "info": "Die Jungfrau hatte noch nie Sex und jeder weiß es. Sie ist demnach einfach jemand auf der Suche nach etwas Spaß.",
+                "name": "Jungfrau"
+            },
+            "ScapeGoat": {
+                "info": "Das Opfer wird automatisch als Ziel ausgerufen, wenn bei einer AIDS-Auslöschung ein Unentschieden entsteht. Dies will das Opfer natürlich vermeiden.\n Wird das Opfer durch ein Unentschieden als Ziel ausgerufen und dadurch vom Strich umgebracht, dann bekommt das Opfer das Recht bei der kommenden AIDS-Auslöschung zu bestimmen wer abstimmen darf und wer nicht. Wenn es nur einen bestimmt und dieser direkt von den Personen mit AIDS umgebracht wird, so entfällt die nächste AIDS-Auslöschung.",
+                "name": "Opfer"
+            },
+            "Unknown": {
+                "name": "???"
+            },
+            "Villager": {
+                "info": "Ein normaler Freier ohne besonderen Fähigkeiten.",
+                "name": "Freier"
+            },
+            "Werewolf": {
+                "info": "Eine Person mit AIDS, dessen Ziel es ist alle Freier auszurotten.\nDie Personen mit AIDS werden jede Nacht einmal aufgerufen um für ihr Opfer zu stimmen.",
+                "name": "Person mit AIDS"
+            },
+            "Witch": {
+                "info": "Der verrückte Apotheker hat zwei besondere Medikamente im Spiel, welche er jeweils nur einmal benutzen darf.\nDer eine ist das Lebensmedikament, mit dessen Hilfe kann er das aktuelle Opfer der Personen mit AIDS vor dem Tod beschützen.\nDas andere ist das Todesmedikament. Mit diesem kann er einen anderen Spieler umbringen.\nEr kann in der Nacht ein, beide oder keines der Medikamente nutzen.",
+                "name": "verrückter Apotheker"
+            }
+        },
+        "voting": {
+            "GirlSpy": {
+                "options": {
+                    "Spy": "Ausspionieren"
+                }
+            },
+            "ScapeGoat": {
+                "options": {
+                    "stop-voting": "Abstimmung beenden"
+                },
+                "title": "Verteile Stimmrechte"
+            },
+            "Witch_DeathPotion": {
+                "options": {
+                    "player": "{name} Medikament einflösen"
+                },
+                "title": "Todesmedikament nutzen"
+            },
+            "Witch_HealPotion": {
+                "options": {
+                    "character": "{name} Medikament einflösen"
+                },
+                "title": "Lebensmedikament nutzen"
+            },
+            "default": {
+                "options": {
+                    "None": "Der Arbeit widmen",
+                    "character": "{name}"
+                },
+                "title": "Wähle eine Option"
+            }
+        }
+    }
+}

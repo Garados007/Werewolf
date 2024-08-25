@@ -1,0 +1,23 @@
+mode Random {
+    character { User }
+}
+phase Random {
+    func start { true }
+    func next { phase Random }
+    func background { "test-bg" }
+    func theme { "test-theme" }
+}
+scene Random {
+    phase Random;
+    func start {
+        for let $user = get2(0, split(2, shuffle(@character))) {
+            add($user, label SelGroup);
+        };
+        if let $single = get(rand(length(@character)), @character) {
+            add($single, label SelSingle);
+        };
+    }
+}
+character User { }
+label SelGroup { target { character } }
+label SelSingle { target { character } }

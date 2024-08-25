@@ -1,3 +1,6 @@
 [submodule "content/vendor/flag-icon-css"]
 	path = content/vendor/flag-icon-css
 	url = https://github.com/lipis/flag-icon-css.git
+[submodule "docs/wiki"]
+	path = docs/wiki
+	url = https://github.com/Garados007/Werewolf.wiki.git

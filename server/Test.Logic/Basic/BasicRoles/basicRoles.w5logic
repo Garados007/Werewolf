@@ -1,0 +1,35 @@
+mode BasicRoles {
+    character {
+        Villager,
+        Wolf
+    }
+}
+phase BasicPhase {
+    func start { true }
+    func next { phase BasicPhase }
+    func background { "test-bg" }
+    func theme { "test-theme" }
+}
+scene BasicScene {
+    phase BasicPhase;
+    func start {
+        spawn voting BasicVoting;
+    }
+}
+character Villager {}
+character Wolf {}
+label TestLabel {
+    target { character }
+}
+voting BasicVoting {
+    target all;
+    func voting_option { @character }
+    func choice {
+        if let $char = $character {
+            add($char, label TestLabel);
+        }
+    }
+    func unanimous {
+        spawn voting BasicVoting with choices($choices);
+    }
+}

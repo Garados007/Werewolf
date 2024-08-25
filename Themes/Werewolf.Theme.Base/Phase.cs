@@ -1,67 +1,48 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Werewolf.Theme.Labels;
 
-namespace Werewolf.Theme
+namespace Werewolf.Theme;
+
+public abstract class Phase : ILabelHost<IPhaseLabel>
 {
-    public abstract class Phase
+    public List<Scene> EnabledScenes { get; } = [];
+
+    public int SceneIndex { get; private set; } = -1;
+
+    public Scene? CurrentScene => SceneIndex < 0 || SceneIndex >= EnabledScenes.Count ? null : EnabledScenes[SceneIndex];
+
+    /// <summary>
+    /// Navigates to the next available scene. Returns false if no scene is available for the
+    /// current phase. This methods does also the initialization and the exit of each scene.
+    /// </summary>
+    /// <param name="game">the current game</param>
+    /// <returns>true if a scene is available</returns>
+    public bool NextScene(GameRoom game)
     {
-
-        public Effects.EffectCollection<Effects.IPhaseEffect> Effects { get; } = new();
-
-        public virtual string LanguageId
+        // check if already in a scene
+        if (SceneIndex >= 0)
         {
-            get
+            EnabledScenes[SceneIndex].Exit(game);
+        }
+        for (SceneIndex++; SceneIndex < EnabledScenes.Count; SceneIndex++)
+        {
+            Serilog.Log.Verbose("Core: Check scene {name}", EnabledScenes[SceneIndex].LanguageId);
+            if (EnabledScenes[SceneIndex].CanExecute(game))
             {
-                var name = GetType().FullName ?? "";
-                var ind = name.LastIndexOf('.');
-                return ind >= 0 ? name[(ind + 1)..] : name;
+                EnabledScenes[SceneIndex].Init(game);
+                return true;
             }
         }
-
-        public abstract bool CanExecute(GameRoom game);
-
-        public abstract bool CanMessage(GameRoom game, Role role);
-
-        public virtual async Task InitAsync(GameRoom game)
-        {
-            Init(game);
-            await Task.CompletedTask;
-        }
-
-        protected virtual void Init(GameRoom game)
-        {
-            votings.Clear();
-            this.game = game;
-        }
-
-        public virtual bool IsGamePhase => true;
-
-        private readonly List<Voting> votings = new List<Voting>();
-        public virtual IEnumerable<Voting> Votings => votings.ToArray();
-
-        private GameRoom? game;
-
-        protected virtual void AddVoting(Voting voting)
-        {
-            if (!voting.Options.Any())
-                return;
-            votings.Add(voting);
-            voting.Started = game?.AutostartVotings ?? false;
-            if (game?.UseVotingTimeouts ?? false)
-                _ = voting.SetTimeout(game, true);
-            game?.SendEvent(new Events.AddVoting(voting));
-        }
-
-        public virtual void RemoveVoting(Voting voting)
-        {
-            _ = votings.Remove(voting);
-            game?.SendEvent(new Events.RemoveVoting(voting.Id));
-        }
-
-        public virtual void ExecuteMultipleWinner(Voting voting, GameRoom game)
-        {
-
-        }
+        SceneIndex = -1;
+        return false;
     }
+
+    public LabelCollection<IPhaseLabel> Labels { get; } = new();
+
+    public abstract string LanguageId { get; }
+
+    public abstract string BackgroundId { get; }
+
+    public abstract string ColorTheme { get; }
+
+    public abstract Phase? Next(GameRoom game);
 }

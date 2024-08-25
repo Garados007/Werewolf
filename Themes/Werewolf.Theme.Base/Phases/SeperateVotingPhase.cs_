@@ -1,0 +1,43 @@
+﻿using Werewolf.User;
+using Werewolf.Theme.Votings;
+
+namespace Werewolf.Theme.Phases;
+
+[Obsolete]
+public abstract class SeperateVotingPhase<TVoting, TRole> : SeperateVotingPhaseBase<TVoting, TRole>
+    where TVoting : PlayerVotingBase
+    where TRole : Character
+{
+    protected sealed override TVoting Create(TRole role, GameRoom game)
+        => Create(role, game, null);
+
+    protected abstract TVoting Create(TRole role, GameRoom game, IEnumerable<UserId>? ids = null);
+
+    // this should never be used but here is the code
+    public override void ExecuteMultipleWinner(Voting voting, GameRoom game)
+    {
+        if (voting is TVoting tvoting)
+        {
+            var ids = tvoting.GetResultUserIds().ToArray();
+            if (ids.Length > 2)
+                AddVoting(Create(GetRole(tvoting), game, ids));
+            else if (ids.Length == 1 && game.Users.TryGetValue(ids[0], out GameUserEntry? entry)
+                && entry.Role is not null)
+                tvoting.Execute(game, ids[0], entry.Role);
+            RemoveVoting(tvoting);
+        }
+    }
+
+    public override void RemoveVoting(Voting voting)
+    {
+        base.RemoveVoting(voting);
+        if (voting is TVoting tvoting)
+        {
+            var result = tvoting.GetResultUserIds().ToArray();
+            if (result.Length == 1)
+                foreach (var other in Votings)
+                    if (other is TVoting otherVoting)
+                        otherVoting.RemoveOption(result[0]);
+        }
+    }
+}

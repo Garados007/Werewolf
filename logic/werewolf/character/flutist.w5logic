@@ -1,0 +1,92 @@
+character Flutist {
+    func view { character Unknown }
+}
+label EnchantedByFlutist {
+    target { character }
+    with character flutist;
+    func view {
+        if let $target = $viewer {
+            has($target, EnchantedByFlutist) ||
+                if let $flutist = get_with($this, label EnchantedByFlutist, flutist) {
+                    $flutist == $target
+                } else {
+                    false
+                }
+        } else {
+            true
+        }
+    }
+}
+scene Flutist {
+    phase Night;
+    after { Witch }
+    before { TwoSisters }
+    func enable {
+        any(@all_character | has_character(character Flutist))
+    }
+    func run_on {
+        any(@character | has_character(character Flutist))
+    }
+    func can_message {
+        $character == character Flutist
+    }
+    func start {
+        spawn voting FlutistSelection;
+    }
+}
+voting FlutistSelection {
+    target each;
+    func targets {
+        @character | has_character(character Flutist)
+    }
+    func voting_option {
+        @character | filter($x,
+            // character should not be the flutist itself
+            $x != $target &&
+            // character should not have the label already
+            empty(
+                labels($x) | filter($y,
+                    if let $flutist = get_with($y, label EnchantedByFlutist, flutist) {
+                        $flutist == $target
+                    } else {
+                        false
+                    }
+                )
+            )
+        )
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func choice {
+        if let $char = $character {
+            add($char, label EnchantedByFlutist, flutist=$target)
+        }
+    }
+}
+win FlutistWin {
+    func has_one {
+        // a flutist wins if all remaining player have the respective EnchantedByFlutist label or is
+        // the flutist itself.
+        @all_character
+            | has_character(character Flutist)
+            | filter($x,
+                empty(@character
+                    | filter($other, $x != $other &&
+                        empty(
+                            labels($other) | filter($label,
+                                if let $flutist = get_with($label, label EnchantedByFlutist, flutist) {
+                                    $flutist == $x
+                                } else {
+                                    false
+                                }
+                            )
+                        )
+                    )
+                )
+            )
+    }
+}

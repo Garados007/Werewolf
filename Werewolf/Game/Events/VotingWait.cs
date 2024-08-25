@@ -1,19 +1,18 @@
 using System.Text.Json;
 
-namespace Werewolf.Game.Events
+namespace Werewolf.Game.Events;
+
+public class VotingWait : TaggedEvent
 {
-    public class VotingWait : TaggedEvent
+    public ulong VotingId { get; set; }
+
+    protected override void Read(JsonElement json)
     {
-        public ulong VotingId { get; set; }
+        VotingId = ulong.Parse(json.GetProperty("vid").GetString() ?? "");
+    }
 
-        protected override void Read(JsonElement json)
-        {
-            VotingId = ulong.Parse(json.GetProperty("vid").GetString() ?? "");
-        }
-
-        protected override void Write(Utf8JsonWriter writer)
-        {
-            writer.WriteNumber("vid", VotingId);
-        }
+    protected override void Write(Utf8JsonWriter writer)
+    {
+        writer.WriteNumber("vid", VotingId);
     }
 }

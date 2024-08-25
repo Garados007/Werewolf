@@ -2,9 +2,9 @@ namespace Werewolf.Theme.Chats;
 
 public class NextPhaseLog : ChatServiceMessage
 {
-    public Phase Phase { get; }
+    public Scene Phase { get; }
 
-    public NextPhaseLog(Phase phase)
+    public NextPhaseLog(Scene phase)
         => Phase = phase;
 
     public override bool Epic => true;

@@ -35,6 +35,7 @@ type EventData
     | Maintenance (Maybe String) Posix
     | SendStats (Dict String (GameUserStats, LevelData))
     | ChatServiceMessage Data.ChatServiceMessage
+    | SendSequences (List Data.SequenceInfo) Bool
 
 type alias EventGameConfig =
     { config: Dict String Int
@@ -225,6 +226,10 @@ decodeEventData =
                 "ChatServiceMessage" ->
                     JD.map ChatServiceMessage
                     <| Data.decodeChatServiceMessage
+                "SendSequences" ->
+                    JD.succeed SendSequences
+                    |> required "sequences" (JD.list decodeSequenceInfo)
+                    |> required "auto-skip" JD.bool
                 _ -> JD.fail <| "unknown event " ++ key
         )
     <| JD.field "$type" JD.string

@@ -1,0 +1,32 @@
+character Angel {
+    func create {
+        add($this, label AngelRight);
+    }
+    func view { character Unknown }
+}
+label AngelRight {
+    target { character }
+}
+scene AngelReset {
+    phase Morning;
+    after { NightKills }
+    func enable {
+        any(@all_character | has_character(character Angel))
+    }
+    func run_on {
+        any(@character | has_character(character Angel))
+    }
+    func start {
+        for let $angel = @character | has_character(character Angel) {
+            remove($angel, label AngelRight);
+        }
+    }
+}
+win AngelWon {
+    func has_one {
+        @all_character
+            | has_character(character Angel)
+            | has(label AngelRight)
+            | filter($x, !enabled($x))
+    }
+}

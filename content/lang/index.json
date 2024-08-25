@@ -7,14 +7,14 @@
         "en": "gb"
     },
     "system": {
-        "Werewolf.Theme.Default.DefaultTheme": {
+        "Theme.werewolf.Mode_BasicWerewolf": {
             "title": {
                 "de": "Standard Werwolf"
             }
         }
     },
     "themes": {
-        "Werewolf.Theme.Default.DefaultTheme": {
+        "Theme.werewolf.Mode_BasicWerewolf": {
             "default": {
                 "de": "Standard-Theme"
             },

@@ -1,0 +1,31 @@
+character Hunter {
+    func view { character Unknown }
+}
+sequence HunterKill {
+    step vote {
+        if empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage)) {
+            spawn voting HunterKill with targets({$target});
+        }
+    }
+    step die {
+        enabled($target, false);
+        notify character HunterKill({$target});
+    }
+}
+voting HunterKill {
+    target each;
+    func voting_option {
+        @character | filter($x, $x != $target) | has_not(label Killed)
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        true
+    }
+    func choice {
+        if let $char = $character {
+            add($char, label Killed);
+        }
+    }
+}

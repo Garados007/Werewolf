@@ -1,30 +1,27 @@
-using System;
-using System.Linq;
-using MongoDB.Driver;
 using MaxLib.Ini;
+using MongoDB.Driver;
 
-namespace Werewolf
+namespace Werewolf;
+
+public class Database : IDisposable
 {
-    public class Database : IDisposable
+    private readonly MongoClient dbClient;
+    private readonly IMongoDatabase database;
+
+    public IMongoCollection<User.DB.UserInfo> UserInfo { get; }
+
+    public Database(IniGroup config)
     {
-        private readonly MongoClient dbClient;
-        private readonly IMongoDatabase database;
+        var target = config.GetString("connection", "mongodb://localhost");
+        var settings = MongoClientSettings.FromConnectionString(target);
+        settings.ApplicationName = config.GetString("application", "Werewolf");
+        dbClient = new MongoClient(settings);
+        database = dbClient.GetDatabase(config.GetString("database", "Werewolf"));
+        UserInfo = database.GetCollection<User.DB.UserInfo>("user_info");
+    }
 
-        public IMongoCollection<User.DB.UserInfo> UserInfo { get; }
-
-        public Database(IniGroup config)
-        {
-            var target = config.GetString("connection", "mongodb://localhost");
-            var settings = MongoClientSettings.FromConnectionString(target);
-            settings.ApplicationName = config.GetString("application", "Werewolf");
-            dbClient = new MongoClient(settings);
-            database = dbClient.GetDatabase(config.GetString("database", "Werewolf"));
-            UserInfo = database.GetCollection<User.DB.UserInfo>("user_info");
-        }
-
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

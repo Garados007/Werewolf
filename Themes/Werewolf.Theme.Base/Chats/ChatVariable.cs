@@ -30,14 +30,14 @@ public readonly struct ChatVariable
 
     public ChatVariable(string text)
         : this(ChatVariableType.Plain, text)
-    {}
+    { }
 
     public static implicit operator ChatVariable(string text)
         => new ChatVariable(text);
-    
+
     public static implicit operator ChatVariable(User.UserId user)
         => new ChatVariable(ChatVariableType.User, user.ToString());
-    
+
     public static implicit operator ChatVariable(Voting voting)
         => new ChatVariable(ChatVariableType.Voting, voting.LanguageId);
 
@@ -45,10 +45,10 @@ public readonly struct ChatVariable
         => new ChatVariable(
             ChatVariableType.VotingOption,
             data.option.LangId,
-            new [] { data.voting.LanguageId },
+            new[] { data.voting.LanguageId },
             data.option.Vars
         );
 
-    public static implicit operator ChatVariable(Phase phase)
+    public static implicit operator ChatVariable(Scene phase)
         => new ChatVariable(ChatVariableType.Phase, phase.LanguageId);
 }

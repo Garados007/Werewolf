@@ -1,0 +1,133 @@
+{
+    "theme": {
+        "event": {
+            "player-notification": {
+                "HunterKill": "Der Jäger hat geschossen.",
+                "KilledAtNight": "Leider haben nicht alle ihre Gläser geleert.",
+                "KilledByLove": "Der Hunger wurde wieder zu groß.",
+                "KilledByMajor": "Der Bürgermeister hat entschieden den Nüchternen rauszuwerfen.",
+                "KilledByVillage": "Die Kneipenbesucher haben jemanden rausgeschmissen.",
+                "KilledScapegoat": "Der Komiker wurde wegen Erregung öffentlichen Ergernisses rausgeworfen.",
+                "NewMajorInherited": "Der Bürgermeistertitel wurde vererbt.",
+                "NewMajorVoted": "Ein neuer Bürgermeister wurde bestimmt!",
+                "OldManAndIdiotKilled": "Die Kneipenbesucher waren zu besoffen und konnten nicht mehr klar denken",
+                "ScapegoatVoted": "Der Komiker hat seinen letzen Sketch."
+            }
+        },
+        "label": {
+            "EnchantedByFlutist": "(tanzend)",
+            "Killed": "(nüchtern)",
+            "LovedOne": "(vollgefuttert)",
+            "Major": "(Bürgermeister)",
+            "WerewolfSelectedTarget": "(Nüchterner)"
+        },
+        "names": {
+            "game-leader": "Spielleiter",
+            "member": "Mitspieler",
+            "player": "Spieler"
+        },
+        "phases": {
+            "AmorPhase": "Kellner serviert das Essen",
+            "DailyVote": "Noch ne Runde Bier",
+            "Flutist": "Musiker verzaubert mit seiner Musik",
+            "Healer": "Wirt gibt einen aus!",
+            "HunterPhase": "Der Jäger will dicht werden",
+            "InheritMajorPhase": "Vererbung des Bürgermeisters",
+            "Major": "Bürgermeisterwahl",
+            "OracleView": "Im Suff neue Freunde finden!",
+            "ScapeGoatPhase": "Ein guter Witz",
+            "Werewolf": "panschen des Bieres",
+            "Witch": "Kleines Geschäft unter 'Freunden'"
+        },
+        "role": {
+            "Amor": {
+                "info": "Im Krieg gibt es viele Tote, viele einsame Seelne und viele die einfach nicht einsam sterben wollen. Beim Essen hat ein Kamerad seinem Besten zu einer Liebe verholfen die Stärker ist als er zu erst dachte. Beide sind glücklich und Ihr Schicksal ist von nun an verbunden. Sollte einer der Verliebten sterben, so stirbt der andere sofort an Kummer.",
+                "name": "Kellner"
+            },
+            "Angel": {
+                "info": "Das Ziel von Bruder Thomas ist es in der ersten Runde (1 Tag- und Nachtphase) die Kneipe zu verlassen. Sollte dies eintreffen, dann gewinnt Bruder Thomas sofort.\nSollte mit Bruder Thomas gespielt werden, so fängt das Spiel mit einer Tag- statt Nachtphase an.\nSollte Bruder Thomas es nicht schaffen in der ersten Runde die Kneipe zu verlassen, so wird dieser automatisch zu einem der anderen betrunkenen Kneipenbesucher.",
+                "name": "Bruder Thomas"
+            },
+            "Flutist": {
+                "info": "Der Spion hat sich eingeschmuggelt, um Infos für die gegnerische Seite zu sammeln. Es stellt sich heraus, dass es auch hier Leute gibt, die sich ihm anschließen möchten. Jede Nacht findet er einen neuen Anhänger. Der Spion und alle Deserteure kämpfen von nun an für die Gegner.\nDas Spiel ist sofort beendet, wenn nur noch Deserteure oder der Spion leben. Dann gewinnt der Spion.\nGibt es 7 oder weniger Mitspieler, so darf der Spion nur einen Deserteur pro Nacht bestimmen.\nTipp für die anderen Mitspieler: Versucht den Spion möglichst früh loszuwerden.",
+                "name": "Musiker"
+            },
+            "Girl": {
+                "info": "Die Geheimpolizei kann während der Phase der Saboteure ihnen für eine kurze Zeit folgen, um ihre Identität zu erfahren. Aufgrund mangelhaften Trainings besteht dabei die Möglichkeit, dass sie von den Saboteuren erwischt werden. \nBei diesem Katz-und-Maus-Spiel kann die Geheimpolizei die Saboteure entlarven oder von ihnen bemerkt werden.",
+                "name": "Tochter vom Wirt"
+            },
+            "Healer": {
+                "info": "Der Sanitäter wird in der Nacht zu einem Notfall gerufen und verzucht das Leben dieses Kameraden zu bewahren, dieser kann diese Nacht nicht von den Saboteuren getötet werden.\nDer Sanitäter kann nicht jede Nacht denselben Kameraden schützen, so kommt es das in zwei aufeinander folgenden Nächten nie die selbe Person sicher ist.",
+                "name": "Wirt"
+            },
+            "Hunter": {
+                "info": "Der Schwarfschütze kann bevor er stirbt noch einen letzten Schuss abgeben und so, dank seiner treffsicherheit, einen der anwesenden Personen zur Strecke bringen. Er weiß jedoch nicht ob er mit seinem Verdacht einen der Saboteure zu erwischen richtig liegt, also ist auf eine gute Beobachtungsgabe zu hoffen.",
+                "name": "Jäger"
+            },
+            "Idiot": {
+                "info": "Der Trottel vom Dienst kann nicht direkt von der Mannschaft umgebracht werden. Sollte der Trottel von ihr ausgewählt werden, so wird allen klar, dass er einfach nur nicht sofort eine Lehre anfangen wollte und vergibt ihm. \nDamit verliert er aber auch sein Wahlrecht bei den zukünftigen Appellen. War dieser Depp vorher Spieß, so ist die Funktion von ihm völlig verloren und die Truppe hat keinen Kommandeur mehr. \nWenn ein Veteran anwesend ist tritt folgendes in Kraft: Sobald dieser stirbt, wird der Trottel automatisch von der Mannschaft gelyncht, sobald er als dieser erkannt wurde.",
+                "name": "Besoffener"
+            },
+            "OldMan": {
+                "info": "Der Veteran hat so lange gedient und Kampferfahrung gesammelt, dass dieser sich nicht von einem einzelnen feigen Hinterhalt der Saboteure umbringen lässt. Stattdessen müssen diese zweimal ran. Bei allen anderen (Oberfeldarzt, Scharfschütze, Mannschaft, etc.) bringt ihm seine Kampferfahrung nichts. \nWird mit dem Trottel vom Dienst gespielt: Sobald der Veteran stirbt, geht auch die Weisheit von der Mannschaft verloren. Diese kann sich dann nicht mehr zurückhalten und bringt den Trottel um, wenn dieser als das, was er ist, ertappt wurde",
+                "name": "trinkfester Mann"
+            },
+            "Oracle": {
+                "info": "Der Aufklärungstrupp ist mal wieder unterwegs, um die Gegend zu erkunden. Dabei entdecken sie oft wie ihre Kameraden wirklich sind. In Stressmomenten wie solchen, sieht man den richtigen Character der Menschen zum Vorschein kommen.",
+                "name": "Bierleiche"
+            },
+            "PureSoul": {
+                "info": "Der Schnapskobold ist Stammgast der Kneipe. Seine alltäglichen Besuche sind jedem bekannt. Unbekannt ist es jedoch, wenn er mal nüchtern ist",
+                "name": "Schnapskobold"
+            },
+            "ScapeGoat": {
+                "info": "Der Unteroffizier wird automatisch als Schuldiger ausgerufen, wenn bei einem Apell kein eindeutiger Schuldiger gefunden wird. Dies will der Unteroffizier natürlich vermeiden.\nWird der Unteroffizier durch ein Unentschieden als Schuldiger ausgerufen und dadurch von der Mannschaft umgebracht, dann bekommt der Unteroffizier das Recht bei dem kommendem Apell zu bestimmen wer abstimmen darf und wer nicht. Wenn er nur einen bestimmt und dieser direkt von den Saboteuren umgebracht wird, so entfällt der nächste Apell.",
+                "name": "Komiker"
+            },
+            "Unknown": {
+                "name": "???"
+            },
+            "Villager": {
+                "info": "Keine Fähigkeiten, kein Talent und erstrecht keine Besonderheiten! \nDie neuen Gefreiten sind bekanntermaßen nur als Kanonenfutter zu gebrauchen.",
+                "name": "Kneipenbesucher"
+            },
+            "Werewolf": {
+                "info": "Ein Saboteur dessen Ziel es ist, alle Gefreiten zu töten, um den bevorstehenden Gegenangriff zu verhindern. \nDie Saboteure schlagen jede Nacht zu und suchen sich ein schlafendes Opfer.",
+                "name": "Bierpanscher"
+            },
+            "Witch": {
+                "info": "Der Oberfeldarzt hat Medizin, aber nicht besonders viel. Im Krieg muss er oft entscheiden, ob jemand an seinen Wunden erliegt oder die Heimat wieder sehen wird.\nEr hat einmal Medizin um einen zu retten, für wen wird er es nutzen? Aber auch er kann töten, und das mit den fiesesten Mitteln. Er hat ein Ass im Ärmel und kann mit diesem einen in den Tot reißen, ohne das man direkt weiß, dass er es war.\nEr kann in der Nacht eines, beide oder keins der Medikamente nutzen.",
+                "name": "Drogendieler"
+            }
+        },
+        "voting": {
+            "GirlSpy": {
+                "options": {
+                    "Spy": "Beobachten"
+                }
+            },
+            "ScapeGoat": {
+                "options": {
+                    "stop-voting": "Alle Gläser leer"
+                },
+                "title": "Verteile Stimmrechte"
+            },
+            "Witch_DeathPotion": {
+                "title": "Todesdroge nutzen"
+            },
+            "Witch_HealPotion": {
+                "options": {
+                    "character": "{name} abfüllen"
+                },
+                "title": "Lebensdroge nutzen"
+            },
+            "default": {
+                "options": {
+                    "None": "Weiter saufen",
+                    "character": "{name}"
+                },
+                "title": "Wähle eine Option"
+            }
+        }
+    }
+}

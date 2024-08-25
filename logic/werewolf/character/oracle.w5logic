@@ -1,0 +1,47 @@
+character Oracle {
+    func view {
+        if $viewer == character Healer {
+            character Healer
+        } else {
+            character Unknown
+        }
+    }
+}
+scene OracleView {
+    phase Night;
+    after { Healer }
+    before { Werewolf }
+    func enable {
+        any(@all_character | has_character(character Oracle))
+    }
+    func run_on {
+        any(@character | has_character(character Oracle)) &&
+        empty(@all_character | has_character(character OldMan) | has(label OldManKilledByVillage))
+    }
+    func can_message {
+        $character == character Oracle
+    }
+    func start {
+        spawn voting OracleView;
+    }
+}
+voting OracleView {
+    target each;
+    func targets {
+        @character | has_character(character Oracle)
+    }
+    func voting_option {
+        @character
+    }
+    func can_vote {
+        $target == $voter
+    }
+    func can_view {
+        $target == $viewer
+    }
+    func choice {
+        if let $ch = $character {
+            set_visible($ch, $target);
+        }
+    }
+}

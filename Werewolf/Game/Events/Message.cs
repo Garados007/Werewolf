@@ -1,24 +1,22 @@
 using System.Text.Json;
-using System;
 
-namespace Werewolf.Game.Events
+namespace Werewolf.Game.Events;
+
+public class Message : TaggedEvent
 {
-    public class Message : TaggedEvent
+    public string? Phase { get; set; }
+
+    public string Content { get; set; } = "";
+
+    protected override void Read(JsonElement json)
     {
-        public string? Phase { get; set; }
+        if (json.TryGetProperty("phase", out JsonElement element))
+            Phase = element.GetString();
+        Content = json.GetProperty("message").GetString() ?? "";
+    }
 
-        public string Content { get; set; } = "";
-
-        protected override void Read(JsonElement json)
-        {
-            if (json.TryGetProperty("phase", out JsonElement element))
-                Phase = element.GetString();
-            Content = json.GetProperty("message").GetString() ?? "";
-        }
-
-        protected override void Write(Utf8JsonWriter writer)
-        {
-            throw new NotSupportedException();
-        }
+    protected override void Write(Utf8JsonWriter writer)
+    {
+        throw new NotSupportedException();
     }
 }

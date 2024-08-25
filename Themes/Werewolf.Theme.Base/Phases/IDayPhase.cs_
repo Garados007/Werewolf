@@ -1,0 +1,7 @@
+﻿namespace Werewolf.Theme.Phases;
+
+[Obsolete]
+public interface IDayPhase<T>
+    where T : Scene, IDayPhase<T>
+{
+}

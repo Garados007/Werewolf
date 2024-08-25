@@ -1,0 +1,75 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  dotnet_test:
+    name: dotnet test
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+          java-package: 'jre'
+      - name: Generate compiler files
+        working-directory: ./tools/LogicCompiler/grammar
+        run: |
+          java \
+            -jar ../antlr-4.13.1-complete.jar \
+            -message-format vs2005 \
+            -long-messages \
+            -Werror \
+            -Dlanguage=CSharp \
+            -no-listener \
+            -package LogicCompiler.Grammar \
+            W5LogicLexer.g4 W5LogicParser.g4
+      - name: Generate test files (1/2)
+        working-directory: ./server/Test.Logic
+        run: |
+          dotnet run \
+            --project ../../tools/LogicCompiler/LogicCompiler.csproj \
+            --test \
+            --write-ast
+      - name: Generate test files (2/2)
+        working-directory: ./server/Test.Logic
+        run: |
+          dotnet run \
+            --project ../../tools/LogicCompiler/LogicCompiler.csproj \
+            -- \
+              -s ../../logic/werewolf \
+              -t Modes/Werewolf \
+              -n Theme.werewolf \
+              --write-ast
+      - name: Run dotnet test
+        run: dotnet test
+
+  docker_build:
+    name: docker build
+    runs-on: ubuntu-latest
+    env:
+      GAME_SERVER_NAME: CI Werewolf
+      GAME_SERVER_DOMAIN: unused
+      PRONTO_URL: unused
+      PRONTO_TOKEN: unused
+      OAUTH_USERINFO: unused
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run docker compose
+        run: docker compose build

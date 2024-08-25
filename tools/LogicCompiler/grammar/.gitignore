@@ -1,0 +1,6 @@
+# ignore all generated files
+*.interp
+*.tokens
+*.cs
+# ignore cache directory
+.antlr
