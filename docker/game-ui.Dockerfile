@@ -2,7 +2,7 @@ FROM bitnami/git:latest as version
 WORKDIR /src
 COPY ./.git ./.git
 COPY ./version.txt ./
-RUN echo "\$(cat version.txt)-\$(git rev-parse --short HEAD)" > version
+RUN echo "$(cat version.txt)-$(git rev-parse --short HEAD)" > version
 
 FROM ubuntu:latest as builder
 RUN apt-get -qq update -y && \
@@ -22,8 +22,10 @@ RUN chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
     rm -r src/Debug && \
-    sed -i "s/version = \".*\"/version = \"\$(cat "version")\"/" \
+    echo "s/version = \\\".*\\\"/version = \\\"$(cat "/src/version")\\\"/" && \
+    sed -i "s/version = \\\".*\\\"/version = \\\"$(cat "/src/version")\\\"/" \
         src/Config.elm && \
+    cat src/Config.elm && \
     mkdir /content && \
     mkdir /content/special && \
     elm make --optimize --output=/content/index.js src/Main.elm && \
