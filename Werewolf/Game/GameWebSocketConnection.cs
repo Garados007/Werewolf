@@ -214,7 +214,14 @@ public class GameWebSocketConnection : EventConnection
                     oldCount: Game.RoleConfiguration.TryGetValue(name, out int oldValue)
                         ? oldValue : 0,
                     error: out string? error))
+                {
+                    if (newCount != count)
+                    {
+                        Game.RoleConfiguration[name] = newCount;
+                        Game.SendEvent(new Theme.Events.SetGameConfig(GameController.Current.DefaultGameMode));
+                    }
                     return error;
+                }
 
                 roleConfig.Add(name, newCount);
             }
@@ -375,6 +382,9 @@ public class GameWebSocketConnection : EventConnection
             player.Character = roles[index];
             roles.RemoveAt(index);
         }
+
+        if (!Game.Theme!.IsEnabled())
+            return "Cannot create game as some preconditions are not fullfilled";
 
         await Game.StartGameAsync().CAF();
         return null;

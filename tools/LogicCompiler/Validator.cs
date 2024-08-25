@@ -203,6 +203,21 @@ internal sealed class Validator(Generator data, Output? docs)
                     accepted.
                     """)
                 .Add("$game", Ast.ValueType.Mode),
+            new Method(this, "valid_usage", Ast.ValueType.Int)
+                .Doc(
+                    """
+                    Similar to `enable` is this executed before the game to check if the
+                    preconditions are met to start a game. This function is called everytime when
+                    someone changes the current number of characters for this type. There is no
+                    `$game` instance for this function and every method that rely on this cannot be
+                    used.
+
+                    Returning a value differnet to `$count` is considered as an user error, will be
+                    reported and the number will be changed to the returned one. `$old` will contain
+                    the value before any change was done.
+                    """)
+                .Add("$count", Ast.ValueType.Int)
+                .Add("$old", Ast.ValueType.Int),
             new Method(this, "create", Ast.ValueType.Void | Ast.ValueType.Mutable)
                 .Doc(
                     """

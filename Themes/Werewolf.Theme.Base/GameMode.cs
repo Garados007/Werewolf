@@ -50,4 +50,6 @@ public abstract class GameMode
     public abstract string? GetCharacterName(Type type);
 
     public abstract ReadOnlySpan<Type> GetEvents();
+
+    public abstract bool IsEnabled();
 }

@@ -1,4 +1,15 @@
 character TwoSisters {
+    func valid_usage {
+        if $count < 0 || $count > 2 {
+            $old
+        } else {
+            if $old < $count {
+                2
+            } else {
+                0
+            }
+        }
+    }
     func view {
         if $viewer == character TwoSisters {
             character TwoSisters

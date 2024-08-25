@@ -221,6 +221,47 @@ internal sealed class Generator
         output.WriteBlockEnd();
         output.WriteLine();
 
+        output.WriteLine("public override bool IsEnabled()");
+        output.WriteBlockBegin();
+        output.Write("return Game is not null");
+        output.Push();
+        foreach (var character in mode.Character)
+        {
+            output.WriteLine();
+            output.Write($"&& (!Game.AllCharacters.Any(x => x is Character_{character.Text}) || Character_{character.Text}.IsEnabled(Game))");
+        }
+        output.Pop();
+        output.WriteLine(";");
+        output.WriteBlockEnd();
+
+        output.WriteLine("public override bool CheckRoleUsage(string character, ref int count, int oldCount, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? error)");
+        output.WriteBlockBegin();
+        output.WriteLine("if (oldCount == count)");
+        output.WriteBlockBegin();
+        output.WriteLine("error = null;");
+        output.WriteLine("return true;");
+        output.WriteBlockEnd();
+        output.WriteLine("if (!base.CheckRoleUsage(character, ref count, oldCount, out error))");
+        output.Push();
+        output.WriteLine("return false;");
+        output.Pop();
+        output.WriteLine("switch (character)");
+        output.WriteBlockBegin();
+        foreach (var character in mode.Character)
+        {
+            output.WriteLine($"case \"{character.Text}\":");
+            output.Push();
+            output.WriteLine($"return Character_{character.Text}.ValidUsage(ref count, oldCount, out error);");
+            output.Pop();
+        }
+        output.WriteLine("default:");
+        output.Push();
+        output.WriteLine("error = null;");
+        output.WriteLine("return true;");
+        output.Pop();
+        output.WriteBlockEnd();
+        output.WriteBlockEnd();
+
         output.WriteBlockEnd();
         output.WriteLine();
     }
@@ -510,6 +551,41 @@ internal sealed class Generator
         if (func is not null)
             Write(output, func.Code);
         else output.WriteLine("return true;");
+        output.WriteBlockEnd();
+        output.WriteLine();
+
+        output.WriteLine("public static bool ValidUsage(ref int count, int oldCount, [System.Diagnostics.CodeAnalysis.NotNullWhen(false)] out string? error)");
+        output.WriteBlockBegin();
+        func = character.Get("valid_usage");
+        if (func is not null)
+        {
+            output.WriteLine("var corrected = ValidUsage(count, oldCount);");
+            output.WriteLine("if (corrected is < 0 or > int.MaxValue)");
+            output.WriteBlockBegin();
+            output.WriteLine($"error = $\"invalid value {{corrected}} for corrected number [{character.Name.Text}]\";");
+            output.WriteLine("count = oldCount;");
+            output.WriteLine("return false;");
+            output.WriteBlockEnd();
+            output.WriteLine("if (corrected != count)");
+            output.WriteBlockBegin();
+            output.WriteLine($"error = $\"{{count}} is not a valid number of {character.Name.Text}\";");
+            output.WriteLine("count = (int)corrected;");
+            output.WriteLine("return false;");
+            output.WriteBlockEnd();
+            output.WriteLine("error = null;");
+            output.WriteLine("return true;");
+            output.WriteBlockEnd();
+            output.WriteLine();
+
+            output.WriteLine("private static long ValidUsage(long count, long old)");
+            output.WriteBlockBegin();
+            Write(output, func.Code);
+        }
+        else
+        {
+            output.WriteLine("error = null;");
+            output.WriteLine("return true;");
+        }
         output.WriteBlockEnd();
         output.WriteLine();
 
