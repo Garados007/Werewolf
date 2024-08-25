@@ -271,7 +271,7 @@ view_internal model lang =
             Html.map (always CloseModal)
                 <| Views.ViewModal.viewOnlyClose
                     ( Language.getTextOrPath lang
-                        [ "theme", "roles", roleKey ]
+                        [ "theme", "role", roleKey, "name" ]
                     )
                 <| List.singleton
                 <| Views.ViewRoleInfo.view lang roleKey

@@ -147,17 +147,17 @@ renderTokenVariable language game messageArgs token =
 
 getVotingTitle : Language -> String -> Maybe String
 getVotingTitle language id =
-    case Language.getText language [ "theme", "voting-title", id ] of
+    case Language.getText language [ "theme", "voting", id, "title" ] of
         Just x -> Just x
-        Nothing -> Language.getText language [ "theme", "voting-title", "default-logs" ]
+        Nothing -> Language.getText language [ "theme", "voting", "default", "title-logs" ]
 
 getVotingOptionText : Language -> String -> String -> Dict String String -> Maybe String
 getVotingOptionText language voting option args =
-    case Language.getTextFormat language [ "theme", "voting-options", voting, option ] args of
+    case Language.getTextFormat language [ "theme", "voting", voting, "options", option ] args of
         Just x -> Just x
         Nothing -> Language.getTextFormat
             language
-            [ "theme", "voting-options", "default", option ]
+            [ "theme", "voting", "default", "options", option ]
             args
 
 renderDefault : Data.ChatServiceMessage -> Html msg

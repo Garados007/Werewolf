@@ -11,4 +11,4 @@ view lang roleKey =
             (Html.p [] << List.singleton << text)
         <| String.lines
         <| Language.getTextOrPath lang
-            [ "theme", "role-info", roleKey ]
+            [ "theme", "role", roleKey, "info" ]

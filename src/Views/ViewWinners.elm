@@ -34,11 +34,12 @@ view lang now levels game winners =
                     role : String
                     role = Language.getTextOrPath lang
                         [ "theme"
-                        , "roles"
+                        , "role"
                         , Dict.get winner game.user
                             |> Maybe.andThen .role
                             |> Maybe.andThen .role
                             |> Maybe.withDefault "unknown"
+                        , "name"
                         ]
 
                     level : LevelData

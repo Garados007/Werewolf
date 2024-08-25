@@ -639,7 +639,7 @@ internal sealed class Generator
 
         output.Write("public override IEnumerable<(int id, VoteOption option)> Options => options.Select(x => (x.Key, x.Value))");
         if (voting.Target is VotingTarget.MultiEach)
-            output.Write(".Append((-1, new VoteOption(\"continue\")))");
+            output.Write(".Append((-1, new VoteOption(\"stop-voting\")))");
         output.WriteLine(";");
         output.WriteLine();
         output.WriteLine($"public override string LanguageId => \"{voting.Name.Text}\";");

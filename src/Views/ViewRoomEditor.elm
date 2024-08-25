@@ -105,8 +105,8 @@ view lang langConfig roles theme game editable page buffer missingImg =
                     <| List.singleton
                     <| text
                     <| Language.getTextOrPath lang
-                        [ "theme", "roles", id ]
-                , div 
+                        [ "theme", "role", id, "name" ]
+                , div
                     [ HA.classList
                         [ ("editor-role-number", True)
                         , ("editable", editable)
