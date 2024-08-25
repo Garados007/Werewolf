@@ -450,6 +450,7 @@ applyEventData event model =
                 , autofinishRound = newConfig.autofinishRound
                 , theme = newConfig.theme
                 }
+            , editor = Dict.empty
             }
             <| List.map Network.NetReq
             <| LangConfig.verifyHasTheme
