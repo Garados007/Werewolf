@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <AntlrInput Include="grammar\*.g4" />
-    <AntlrOutput Include="grammar\W5LogicLexer.interp;grammar\W5LogicLexer.tokens;grammar\W5LogicParser.interp;grammar\W5LogicParser.tokens;grammar\W5LogicLexer.cs;grammar\W5LogicParser.cs" />
+    <AntlrOutput
+      Include="grammar\W5LogicLexer.interp;grammar\W5LogicLexer.tokens;grammar\W5LogicParser.interp;grammar\W5LogicParser.tokens;grammar\W5LogicLexer.cs;grammar\W5LogicParser.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,9 +20,12 @@
     <PackageReference Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
 
-  <Target Name="AntlrBuild" BeforeTargets="BeforeBuild" Inputs="@(AntlrInput)" Outputs="@(AntlrOutput)">
+  <Target Name="AntlrBuild" BeforeTargets="BeforeBuild" Inputs="@(AntlrInput)"
+    Outputs="@(AntlrOutput)">
     <Message Text="Rebuild Antlr targets" Importance="high" />
-    <Exec Command="java -jar antlr-4.13.1-complete.jar -message-format vs2005 -long-messages -Werror -Dlanguage=CSharp -no-listener -package LogicCompiler.Grammar -o grammar grammar/W5LogicLexer.g4 grammar/W5LogicParser.g4" />
+    <Exec
+      WorkingDirectory="grammar"
+      Command="java -jar ../antlr-4.13.1-complete.jar -message-format vs2005 -long-messages -Werror -Dlanguage=CSharp -no-listener -package LogicCompiler.Grammar W5LogicLexer.g4 W5LogicParser.g4" />
   </Target>
 
   <Target Name="AntlrClean" BeforeTargets="CoreClean">

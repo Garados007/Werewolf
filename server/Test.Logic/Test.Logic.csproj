@@ -34,9 +34,9 @@
   <Target Name="LogicBuild" BeforeTargets="BeforeBuild">
     <Message Text="Rebuild Logic targets" Importance="high" />
     <Exec
-      Command="dotnet run --project ..\..\tools\LogicCompiler\LogicCompiler.csproj --test --write-ast" />
+      Command="dotnet run --project $(ProjectDir)..\..\tools\LogicCompiler\LogicCompiler.csproj --test --write-ast" />
     <Exec
-      Command="dotnet run --project ..\..\tools\LogicCompiler\LogicCompiler.csproj -- -s ..\..\logic\werewolf -t Modes\Werewolf -n Theme.werewolf --write-ast" />
+      Command="dotnet run --project $(ProjectDir)..\..\tools\LogicCompiler\LogicCompiler.csproj -- -s $(ProjectDir)..\..\logic\werewolf -t Modes\Werewolf -n Theme.werewolf --write-ast" />
   </Target>
 
   <Target

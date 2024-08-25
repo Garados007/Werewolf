@@ -1,23 +1,28 @@
 FROM bitnami/git:latest as version
 WORKDIR /src
 COPY ./.git ./.git
-RUN git rev-parse --short HEAD > version-suffix
+COPY ./version.txt ./
+RUN echo "$(cat version.txt)-$(git rev-parse --short HEAD)" > version
+
+FROM bitnami/java:latest as grammar-builder
+WORKDIR /src
+COPY ./tools/LogicCompiler/grammar ./
+COPY ./tools/LogicCompiler/antlr-4.13.1-complete.jar ./
+RUN java -jar antlr-4.13.1-complete.jar -message-format vs2005 -long-messages -Werror -Dlanguage=CSharp -no-listener -package LogicCompiler.Grammar W5LogicLexer.g4 W5LogicParser.g4
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 as builder
 WORKDIR /src
 COPY ./Werewolf.sln ./Werewolf.sln
-COPY ./version.txt ./version-prefix
-COPY --from=version /src/version-suffix ./version-suffix
-RUN verpre="$(cat "version-prefix")" && \
-    versuf="$(cat "version-suffix")"
+COPY --from=version /src/version ./version
 # build tools
 COPY ./tools ./tools
+COPY --from=grammar-builder /src ./tools/LogicCompiler/grammar
 RUN mkdir -p /tools && \
     dotnet build --nologo -c RELEASE \
-        /p:version="$verpre-$versuf" \
+        /p:version="$(cat "version")" \
         tools/LogicCompiler/LogicCompiler.csproj && \
     dotnet publish --nologo -c RELEASE -o /tools \
-        /p:version="$verpre-$versuf" \
+        /p:version="$(cat "version")" \
         tools/LogicCompiler/LogicCompiler.csproj
 # build logic files
 COPY ./Themes ./Themes
@@ -29,9 +34,9 @@ RUN mkdir -p /src/server/Theme && \
         find /src/logic/ -mindepth 1 -maxdepth 1 -type d | \
         xargs -I {} basename {} | \
         while read -r name; do dotnet /tools/LogicCompiler.dll \
-            --source /src/logic/$name \
-            --target /src/server/Theme/$name \
-            --namespace Theme.$name || exit $?; \
+            --source /src/logic/${name} \
+            --target /src/server/Theme/${name} \
+            --namespace Theme.${name} || exit $?; \
         done && \
     cd /src && \
     dotnet sln add server/Theme/Theme.csproj
@@ -42,12 +47,12 @@ RUN cd /src/Werewolf && \
 # build server
 RUN mkdir -p /app && \
     dotnet build --nologo -c RELEASE \
-        /p:version="$verpre-$versuf" \
+        /p:version="$(cat "version")" \
         Werewolf/Werewolf.csproj && \
     dotnet publish --nologo -c RELEASE -o /app \
-        /p:version="$verpre-$versuf" \
+        /p:version="$(cat "version")" \
         Werewolf/Werewolf.csproj && \
-    rm ./version-* && \
+    rm ./version && \
     echo "Theme.dll" >> /app/plugins.txt
 
 FROM mcr.microsoft.com/dotnet/runtime:8.0

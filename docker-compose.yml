@@ -12,6 +12,11 @@ services:
             GAME_SERVER_DOMAIN: ${GAME_SERVER_DOMAIN}
             PRONTO_URL: ${PRONTO_URL}
             PRONTO_TOKEN: ${PRONTO_TOKEN}
+            PRONTO_DEVELOPER: true
+            PRONTO_MAX_CLIENTS_ENABLED: true
+            PRONTO_MAX_CLIENTS: 10
+            PRONTO_MAX_ROOMS_ENABLED: true
+            PRONTO_MAX_ROOMS: 10
             OAUTH_USERINFO: ${OAUTH_USERINFO}
         volumes:
             - ./maintenance.key:/app/maintenance.key:ro

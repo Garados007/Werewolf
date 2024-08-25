@@ -2,7 +2,7 @@ FROM bitnami/git:latest as version
 WORKDIR /src
 COPY ./.git ./.git
 COPY ./version.txt ./
-RUN echo "$(cat version.txt)-$(git rev-parse --short HEAD)" > version
+RUN echo "\$(cat version.txt)-\$(git rev-parse --short HEAD)" > version
 
 FROM ubuntu:latest as builder
 RUN apt-get -qq update -y && \
@@ -18,12 +18,11 @@ COPY ./elm.json /src/
 COPY ./src /src/src
 COPY ./preprocess-elm.sh /src/
 COPY --from=version /src/version ./version
-RUN ver="$(cat "version")" && \
-    chmod +x preprocess-elm.sh && \
+RUN chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
     rm -r src/Debug && \
-    sed -i "s/version = \".*\"/version = \"$ver\"/" \
+    sed -i "s/version = \".*\"/version = \"\$(cat "version")\"/" \
         src/Config.elm && \
     mkdir /content && \
     mkdir /content/special && \
@@ -94,6 +93,6 @@ COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY --from=version /src/version /usr/local/apache2/htdocs/content/version
 # COPY --from=report /src/content/report /usr/local/apache2/htdocs/content/report
-RUN ver="$(cat /usr/local/apache2/htdocs/content/version)" && \
-    sed -i "s@/content/index.js@/content/index.js?_v=$ver@" \
+RUN ver="\$(cat /usr/local/apache2/htdocs/content/version)" && \
+    sed -i "s@/content/index.js@/content/index.js?_v=\$ver@" \
         /usr/local/apache2/htdocs/content/index.html
