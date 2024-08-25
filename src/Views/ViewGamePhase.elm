@@ -210,7 +210,47 @@ view lang now game phase isLeader myId =
                     ]
                 ]
 
+        viewSequence : Data.SequenceInfo -> Html Msg
+        viewSequence sequence =
+            div [ class "sequence-box" ]
+                [ div [ class "marker" ] []
+                , div [ class "sequence-step" ]
+                    [ text <| String.concat
+                        [ "("
+                        , String.fromInt sequence.stepIndex
+                        , " / "
+                        , String.fromInt sequence.stepMax
+                        , ")"
+                        ]
+                    ]
+                , div [ class "sequence-name-box" ]
+                    [ div [ class "sequence-name" ]
+                        <| List.singleton
+                        <| text
+                        <| Language.getTextOrPath lang
+                            [ "theme"
+                            , "sequence"
+                            , sequence.name
+                            , "name"
+                            ]
+                    , div [ class "sequence-stepname" ]
+                        <| List.singleton
+                        <| text
+                        <| Language.getTextOrPath lang
+                        <| case sequence.stepName of
+                            Just name -> [ "theme", "sequence", sequence.name, "step", name ]
+                            Nothing -> [ "theme", "sequence", sequence.name, "init" ]
+                    ]
+                ]
+
     in div [ class "phase-container" ]
-        [ div [ class "phase-votings" ]
+        [ div
+            [ HA.classList
+                [ ("phase-sequences", True)
+                , ("auto-skip", game.autoSkip)
+                ]
+            ]
+            <| List.map viewSequence game.sequences
+        , div [ class "phase-votings" ]
             <| List.map viewVoting phase.voting
         ]

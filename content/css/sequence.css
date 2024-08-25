@@ -1,0 +1,72 @@
+.sequence-box {
+    display: flex;
+    flex-direction: row;
+    background-color: var(--color-light);
+}
+
+.sequence-box .marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3em;
+    height: 3em;
+    text-align: center;
+}
+
+.sequence-box .marker::before {
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 1em solid transparent;
+    border-bottom: 1em solid transparent;
+    border-left: 1em solid var(--text-color);
+}
+
+.phase-sequences.auto-skip .sequence-box:not(:last-child) .marker::before {
+    transform: rotate(90deg);
+}
+
+.phase-sequences.auto-skip .sequence-box:last-child .marker::before {
+    content: " ";
+    border-top: 0.25em solid var(--text-color);
+    border-right: 0.25em solid var(--text-color);
+    border-bottom: 0.25em solid var(--text-color);
+    border-left: 0.25em solid transparent;
+    width: 1.5em;
+    height: 1.5em;
+    background-color: transparent;
+    border-radius: 50%;
+    animation-name: PhaseSkipAnimation;
+    animation-duration: 0.75s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes PhaseSkipAnimation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.sequence-box .sequence-step {
+    align-content: center;
+    padding: 0 0.5em;
+}
+
+.sequence-box .sequence-name-box {
+    align-content: center;
+}
+
+.sequence-box .sequence-name-box>* {
+    display: inline;
+}
+
+.sequence-box .sequence-name:after {
+    display: inline;
+    content: ": ";
+}

@@ -17,6 +17,7 @@ module Data exposing
     , LobbyJoinToken
     , OnlineInfo
     , RoleTemplates
+    , SequenceInfo
     , UserConfig
     , decodeChatMessage
     , decodeError
@@ -25,6 +26,7 @@ module Data exposing
     , ChatServiceMessage
     , decodeChatServiceMessage
     , TextVariable (..)
+    , decodeSequenceInfo
     , decodeTextVariable
     )
 
@@ -71,6 +73,8 @@ type alias Game =
     , votingTimeout: Bool
     , autofinishRound: Bool
     , theme: (String, String)
+    , sequences: List SequenceInfo
+    , autoSkip: Bool
     }
 
 type alias GameUserEntry =
@@ -225,6 +229,8 @@ decodeGameGlobalState =
                         (JD.index 0 JD.string)
                         (JD.index 1 JD.string)
                     )
+                |> required "sequences" (JD.list decodeSequenceInfo)
+                |> required "auto-skip" JD.bool
             )
         |> required "user" JD.string
         |> required "user-config"
@@ -313,3 +319,20 @@ decodeTextVariable =
                     <| "Unknown variable type " ++ type_
         )
     <| JD.index 0 JD.string
+
+type alias SequenceInfo =
+    { name: String
+    , stepName: Maybe String
+    , stepIndex: Int
+    , stepMax: Int
+    , target: Maybe String
+    }
+
+decodeSequenceInfo : Decoder SequenceInfo
+decodeSequenceInfo =
+    JD.succeed SequenceInfo
+    |> required "name" JD.string
+    |> required "step-name" (JD.nullable JD.string)
+    |> required "step-index" JD.int
+    |> required "step-max" JD.int
+    |> Json.Decode.Pipeline.optional "target" (JD.maybe JD.string) Nothing

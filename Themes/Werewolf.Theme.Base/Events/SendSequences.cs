@@ -22,5 +22,6 @@ public sealed class SendSequences : GameEvent
             writer.WriteEndObject(); // {}
         }
         writer.WriteEndArray(); // sequences
+        writer.WriteBoolean("auto-skip", game.AutoFinishRounds && game.Votings.Count == 0);
     }
 }

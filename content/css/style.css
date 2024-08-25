@@ -15,6 +15,7 @@
 @import url("voting.css");
 @import url("phase.css");
 @import url("user-frame-winner.css");
+@import url("sequence.css");
 
 :root {
   /* the default base color of the page */

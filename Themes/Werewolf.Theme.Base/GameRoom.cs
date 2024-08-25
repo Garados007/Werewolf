@@ -180,6 +180,7 @@ public class GameRoom : ILabelHost<IGameRoomLabel>
     {
         Winner = null;
         ExecutionRound++;
+        Sequences.Clear();
         SendEvent(new Events.GameStart());
         // initialize all Character
         foreach (var character in EnabledCharacters)
@@ -309,13 +310,34 @@ public class GameRoom : ILabelHost<IGameRoomLabel>
             else
             {
                 SendEvent(new Events.SendSequences());
+                AutoContinueSequence();
                 return;
             }
         }
+        AutoContinueSequence();
         SendEvent(new Events.SendSequences());
         // continue to the next active scene
         if (AutoFinishRounds)
             NextScene();
+    }
+
+    private int lastSequenceCounter;
+    private void AutoContinueSequence()
+    {
+        if (!AutoFinishRounds)
+            return;
+        var expectedCounter = Interlocked.Increment(ref lastSequenceCounter) + 1;
+        if (Sequences.Count == 0)
+            return;
+        var gameStep = ExecutionRound;
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            var currentCounter = lastSequenceCounter;
+            if (currentCounter != lastSequenceCounter || gameStep != ExecutionRound)
+                return;
+            Continue(false);
+        });
     }
 
     public void AddSequence(Sequence? sequence)
@@ -324,6 +346,7 @@ public class GameRoom : ILabelHost<IGameRoomLabel>
             return;
         SendEvent(new Events.SendSequences());
         Sequences.Add(sequence);
+        AutoContinueSequence();
     }
 
     public void AddVoting(Voting voting)
