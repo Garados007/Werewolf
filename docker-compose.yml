@@ -14,7 +14,7 @@ services:
             PRONTO_TOKEN: ${PRONTO_TOKEN}
             OAUTH_USERINFO: ${OAUTH_USERINFO}
         volumes:
-            - ./maintenance.key:/app/maintenance.key:ro
+            - ${PWD}/maintenance.key:/app/maintenance.key:ro
         ports:
             - 8100:8000
         restart: unless-stopped

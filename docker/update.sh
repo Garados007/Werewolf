@@ -16,7 +16,7 @@ fi
 
 # build the new docker compose setup
 
-docker-compose build || exit $?
+docker compose build || exit $?
 
 # check if docker is running
 
@@ -34,6 +34,6 @@ fi
 
 # restart docker compose
 
-if [ ! $(docker-compose restart) ]; then
-    docker-compose up -d
+if [ ! $(docker compose restart) ]; then
+    docker compose up -d
 fi
