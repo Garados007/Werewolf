@@ -31,7 +31,6 @@ type alias Model =
     , now: Posix
     , modal: Modal
     -- local editor
-    , editor: Dict String Int
     , editorPage: EditorPage
     -- buffer
     , oldBufferedConfig: (Posix, Data.UserConfig)
@@ -64,7 +63,7 @@ type Modal
     | RoleInfo String
     | Maintenance (Maybe String)
 
-init : String -> LangConfig -> Maybe Data.LobbyJoinToken 
+init : String -> LangConfig -> Maybe Data.LobbyJoinToken
     -> Storage -> Model
 init token lang joinToken storage =
     { state = Nothing
@@ -74,7 +73,6 @@ init token lang joinToken storage =
     , token = token
     , now = Time.millisToPosix 0
     , modal = NoModal
-    , editor = Dict.empty
     , editorPage = PageTheme
     , oldBufferedConfig = Tuple.pair
         (Time.millisToPosix 0)
@@ -108,14 +106,14 @@ getLang model =
     <| Maybe.map
         (\state -> state.game.theme)
         model.state
-    
+
 applyResponse : NetworkResponse -> Model -> (Model, List Network.NetworkRequest)
 applyResponse response model =
     case response of
         RespError error ->
             Tuple.pair
                 { model
-                | errors = 
+                | errors =
                     if List.member error model.errors
                     then model.errors
                     else error :: model.errors
@@ -178,7 +176,7 @@ applyEventData event model =
                     state.game.theme
                     model.lang.lang
             ]
-        EventData.AddParticipant id user -> Tuple.pair 
+        EventData.AddParticipant id user -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
@@ -203,20 +201,20 @@ applyEventData event model =
                 model.levels
             }
             []
-        EventData.AddVoting voting -> Tuple.pair 
+        EventData.AddVoting voting -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
                 | phase =
-                    Maybe.withDefault 
-                        (Data.GamePhase "" 
+                    Maybe.withDefault
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
-                        game.phase 
+                        )
+                        game.phase
                     |> \phase -> Just
                         { phase
-                        | voting = 
+                        | voting =
                             if List.isEmpty
                                 <| List.filter
                                     (\v -> v.id == voting.id)
@@ -229,7 +227,7 @@ applyEventData event model =
             []
         EventData.ChatEvent chat -> Tuple.pair
             { model
-            | chats = 
+            | chats =
                 (::)
                     { time = model.now
                     , shown = model.chatView /= Nothing
@@ -252,7 +250,7 @@ applyEventData event model =
                 , phase = Nothing
                 }
             , modal = case winner of
-                Just list -> 
+                Just list ->
                     Maybe.withDefault model.modal
                     <| Maybe.map
                         (\state -> WinnerModal state.game list)
@@ -266,17 +264,17 @@ applyEventData event model =
                 { game
                 | phase = game.phase
                     |> Maybe.withDefault
-                        (Data.GamePhase "" 
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
+                        )
                     |> Just
                 , user = Dict.merge
                     (\id a ->
                         Dict.insert id
                             { a | role = Nothing }
                     )
-                    (\id a b -> 
+                    (\id a b ->
                         Dict.insert id
                             { a | role = b }
                     )
@@ -361,7 +359,7 @@ applyEventData event model =
                     _ -> Dict.singleton nid player
             }
             []
-        EventData.RemoveParticipant id -> Tuple.pair 
+        EventData.RemoveParticipant id -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
@@ -379,17 +377,17 @@ applyEventData event model =
             , levels = Dict.remove id model.levels
             }
             []
-        EventData.RemoveVoting id -> Tuple.pair 
+        EventData.RemoveVoting id -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
-                | phase = 
+                | phase =
                     Maybe.withDefault
-                        (Data.GamePhase "" 
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
-                        game.phase 
+                        )
+                        game.phase
                     |> \phase -> Just
                         { phase
                         | voting = List.filter
@@ -409,13 +407,13 @@ applyEventData event model =
                         | stage = stage
                         }
                     Nothing -> Just
-                        <| Data.GamePhase "" 
+                        <| Data.GamePhase ""
                             stage
                             []
                 }
             }
             []
-        EventData.SetGameConfig newConfig -> Tuple.pair 
+        EventData.SetGameConfig newConfig -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
@@ -450,7 +448,6 @@ applyEventData event model =
                 , autofinishRound = newConfig.autofinishRound
                 , theme = newConfig.theme
                 }
-            , editor = Dict.empty
             }
             <| List.map Network.NetReq
             <| LangConfig.verifyHasTheme
@@ -472,17 +469,17 @@ applyEventData event model =
             , bufferedConfig = newConfig
             }
             []
-        EventData.SetVotingTimeout vid timeout -> Tuple.pair 
+        EventData.SetVotingTimeout vid timeout -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
-                | phase = 
+                | phase =
                     Maybe.withDefault
-                        (Data.GamePhase "" 
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
-                        game.phase 
+                        )
+                        game.phase
                     |> \phase -> Just
                         { phase
                         | voting = List.map
@@ -496,17 +493,17 @@ applyEventData event model =
                 }
             }
             []
-        EventData.SetVotingVote vid oid voter -> Tuple.pair 
+        EventData.SetVotingVote vid oid voter -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
-                | phase = 
+                | phase =
                     Maybe.withDefault
-                        (Data.GamePhase "" 
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
-                        game.phase 
+                        )
+                        game.phase
                     |> \phase -> Just
                         { phase
                         | voting = List.map
@@ -517,7 +514,7 @@ applyEventData event model =
                                     | options = Dict.map
                                         (\key value ->
                                             if key == oid
-                                            then 
+                                            then
                                                 { value
                                                 | user = value.user ++ [ voter ]
                                                 }
@@ -532,17 +529,17 @@ applyEventData event model =
                 }
             }
             []
-        EventData.RemoveVotingVote vid oid voter -> Tuple.pair 
+        EventData.RemoveVotingVote vid oid voter -> Tuple.pair
             { model
             | state = editGame model <| \game ->
                 { game
-                | phase = 
+                | phase =
                     Maybe.withDefault
-                        (Data.GamePhase "" 
+                        (Data.GamePhase ""
                             (Data.GameStage "" "" "")
                             []
-                        ) 
-                        game.phase 
+                        )
+                        game.phase
                     |> \phase -> Just
                         { phase
                         | voting = List.map
@@ -553,7 +550,7 @@ applyEventData event model =
                                     | options = Dict.map
                                         (\key value ->
                                             if key == oid
-                                            then 
+                                            then
                                                 { value
                                                 | user = List.filter
                                                     ((/=) voter)
@@ -571,7 +568,7 @@ applyEventData event model =
             }
             []
         EventData.GetJoinToken token -> Tuple.pair
-            { model 
+            { model
             | joinToken = Just token
             }
             []
@@ -645,7 +642,7 @@ applyEventData event model =
             []
         EventData.ChatServiceMessage msg -> Tuple.pair
             { model
-            | chats = 
+            | chats =
                 (::)
                     { time = model.now
                     , shown = model.chatView /= Nothing

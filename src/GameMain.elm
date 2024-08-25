@@ -62,7 +62,7 @@ type Msg
     | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
     | WsClose (Result JD.Error Network.SocketClose)
 
-init : String -> String -> LangConfig 
+init : String -> String -> LangConfig
     -> Maybe Data.LobbyJoinToken -> Storage -> (Model, Cmd Msg)
 init token api lang joinToken storage =
     ( Model.init token lang joinToken storage
@@ -87,7 +87,7 @@ viewTopLeftButtons model =
         []
     , Layout.LayoutButton
         ViewChat
-        (Layout.LayoutImageSvg 
+        (Layout.LayoutImageSvg
             <| Views.Icons.svgChat model
         )
         (Layout.StaticLayoutText "Chat")
@@ -100,7 +100,7 @@ viewTopRightButtons model =
         Nothing -> []
         Just state ->
             if state.game.leader == state.user && state.game.phase /= Nothing
-            then 
+            then
                 [ Layout.LayoutButton
                     (Send
                         <| Network.SockReq
@@ -112,7 +112,7 @@ viewTopRightButtons model =
                     )
                     []
                 , Layout.LayoutButton
-                    (Send 
+                    (Send
                         <| Network.SockReq
                         <| Network.GameStop
                     )
@@ -144,7 +144,7 @@ viewBanner model =
                                 (Model.getLang model)
                                 [ "banner", "maintenance" ]
                             <| Dict.fromList
-                                [ Tuple.pair "minute" 
+                                [ Tuple.pair "minute"
                                     <| String.fromInt
                                     <| diff // 60000
                                 , Tuple.pair "sec-prefix" <|
@@ -162,7 +162,7 @@ viewBanner model =
             )
             model.errors
         ]
-   
+
 
 viewLeftSection : Model -> Html Msg
 viewLeftSection model =
@@ -173,7 +173,7 @@ viewLeftSection model =
                 <| Views.ViewUserList.view
                     (Model.getLang model)
                     model.now model.levels
-                    state.game 
+                    state.game
                     state.user
                     model.joinToken
                     model.codeCopied
@@ -223,7 +223,7 @@ view_internal model lang =
             )
         |> Maybe.withDefault (text "")
     , case (model.chatView, Maybe.map .game model.state) of
-        (Just input, Just game) -> 
+        (Just input, Just game) ->
             Views.ViewChat.view lang game model.chats input
                 |> Html.map WrapChat
         _ -> text ""
@@ -242,7 +242,7 @@ view_internal model lang =
                     model.lang.lang
         Model.WinnerModal game list ->
             Html.map (always CloseModal)
-                <| Views.ViewModal.viewOnlyClose 
+                <| Views.ViewModal.viewOnlyClose
                     ( Language.getTextOrPath lang
                         [ "modals", "winner", "title" ]
                     )
@@ -324,7 +324,6 @@ viewGameFrame model lang roles state =
             state.game
             (state.user == state.game.leader)
             model.editorPage
-            model.editor
             model.missingImg
 
 tryViewGamePhase : Model -> Language -> Maybe (Html Msg)
@@ -355,7 +354,7 @@ update msg model =
         | styles = Styles.pushState
                 newModel.now
                 newModel.styles
-            <| Maybe.withDefault 
+            <| Maybe.withDefault
                 model.bufferedConfig
             <| Maybe.Extra.orElse
                 ( Maybe.map .userConfig model.state)
@@ -370,7 +369,7 @@ update msg model =
                             else Just
                                 { theme = stage.theme
                                 , background = stage.backgroundId
-                                }   
+                                }
                         )
                 )
             <| case model.modal of
@@ -413,14 +412,20 @@ update_internal msg model =
                 (\x -> { x | streamerMode = Just mode })
                 model.storage
             |> \(storage, storageCmd) -> Tuple.pair
-                { model 
+                { model
                 | streamerMode = mode
                 , storage = storage
                 }
                 storageCmd
         WrapEditor (Views.ViewRoomEditor.SetBuffer buffer req) ->
             Tuple.pair
-                { model | editor = buffer }
+                { model
+                | state = Maybe.map
+                    (\state ->
+                        { state | game = state.game |> \game -> { game | config = buffer }}
+                    )
+                    model.state
+                }
             <| Network.wsSend
             <| Network.SetGameConfig req
         WrapEditor (Views.ViewRoomEditor.SetPage page) ->
@@ -454,8 +459,8 @@ update_internal msg model =
             <| Network.execute Response req
         WrapError index ->
             Tuple.pair
-                { model 
-                | errors = 
+                { model
+                | errors =
                     List.filterMap
                         (\(ind, entry) ->
                             if ind /= index
@@ -469,23 +474,23 @@ update_internal msg model =
         OpenModal modal ->
             Tuple.pair { model | modal = modal } Cmd.none
         ViewChat ->
-            Tuple.pair 
-                { model 
+            Tuple.pair
+                { model
                 | chatView = Just ""
                 , chats = List.map
                     (\chat -> { chat | shown = True })
                     model.chats
-                } 
+                }
                 Cmd.none
         WrapThemeEditor sub ->
             case model.modal of
                 Model.SettingsModal editor ->
-                    let 
+                    let
                         (newEditor, newEvent) = Views.ViewThemeEditor.update sub editor
                         sendEvents = List.filterMap
                             (\event ->
                                 case event of
-                                    Views.ViewThemeEditor.Send req -> 
+                                    Views.ViewThemeEditor.Send req ->
                                         Just
                                             <| Network.wsSend
                                             <| Network.SetUserConfig req
@@ -496,8 +501,8 @@ update_internal msg model =
                                     _ -> Nothing
                             )
                             newEvent
-                        
-                        (newLang, langEvents) = 
+
+                        (newLang, langEvents) =
                             LangConfig.setCurrent
                                 (Maybe.withDefault model.lang.lang
                                     <| List.head
@@ -512,7 +517,7 @@ update_internal msg model =
                                 model.lang
 
                     in Tuple.pair
-                        { model 
+                        { model
                         | modal = Model.SettingsModal newEditor
                         , lang = newLang
                         }
@@ -579,7 +584,7 @@ update_internal msg model =
                             , doScroll "chat-box-history"
                             ]
                     else (newModel, newMsg)
-                    
+
             in case decodedData of
                 Ok data ->
                     doScrollIfNewChat
@@ -592,11 +597,11 @@ update_internal msg model =
                         -- { model
                         -- | events = (True, formatedRaw) :: model.events
                         -- }
-                Err err -> Tuple.pair 
+                Err err -> Tuple.pair
                     { model
                     | events = (False, formatedRaw) :: model.events
                     , errors = (++) model.errors
-                        <| List.singleton 
+                        <| List.singleton
                         <| "Socket error: " ++ err
                     }
                     Cmd.none
@@ -635,7 +640,7 @@ subscriptions model =
         [ Time.every
             (   if (Dict.values model.levels
                         |> List.any Level.isAnimating
-                    ) 
+                    )
                     || Styles.isAnimating model.now model.styles
                 then 50
                 else 1000
