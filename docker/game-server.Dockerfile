@@ -2,7 +2,7 @@ FROM bitnami/git:latest as version
 WORKDIR /src
 COPY ./.git ./.git
 COPY ./version.txt ./
-RUN echo "$(cat version.txt)-$(git rev-parse --short HEAD)" > version
+RUN echo "$(cat version.txt)+$(git rev-parse --short HEAD)" > version
 
 FROM bitnami/java:latest as grammar-builder
 WORKDIR /src
