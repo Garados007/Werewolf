@@ -8,10 +8,11 @@ import Html.Attributes as HA exposing (class)
 import Dict exposing (Dict)
 import Time exposing (Posix)
 import Language exposing (Language)
+import Avatar
 
-view : Language -> Posix -> Dict String Level -> Data.Game -> List String
+view : Language -> Avatar.AvatarStorage -> Posix -> Dict String Level -> Data.Game -> List String
     -> Html Never
-view lang now levels game winners =
+view lang avatar now levels game winners =
     div [ class "winner-box" ]
         <| List.map
             (\winner ->
@@ -53,9 +54,7 @@ view lang now levels game winners =
 
                 in div [ class "winner" ]
                     [ div [ class "image" ]
-                        [ Html.img
-                            [ HA.src img ]
-                            []
+                        [ Avatar.viewOrImg avatar img
                         , if isGuest
                             then div [ class "guest" ]
                                 <| List.singleton

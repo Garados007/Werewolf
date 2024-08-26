@@ -5,9 +5,10 @@ import Html.Attributes as HA exposing (class)
 import Html.Events as HE
 import Language exposing (Language)
 import Data exposing (UserInfo)
+import Avatar
 
-view : Language -> Bool -> UserInfo -> Html ()
-view lang guest user =
+view : Language -> Avatar.AvatarStorage -> Bool -> UserInfo -> Html ()
+view lang avatar guest user =
     div [ class "user-container" ]
         [ div
             [ class "user-frame"
@@ -15,9 +16,7 @@ view lang guest user =
             ]
             [ div [ class "user-image-box" ]
                 [ div [ class "user-image" ]
-                    [ Html.img
-                        [ HA.src user.picture ]
-                        []
+                    [ Avatar.viewOrImg avatar user.picture
                     , if guest
                         then div [ class "guest" ]
                             <| List.singleton

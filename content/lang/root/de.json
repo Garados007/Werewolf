@@ -34,7 +34,7 @@
         "guest-input": {
             "continue": "Als Gast fortfahren",
             "image-code": "Bildcode",
-            "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet. Wenn du Nutzer von Gravatar.com bist und dort dein Profilbild hinterlegt hast, dann gib hier bitte deine Email-Adresse ein.",
+            "image-hint": "Hier kannst du einen beliebigen Text einfügen aus dem dein Profilbild generiert wird. Falls du nichts eingibst, so wid dein Nutzername verwendet.",
             "name": "Name"
         },
         "lobby-input": {

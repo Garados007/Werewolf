@@ -3,6 +3,7 @@ module Views.ViewUserList exposing (Msg (..), view)
 import Data
 import Network exposing (Request(..), SocketRequest(..), NetworkRequest(..))
 import Language exposing (Language)
+import Avatar
 
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
@@ -18,9 +19,9 @@ type Msg
     | CopyToClipboard String
     | SetStreamerMode Bool
 
-view : Language -> Posix -> Dict String Level -> Data.Game -> String -> Maybe Data.LobbyJoinToken
+view : Language -> Avatar.AvatarStorage -> Posix -> Dict String Level -> Data.Game -> String -> Maybe Data.LobbyJoinToken
     -> Maybe Posix -> Bool -> Html Msg
-view lang now levels game myId joinToken codeCopyTimestamp streamerMode =
+view lang avatar now levels game myId joinToken codeCopyTimestamp streamerMode =
     let
         getLeaderSpecText : String -> (() -> String) -> String
         getLeaderSpecText id func =
@@ -82,9 +83,7 @@ view lang now levels game myId joinToken codeCopyTimestamp streamerMode =
                 [ div [ class "user-image-box" ]
                     <| List.singleton
                     <| div [ class "user-image" ]
-                    [ Html.img
-                        [ HA.src user.img ]
-                        []
+                    [ Avatar.viewOrImg avatar user.img
                     , if user.isGuest
                         then div [ class "guest" ]
                             <| List.singleton

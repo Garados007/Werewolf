@@ -4,12 +4,14 @@
   border-bottom: 0.1em solid var(--color-medium);
   padding: 0 0 0.5em;
 }
+
 .lobby-selection-box .options {
   margin: 3em 0 0;
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
 }
+
 .lobby-selection-box .option {
   flex: 1 1 15em;
   border: 1px solid;
@@ -19,6 +21,7 @@
   margin: 0.5em;
   background-color: var(--color-medium);
 }
+
 .guest-input-box .input {
   display: flex;
   flex-direction: column;
@@ -26,15 +29,18 @@
   padding: 0 0.5em;
   position: relative;
 }
+
 .guest-input-box .input .name {
   font-size: 1.1em;
   font-weight: bold;
 }
+
 .guest-input-box .input .value {
   position: relative;
   max-width: 100%;
   width: 35em;
 }
+
 .guest-input-box .input input {
   font-family: inherit;
   font-size: 1.5em;
@@ -44,6 +50,7 @@
   box-sizing: border-box;
   width: 100%;
 }
+
 .guest-input-box .input .hint {
   max-width: 100%;
   width: 55em;
@@ -51,15 +58,21 @@
   font-size: 0.85em;
   margin: 0.25em 0 0.5em;
 }
+
 .guest-input-box .profile-image {
   display: flex;
   justify-content: center;
   margin: 1em 0;
 }
-.guest-input-box .profile-image img {
+
+.guest-input-box .profile-image img,
+.guest-input-box .profile-image svg,
+.guest-input-box .profile-image .avatar.loading {
   border-radius: 5em;
   width: 5em;
+  height: 5em;
 }
+
 .init-select-user button,
 .lobby-selection-box button,
 .user-container .reset-user button {
@@ -71,16 +84,19 @@
   color: var(--text-color);
   border: 0.1em solid var(--color-medium);
 }
+
 .init-select-user button:hover,
 .lobby-selection-box button:hover,
 .user-container .reset-user button:hover {
   background-color: var(--color-light-transparent);
 }
+
 .init-select-user button:disabled {
   cursor: default;
   background-color: var(--color-dark);
   color: var(--text-color-light);
 }
+
 .guest-input-box .button,
 .init-select-user .login-button,
 .user-container .reset-user {
@@ -88,22 +104,27 @@
   justify-content: space-around;
   margin: 1em 0;
 }
+
 .guest-input-box .button button,
 .init-select-user .login-button button {
   font-size: 1.5em;
 }
+
 .lobby-selection-box .option {
   display: flex;
   flex-direction: column;
   position: relative;
 }
+
 .lobby-selection-box .option .title {
-    font-size: 1.2em;
-    text-align: center;
+  font-size: 1.2em;
+  text-align: center;
 }
+
 .lobby-selection-box .option .space {
-    flex-grow: 1;
+  flex-grow: 1;
 }
+
 .lobby-selection-box .option input {
   font-family: inherit;
   font-size: 1.2em;
@@ -115,6 +136,7 @@
   margin: 0.5em 0;
   text-align: center;
 }
+
 .lobby-selection-box .option button {
   font-family: inherit;
   padding: 0.25em 0.5em;

@@ -5,11 +5,12 @@ import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
 import Dict exposing (Dict)
 import Language exposing (Language)
+import Avatar
 import Maybe.Extra
 
-view : Language -> Maybe Data.Game -> Dict String Data.GameUser -> String -> List String
+view : Language -> Avatar.AvatarStorage -> Maybe Data.Game -> Dict String Data.GameUser -> String -> List String
     -> Html Never
-view lang game removedUser notificationId player =
+view lang avatar game removedUser notificationId player =
     div [ class "notification-box" ]
         [ div [ class "player-list" ]
             <| List.filterMap
@@ -17,9 +18,7 @@ view lang game removedUser notificationId player =
                     (\user ->
                         div [ class "player" ]
                             [ div [ class "player-image" ]
-                                [ Html.img
-                                    [ HA.src user.img ]
-                                    []
+                                [ Avatar.viewOrImg avatar user.img
                                 , if user.isGuest
                                     then div [ class "guest" ]
                                         <| List.singleton

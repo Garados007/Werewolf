@@ -9,6 +9,7 @@
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
+            "Garados007/elm-svg-parser": "1.1.2",
             "NoRedInk/elm-json-decode-pipeline": "1.0.0",
             "andrewMacmurray/elm-delay": "4.0.0",
             "avh4/elm-color": "1.0.0",
@@ -28,6 +29,7 @@
             "elm/time": "1.0.0",
             "elm/url": "1.0.0",
             "elm-community/maybe-extra": "5.2.0",
+            "elm-community/random-extra": "3.2.0",
             "fredcy/elm-debouncer": "2.0.1",
             "garados007/triple": "1.0.0",
             "noahzgordon/elm-color-extra": "1.0.2",
@@ -38,10 +40,12 @@
             "truqu/elm-oauth2": "8.0.0"
         },
         "indirect": {
+            "andre-dietrich/parser-combinators": "3.2.0",
             "danfishgold/base64-bytes": "1.1.0",
             "elm/virtual-dom": "1.0.2",
             "folkertdev/elm-sha2": "1.0.0",
             "fredcy/elm-parseint": "2.0.1",
+            "pilatch/flip": "1.0.0",
             "rtfeldman/elm-hex": "1.0.0",
             "zwilias/elm-utf-tools": "2.0.1"
         }

@@ -8,82 +8,108 @@
   border-radius: 0.8em;
   position: relative;
 }
+
 .user-frame.dead img {
-  filter: gray; /* IE6-9 */
-  -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
-  filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
+  filter: gray;
+  /* IE6-9 */
+  -webkit-filter: grayscale(1);
+  /* Google Chrome, Safari 6+ & Opera 15+ */
+  filter: grayscale(1);
+  /* Microsoft Edge and Firefox 35+ */
 }
+
 .user-frame.dead .user-name {
   color: var(--text-color-light);
 }
+
 .user-frame svg {
   height: 1em;
   width: 1em;
   fill: var(--text-color);
 }
+
 .user-frame .user-info-stats,
 .user-frame .user-info-level {
   grid-column: 1 / 3;
   display: none;
 }
+
 .user-frame:hover .user-info-stats {
   display: flex;
 }
-.user-frame .user-info-stats > div {
+
+.user-frame .user-info-stats>div {
   flex-grow: 1;
   display: flex;
   justify-content: space-around;
 }
-.user-frame .user-info-stats > div:hover {
+
+.user-frame .user-info-stats>div:hover {
   background-color: var(--color-base);
 }
+
 .user-frame:hover .user-info-level,
 .winner .user-info-level {
   display: block;
 }
+
 .winner .user-info-level {
   width: 100%;
 }
+
 .user-info-level .text {
   display: flex;
   justify-content: space-between;
   font-size: 0.8em;
 }
+
 .user-info-level .outer {
   position: relative;
   height: 0.2em;
   background-color: var(--color-base);
 }
-.user-info-level .outer > div {
+
+.user-info-level .outer>div {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   background-color: var(--color-light);
 }
+
 .winner .user-info-level .outer {
   background-color: var(--color-light);
 }
-.winner .user-info-level .outer > div {
+
+.winner .user-info-level .outer>div {
   background-color: var(--color-darker);
 }
+
 .user-image-box {
   padding-right: 0.5em;
 }
+
 .user-frame .user-image,
 .notification-box .player-image,
 .winner-box .image {
   position: relative;
 }
-.user-image img {
+
+.user-image img,
+.user-image svg,
+.user-image .avatar.loading {
   width: 3em;
   height: 3em;
   border-radius: 40%;
   transition: border-radius 0.25s;
 }
-.user-frame:hover .user-image img {
+
+.user-frame:hover .user-image img,
+.user-frame:hover .user-image svg,
+.user-frame:hover .user-image .avatar.loading {
   border-radius: 0;
 }
+
 .notification-box .player-image .guest,
 .user-frame .guest,
 .winner-box .image .guest {
@@ -93,19 +119,29 @@
   left: 0;
   background-color: var(--color-background);
   padding: 0.05em 0.1em;
+  opacity: 1;
+  transition: opacity 0.25s;
 }
+
+.user-frame:hover .guest {
+  opacity: 0.5;
+}
+
 .winner-box .image .guest {
   font-size: 2em;
 }
+
 .user-frame .user-name {
   font-size: 1.2em;
 }
+
 .user-frame .offline {
   font-size: 0.8em;
   font-style: italic;
   margin-left: 0.5em;
   color: var(--text-color-light);
 }
+
 .user-frame .kick {
   display: none;
   position: absolute;
@@ -114,9 +150,11 @@
   padding: 0.5em 0.8em;
   cursor: pointer;
 }
+
 .user-frame:hover .kick {
   display: block;
 }
+
 .user-frame:hover .kick:hover {
   background-color: var(--color-dark);
 }

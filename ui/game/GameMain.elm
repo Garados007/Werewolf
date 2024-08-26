@@ -32,6 +32,7 @@ import Views.ViewGamePhase
 import Level
 import Styles
 import Ports
+import Avatar
 
 import Json.Decode as JD
 import Json.Encode as JE
@@ -172,6 +173,7 @@ viewLeftSection model =
             Html.map WrapUser
                 <| Views.ViewUserList.view
                     (Model.getLang model)
+                    model.avatar
                     model.now model.levels
                     state.game
                     state.user
@@ -249,6 +251,7 @@ view_internal model lang =
                 <| List.singleton
                 <| Views.ViewWinners.view
                     lang
+                    model.avatar
                     model.now model.levels
                     game list
         Model.PlayerNotification notification ->
@@ -261,6 +264,7 @@ view_internal model lang =
                     (\(nid,player) ->
                         Views.ViewPlayerNotification.view
                             lang
+                            model.avatar
                             (Maybe.map .game model.state)
                             model.removedUser
                             nid
@@ -377,7 +381,18 @@ update msg model =
                     Just conf.config
                 _ -> Nothing
         }
-        cmd
+        <| Cmd.batch
+        <| (\x -> [ cmd, x ])
+        <| Maybe.withDefault Cmd.none
+        <| Maybe.map
+            (\state -> Dict.values state.game.user
+                |> List.map (.user >> .img)
+                |> List.filter (String.startsWith "@")
+                |> List.map (String.dropLeft 1)
+                |> List.map (Avatar.request newModel.avatar)
+                |> Cmd.batch
+            )
+        <| newModel.state
 
 update_internal : Msg -> Model -> (Model, Cmd Msg)
 update_internal msg model =
