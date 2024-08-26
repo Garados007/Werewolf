@@ -1118,7 +1118,7 @@ update msg model =
             ( SelectUser
                 { data
                 | guest = data.guest |> \guest ->
-                    { guest | email = code, debouncer = Debounce.init 500 code  }
+                    { guest | email = code, debouncer = Debounce.init 250 code  }
                 }
             , Avatar.request data.avatar code
             )
