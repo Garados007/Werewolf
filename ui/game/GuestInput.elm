@@ -6,9 +6,9 @@ import Html.Attributes as HA exposing (class)
 import Html.Events as HE
 import Debounce
 import Triple
-import MD5
 import Language exposing (Language)
 import Storage exposing (Storage)
+import Avatar
 
 type alias Model =
     { name: String
@@ -27,7 +27,7 @@ init storage =
     { name = Maybe.withDefault ""
         <| Storage.get .guestName storage
     , email = ""
-    , debouncer = Debounce.init 500 ""
+    , debouncer = Debounce.init 250 ""
     }
 
 singleLangBlock : Language -> List String -> List (Html msg)
@@ -40,8 +40,8 @@ singleLang lang =
     Html.text
     << Language.getTextOrPath lang
 
-view : Model -> Language -> Html Msg
-view model lang =
+view : Avatar.AvatarStorage -> Model -> Language -> Html Msg
+view avatar model lang =
     div [ class "guest-input-box" ]
         [ div [ class "input" ]
             [ div [ class "name" ]
@@ -56,12 +56,10 @@ view model lang =
                 ]
             ]
         , div [ class "profile-image" ]
-            [ Html.img
-                [ HA.src
-                    <| "https://www.gravatar.com/avatar/"
-                    ++ MD5.hex (Debounce.settled model.debouncer)
-                    ++ "?d=identicon"
-                ] []
+            [ Avatar.view avatar <|
+                if model.email == ""
+                then model.name
+                else (Debounce.settled model.debouncer)
             ]
         , div [ class "input" ]
             [ div [ class "name" ]
@@ -89,8 +87,8 @@ view model lang =
             ]
         ]
 
-update : Msg -> Model -> (Model, Cmd Msg, Maybe UserInfo)
-update msg model =
+update : Avatar.AvatarStorage -> Msg -> Model -> (Model, Cmd Msg, Maybe UserInfo)
+update avatar msg model =
     case msg of
         SetName name ->
             if model.email == ""
@@ -130,7 +128,11 @@ update msg model =
             |> \(new, cmd, _) ->
                 Triple.triple
                     { model | debouncer = new }
-                    (Cmd.map Debounce cmd)
+                    (Cmd.batch
+                        [ Cmd.map Debounce cmd
+                        , Avatar.request avatar <| Debounce.settled new
+                        ]
+                    )
                     Nothing
         DoContinue ->
             if model.name == ""
@@ -141,10 +143,7 @@ update msg model =
                     Cmd.none
                 <| Just
                 <| Data.UserInfo model.name
-                <| "https://www.gravatar.com/avatar/"
-                ++ MD5.hex
-                    ( if model.email == ""
-                        then model.name
-                        else model.email
-                    )
-                ++ "?d=identicon"
+                <| (++) "@"
+                <|  if model.email == ""
+                    then model.name
+                    else model.email

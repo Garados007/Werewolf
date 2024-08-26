@@ -32,6 +32,8 @@ import Language.Config as LangConfig exposing (LangConfig)
 import Network
 import Styles
 import Storage exposing (Storage)
+import Avatar
+import Debounce
 
 import Model
 import GameMain
@@ -43,6 +45,9 @@ import Views.Icons
 import Data exposing (Game)
 import Time
 import AuthToken exposing (AuthToken)
+import Random
+import Random.String
+import Random.Char
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new
 purpose and setup routines.
@@ -118,6 +123,7 @@ type alias SelectUserData =
     { nav: NavOpts
     , lang: LangConfig
     , storage: Storage
+    , avatar: Avatar.AvatarStorage
     -- actual data
     , guest: GuestInput.Model
     }
@@ -127,6 +133,7 @@ type alias OAuthLoginData =
     { nav: NavOpts
     , lang: LangConfig
     , storage: Storage
+    , avatar: Avatar.AvatarStorage
     -- actual data
     , token: Maybe Auth.AuthenticationSuccess
     }
@@ -136,6 +143,7 @@ type alias SelectLobbyData =
     { nav: NavOpts
     , lang: LangConfig
     , storage: Storage
+    , avatar: Avatar.AvatarStorage
     -- actual data
     , token: Maybe AuthToken
     , user: UserInfo
@@ -158,6 +166,7 @@ type alias InitGameData =
     , lobbyId: String
     , lobbyUser: Maybe (UserInfo, Maybe AuthToken)
     , storage: Storage
+    , avatar: Avatar.AvatarStorage
     , nav: NavOpts
     }
 
@@ -183,10 +192,12 @@ type Msg
     | WrapLobbyInput LobbyInput.Msg
     | WrapGame GameMain.Msg
     | WrapStorage Storage.Msg
+    | WrapAvatar Avatar.Msg
     | WrapAuthToken AuthToken.Msg
     | RemoveLostToken
     | Navigate Url
     | RemoveFallback
+    | InitGuestCode String
 
 getLang : Model -> LangConfig
 getLang model =
@@ -218,6 +229,15 @@ getStorage model =
         SelectLobby { storage } -> storage
         Game { game } -> game.storage
         InitGame { storage } -> storage
+
+getAvatarStorage : Model -> Avatar.AvatarStorage
+getAvatarStorage model =
+    case model of
+        SelectUser { avatar } -> avatar
+        OAuthLogin { avatar } -> avatar
+        SelectLobby { avatar } -> avatar
+        Game { game } -> game.avatar
+        InitGame { avatar } -> avatar
 
 setStorage : Storage -> Model -> Model
 setStorage storage model =
@@ -274,6 +294,9 @@ init () url key =
                         |> Cmd.map
                             (ReceiveRootLang lang.lang)
                     , Cmd.map WrapStorage storageCmd
+                    , Random.generate InitGuestCode
+                        <| Random.String.rangeLengthString 4 12
+                        <| Random.Char.latin
                     ]
             )
         <| Maybe.Extra.unpack
@@ -287,6 +310,7 @@ init () url key =
                             , lang = lang
                             , guest = GuestInput.init storage
                             , storage = storage
+                            , avatar = Avatar.empty
                             }
                         , ncmd
                         )
@@ -298,6 +322,7 @@ init () url key =
                             , lang = lang
                             , guest = GuestInput.init storage
                             , storage = storage
+                            , avatar = Avatar.empty
                             }
                         , ncmd
                         )
@@ -309,6 +334,7 @@ init () url key =
                             , lang = lang
                             , token = Nothing
                             , storage = storage
+                            , avatar = Avatar.empty
                             }
                         , Cmd.batch
                             [ Http.request <|
@@ -343,6 +369,7 @@ init () url key =
                         , lobbyId = lobbyId
                         , lobbyUser = Nothing
                         , storage = storage
+                        , avatar = Avatar.empty
                         , nav = nnav
                         }
                     , Cmd.batch
@@ -401,6 +428,9 @@ urlChange model url =
         storage : Storage
         storage = getStorage model
 
+        avatar : Avatar.AvatarStorage
+        avatar = getAvatarStorage model
+
         (new, newCmd) =
             Maybe.Extra.unpack
                 (\() ->
@@ -416,6 +446,7 @@ urlChange model url =
                                         { nav = nav_old
                                         , lang = lang
                                         , storage = storage
+                                        , avatar = avatar
                                         , token = token
                                         , user = user
                                         , model = LobbyInput.init nav_old.dev
@@ -430,6 +461,7 @@ urlChange model url =
                                         , lang = lang
                                         , guest = GuestInput.init storage
                                         , storage = storage
+                                        , avatar = avatar
                                         }
                                     , Network.wsExit
                                     )
@@ -439,6 +471,7 @@ urlChange model url =
                                 , lang = lang
                                 , guest = GuestInput.init storage
                                 , storage = storage
+                                , avatar = avatar
                                 }
                             , Cmd.none
                             )
@@ -460,6 +493,7 @@ urlChange model url =
                                 InitGame data -> data.lobbyUser
                                 _ -> Nothing
                             , storage = storage
+                            , avatar = avatar
                             , nav = nav_old
                             }
                         , initGame serverId lobbyId
@@ -594,7 +628,7 @@ view model =
                         <| singleLangBlock model
                             [ "init", "user-mode", "play-guest" ]
                     , Html.map WrapGuestInput
-                        <| GuestInput.view data.guest
+                        <| GuestInput.view data.avatar data.guest
                         <| LangConfig.getRootLang data.lang
                     , Views.ViewVersion.view
                     ]
@@ -612,6 +646,7 @@ view model =
                     Html.map (always ResetUser)
                     <| Views.ViewUserPreview.view
                         (LangConfig.getRootLang data.lang)
+                        data.avatar
                         (data.token == Nothing)
                         data.user
                 , showLeftSection = data.viewUser
@@ -693,7 +728,7 @@ update msg model =
             )
         (ViewUser _, _) -> (model, Cmd.none)
         (WrapGuestInput sub, SelectUser data) ->
-            GuestInput.update sub data.guest
+            GuestInput.update data.avatar sub data.guest
             |> \(new, cmd, res) ->
                 Tuple.mapSecond
                     (\other ->
@@ -724,6 +759,7 @@ update msg model =
                                 , loading = False
                                 , viewUser = Nothing
                                 , storage = storage
+                                , avatar = data.avatar
                                 }
                             , storageCmd
                             )
@@ -751,8 +787,11 @@ update msg model =
                 , guest = GuestInput.init data.storage
                 , lang = data.lang
                 , storage = data.storage
+                , avatar = data.avatar
                 }
-            , Cmd.none
+            , Random.generate InitGuestCode
+                <| Random.String.rangeLengthString 4 12
+                <| Random.Char.latin
             )
         (ResetUser, _) -> (model, Cmd.none)
         (GotAccessToken (Ok token), OAuthLogin data) ->
@@ -779,11 +818,7 @@ update msg model =
                         [ JD.field Config.oauthPictureMap JD.string
                         , JD.field Config.oauthEmailMap JD.string
                             |> JD.map
-                                (\mail ->
-                                    "https://www.gravatar.com/avatar/"
-                                    ++ MD5.hex mail
-                                    ++ "?d=identicon"
-                                )
+                                (\mail -> MD5.hex mail)
                         ]
                 , timeout = Nothing
                 , tracker = Nothing
@@ -797,8 +832,14 @@ update msg model =
                 , lang = data.lang
                 , guest = GuestInput.init data.storage
                 , storage = data.storage
+                , avatar = data.avatar
                 }
-            , ncmd
+            , Cmd.batch
+                [ ncmd
+                , Random.generate InitGuestCode
+                    <| Random.String.rangeLengthString 4 12
+                    <| Random.Char.latin
+                ]
             )
         (GotAccessToken _, _) -> (model, Cmd.none)
         (GotUserInfo (Ok userinfo), OAuthLogin data) ->
@@ -811,6 +852,7 @@ update msg model =
                 , loading = False
                 , viewUser = Nothing
                 , storage = data.storage
+                , avatar = data.avatar
                 }
             , Cmd.none
             )
@@ -822,8 +864,14 @@ update msg model =
                 , lang = data.lang
                 , guest = GuestInput.init data.storage
                 , storage = data.storage
+                , avatar = data.avatar
                 }
-            , ncmd
+            , Cmd.batch
+                [ ncmd
+                , Random.generate InitGuestCode
+                    <| Random.String.rangeLengthString 4 12
+                    <| Random.Char.latin
+                ]
             )
         (GotUserInfo _, _) -> (model, Cmd.none)
         (WrapLobbyInput sub, SelectLobby data) ->
@@ -1003,6 +1051,30 @@ update msg model =
                 )
             |> \newModel ->
                 ( setStorage storage newModel
+                , Storage.get .guestName storage
+                    |> Maybe.map
+                        (Avatar.request <| getAvatarStorage newModel)
+                    |> Maybe.withDefault Cmd.none
+                )
+        (WrapAvatar sub, _) ->
+            getAvatarStorage model
+            |> Avatar.update sub
+            |> \avatar ->
+                (case model of
+                    SelectUser data ->
+                        SelectUser { data | avatar = avatar }
+                    OAuthLogin data ->
+                        OAuthLogin { data | avatar = avatar }
+                    SelectLobby data ->
+                        SelectLobby { data | avatar = avatar }
+                    InitGame data ->
+                        InitGame { data | avatar = avatar }
+                    Game data ->
+                        Game
+                            { data
+                            | game = data.game |> \game ->
+                                { game | avatar = avatar }
+                            }
                 , Cmd.none
                 )
         (WrapAuthToken sub, SelectLobby data) ->
@@ -1042,36 +1114,56 @@ update msg model =
                     old_nav.url.path
             |> \(nav, ncmd) ->
                 (setNav nav model, ncmd)
-
+        (InitGuestCode code, SelectUser data) ->
+            ( SelectUser
+                { data
+                | guest = data.guest |> \guest ->
+                    { guest | email = code, debouncer = Debounce.init 500 code  }
+                }
+            , Avatar.request data.avatar code
+            )
+        (InitGuestCode _, _) -> (model, Cmd.none)
 
 returnGame : GameData -> (Model, Cmd Msg)
 returnGame data =
     navigateTo data.nav "/"
     |> \(nav, ncmd) ->
-        ( case data.lobbyUser of
+        (case data.lobbyUser of
             Just (user, token) ->
-                SelectLobby
-                    { nav = nav
-                    , lang = data.game.lang
-                    , storage = data.game.storage
-                    , token = token
-                    , user = user
-                    , model = LobbyInput.init nav.dev
-                    , loading = False
-                    , viewUser = data.viewUser
-                    }
+                Avatar.requireList data.game.avatar
+                    (if String.startsWith "@" user.picture
+                        then [ String.dropLeft 1 user.picture ]
+                        else []
+                    )
+                |> Tuple.mapFirst
+                    (\avatar ->
+                        SelectLobby
+                            { nav = nav
+                            , lang = data.game.lang
+                            , storage = data.game.storage
+                            , avatar = avatar
+                            , token = token
+                            , user = user
+                            , model = LobbyInput.init nav.dev
+                            , loading = False
+                            , viewUser = data.viewUser
+                            }
+                    )
             Nothing ->
-                SelectUser
+                ( SelectUser
                     { nav = nav
                     , lang = data.game.lang
                     , guest = GuestInput.init data.game.storage
                     , storage = data.game.storage
+                    , avatar = data.game.avatar
                     }
-        , Cmd.batch
-            [ Network.wsExit
-            , ncmd
-            ]
+                , Random.generate InitGuestCode
+                    <| Random.String.rangeLengthString 4 12
+                    <| Random.Char.latin
+                )
         )
+    |> Tuple.mapSecond
+        (\cmd -> Cmd.batch [ Network.wsExit, ncmd, cmd ])
 
 getGuestToken : LobbyInput.ConnectInfo -> String -> String -> String -> Cmd Msg
 getGuestToken info name image language =
@@ -1145,4 +1237,5 @@ subscriptions model =
                     ]
             _ -> Sub.none
         , Sub.map WrapStorage Storage.subscriptions
+        , Sub.map WrapAvatar Avatar.subscriptions
         ]

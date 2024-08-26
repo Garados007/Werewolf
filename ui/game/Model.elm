@@ -18,6 +18,7 @@ import Language
 import Language.Config as LangConfig exposing (LangConfig)
 import Styles exposing (Styles)
 import Storage exposing (Storage)
+import Avatar
 
 import Views.ViewThemeEditor
 import Set exposing (Set)
@@ -48,6 +49,7 @@ type alias Model =
     , maintenance: Maybe Posix
     , storage: Storage
     , missingImg: Set String
+    , avatar: Avatar.AvatarStorage
     }
 
 type EditorPage
@@ -97,6 +99,7 @@ init token lang joinToken storage =
     , maintenance = Nothing
     , storage = storage
     , missingImg = Set.empty
+    , avatar = Avatar.empty
     }
 
 getLang : Model -> Language.Language

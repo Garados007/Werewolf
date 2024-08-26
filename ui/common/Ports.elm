@@ -16,3 +16,6 @@ port settingSetItem : LocalStorage.SetItemPort msg
 port settingClear : LocalStorage.ClearPort msg
 port settingListKeys : LocalStorage.ListKeysPort msg
 port settingResponse : LocalStorage.ResponsePort msg
+
+port avatarRequest : JE.Value -> Cmd msg
+port avatarResponse : (JD.Value -> msg) -> Sub msg

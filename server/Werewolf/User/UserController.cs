@@ -132,7 +132,7 @@ public class UserController(Database database, string oAuthUserInfoEndpoint) : U
             // update information
             string? value;
             if ((value = GetSaneStringFromJson(json.RootElement, "picture", VerfifyUrl) ??
-                    GravatarLinkFromEmail(GetSaneStringFromJson(json.RootElement, "email"))
+                    GenerateRandomAvatar()
                 ) is not null
                 && value != user.Config.Image)
                 await user.Config.SetImageAsync(value).CAF();
@@ -149,7 +149,7 @@ public class UserController(Database database, string oAuthUserInfoEndpoint) : U
             new DB.UserConfig
             {
                 Image = GetSaneStringFromJson(json.RootElement, "picture", VerfifyUrl) ??
-                    GravatarLinkFromEmail(GetSaneStringFromJson(json.RootElement, "email")),
+                    GenerateRandomAvatar(),
                 Language = GetSaneStringFromJson(json.RootElement, "locale") ?? "en",
                 Username = GetSaneStringFromJson(json.RootElement, "game_username") ??
                     GetSaneStringFromJson(json.RootElement, "preferred_username") ??
@@ -186,14 +186,10 @@ public class UserController(Database database, string oAuthUserInfoEndpoint) : U
         return uri.Scheme.ToLower() == "http" || uri.Scheme.ToLower() == "https";
     }
 
-    public static string GravatarLinkFromEmail(string? email)
+    public static string GenerateRandomAvatar()
     {
-        var hex = email is null ? "" :
-            BitConverter.ToString(
-                System.Security.Cryptography.MD5.HashData(
-                    System.Text.Encoding.UTF8.GetBytes(email)
-                )
-            ).Replace("-", "");
-        return $"https://www.gravatar.com/avatar/{hex}?d=identicon";
+        Span<byte> buffer = stackalloc byte[15];
+        Random.Shared.NextBytes(buffer);
+        return "@" + Convert.ToBase64String(buffer);
     }
 }

@@ -168,6 +168,7 @@
   </div>
   <script src="/content/index.js"></script>
   <script src="/content/js/local-storage.js"></script>
+  <script src="/content/vendor/Multiavatar/multiavatar.min.js"></script>
   <script>
     var app = Elm.Main.init({
       node: document.getElementById("elm")
@@ -179,6 +180,12 @@
     app.ports.sendSocketCommand.subscribe(sendSocketCommand);
     app.ports.sendToClipboard.subscribe(copyToClipboard);
     new ElmLocalStoragePorts().subscribe(app, "settingGetItem", "settingSetItem", "settingClear", "settingListKeys", "settingResponse");
+    app.ports.avatarRequest.subscribe(key => {
+      app.ports.avatarResponse.send({
+        key: key,
+        img: multiavatar(key)
+      });
+    });
   </script>
 </body>
 

@@ -4,3 +4,6 @@
 [submodule "docs/wiki"]
 	path = docs/wiki
 	url = https://github.com/Garados007/Werewolf.wiki.git
+[submodule "content/vendor/Multiavatar"]
+	path = content/vendor/Multiavatar
+	url = https://github.com/multiavatar/Multiavatar.git
