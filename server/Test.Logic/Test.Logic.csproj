@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Test\Tools\Tools.csproj" />
-    <ProjectReference Include="..\..\Themes\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
+    <ProjectReference Include="..\Test.Tools\Tools.csproj" />
+    <ProjectReference Include="..\Werewolf.Theme.Base\Werewolf.Theme.Base.csproj" />
   </ItemGroup>
 
   <ItemGroup>

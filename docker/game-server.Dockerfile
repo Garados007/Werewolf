@@ -25,12 +25,12 @@ RUN mkdir -p /tools && \
         /p:version="$(cat "version")" \
         tools/LogicCompiler/LogicCompiler.csproj
 # build logic files
-COPY ./Themes ./Themes
+COPY ./server/Werewolf.Theme.Base ./server/Werewolf.Theme.Base
 COPY ./logic ./logic
 RUN mkdir -p /src/server/Theme && \
     cd /src/server/Theme && \
     dotnet new classlib && \
-    dotnet add reference /src/Themes/Werewolf.Theme.Base/Werewolf.Theme.Base.csproj && \
+    dotnet add reference /src/server/Werewolf.Theme.Base/Werewolf.Theme.Base.csproj && \
         find /src/logic/ -mindepth 1 -maxdepth 1 -type d | \
         xargs -I {} basename {} | \
         while read -r name; do dotnet /tools/LogicCompiler.dll \
@@ -40,18 +40,18 @@ RUN mkdir -p /src/server/Theme && \
         done && \
     cd /src && \
     dotnet sln add server/Theme/Theme.csproj
-COPY ./Werewolf ./Werewolf
-RUN cd /src/Werewolf && \
+COPY ./server/Werewolf ./server/Werewolf
+RUN cd /src/server/Werewolf && \
     dotnet add reference /src/server/Theme/Theme.csproj && \
     cd /src
 # build server
 RUN mkdir -p /app && \
     dotnet build --nologo -c RELEASE \
         /p:version="$(cat "version")" \
-        Werewolf/Werewolf.csproj && \
+        server/Werewolf/Werewolf.csproj && \
     dotnet publish --nologo -c RELEASE -o /app \
         /p:version="$(cat "version")" \
-        Werewolf/Werewolf.csproj && \
+        server/Werewolf/Werewolf.csproj && \
     rm ./version && \
     echo "Theme.dll" >> /app/plugins.txt
 

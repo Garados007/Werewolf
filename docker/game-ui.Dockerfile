@@ -15,21 +15,21 @@ RUN apt-get -qq update -y && \
     mv elm /bin/
 WORKDIR /src
 COPY ./elm.json /src/
-COPY ./src /src/src
+COPY ./ui /src/ui
 COPY ./preprocess-elm.sh /src/
 COPY --from=version /src/version ./version
 RUN chmod +x preprocess-elm.sh && \
     ./preprocess-elm.sh && \
     cd bin && \
-    rm -r src/Debug && \
+    rm -r ui/common/Debug && \
     echo "s/version = \\\".*\\\"/version = \\\"$(cat "/src/version")\\\"/" && \
     sed -i "s/version = \\\".*\\\"/version = \\\"$(cat "/src/version")\\\"/" \
-        src/Config.elm && \
-    cat src/Config.elm && \
+        ui/common/Config.elm && \
+    cat ui/common/Config.elm && \
     mkdir /content && \
     mkdir /content/special && \
-    elm make --optimize --output=/content/index.js src/Main.elm && \
-    elm make --optimize --output=/content/special/translation.html src/Translation/Main.elm
+    elm make --optimize --output=/content/index.js ui/game/Main.elm && \
+    elm make --optimize --output=/content/special/translation.html ui/translation/Translation/Main.elm
 
 FROM node:latest as js-compressor
 RUN npm install uglify-js --global
