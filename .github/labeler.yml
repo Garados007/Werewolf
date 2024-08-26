@@ -1,0 +1,43 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docs/**"
+          - "README.md"
+ui:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "content/**"
+          - "ui/**"
+          - "elm-live.sh"
+          - "elm.json"
+server:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "logic/**"
+          - "server/**"
+          - "tools/**"
+          - "Werewolf.sln"
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+runtime:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docker/**"
+          - ".dockerignore"
+          - "docker-compose.yml"
+dependencies:
+  - changed-files:
+      - any-glob-to-all-files:
+          - "**/*.sln"
+          - "**/*.csproj"
+          - "elm.json"
+          - "**/package.json"
+          - "**/package-lock.json"
+enhancement:
+  - head-branch:
+      - "^feature/"
+refactoring:
+  - head-branch:
+      - "^refactor/"
