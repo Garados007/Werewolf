@@ -3,6 +3,7 @@ module LobbyInput exposing (..)
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class)
 import Html.Events as HE
+import Html.Tools exposing (onNotShiftEnter)
 import Pronto
 import Triple
 import Config
@@ -93,6 +94,7 @@ view model canContinue lang =
                     , HA.placeholder
                         <| Language.getTextOrPath lang
                             [ "init", "lobby-input", "hint" ]
+                    , onNotShiftEnter SelectJoin
                     , HE.onInput Input
                     ] []
                 , Html.button
