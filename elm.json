@@ -1,7 +1,10 @@
 {
     "type": "application",
     "source-directories": [
-        "src"
+        "ui/common",
+        "ui/dev",
+        "ui/game",
+        "ui/translation"
     ],
     "elm-version": "0.19.1",
     "dependencies": {

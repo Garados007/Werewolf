@@ -2,7 +2,7 @@
 elm-live \
     --port=8000 \
     --start-page=content/index.html \
-    src/Main.elm \
+    ui/game/Main.elm \
     -x /api \
     -y http://localhost:8015 \
     -u \
