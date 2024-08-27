@@ -31,6 +31,7 @@ public class GameStart : GameEvent
                     writer.WriteStringValue(tag);
                 writer.WriteEndArray();
                 writer.WriteString("role", seenRole is null ? null : game.Theme?.GetCharacterName(seenRole));
+                writer.WriteBoolean("enabled", participant.Character.Enabled);
                 writer.WriteEndObject();
             }
         }
