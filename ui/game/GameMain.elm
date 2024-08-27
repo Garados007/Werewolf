@@ -230,7 +230,7 @@ view_internal model lang =
         |> Maybe.withDefault (text "")
     , case (model.chatView, Maybe.map .game model.state) of
         (Just input, Just game) ->
-            Views.ViewChat.view lang game model.chats input
+            Views.ViewChat.view lang game model.removedUser model.chats input
                 |> Html.map WrapChat
         _ -> text ""
     , case model.modal of
