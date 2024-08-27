@@ -81,7 +81,7 @@ internal partial class Program
         var ws = new MaxLib.WebServer.WebSocket.WebSocketService();
         ws.Add(new GameWebSocketEndpoint(userController));
         ws.CloseEndpoint = new MaxLib.WebServer.WebSocket.WebSocketCloserEndpoint(
-            MaxLib.WebServer.WebSocket.CloseReason.NormalClose,
+            (MaxLib.WebServer.WebSocket.CloseReason)4404,
             "lobby not found"
         );
         server.AddWebService(ws);

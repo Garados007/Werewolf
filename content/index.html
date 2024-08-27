@@ -45,12 +45,6 @@
         }
         socket.onclose = function (data) {
           console.log(`ws closed: ${data.code}, ${data.reason}, counter=${socket.errorCounter || 0}`);
-          if (data.code == 1006 && data.reason == "") {
-            if (!socket.errorCounter || socket.errorCounter < 3) {
-              socket.errorCounter = 1 + (socket.errorCounter || 0);
-              return;
-            }
-          }
           app.ports.receiveSocketClose.send(
             {
               name: wat.name

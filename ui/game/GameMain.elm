@@ -4,6 +4,7 @@ import Data
 import EventData exposing (EventData)
 import Model exposing (Model)
 import Network exposing (NetworkResponse)
+import Network.NetworkManager
 import Language exposing (Language)
 import Language.Config as LangConfig exposing (LangConfig)
 
@@ -61,17 +62,20 @@ type Msg
     | ViewChat
     | Send Network.Request
     | WsMsg (Result JD.Error WebSocket.WebSocketMsg)
-    | WsClose (Result JD.Error Network.SocketClose)
+    | WrapNetwork Network.NetworkManager.Msg
 
 init : String -> String -> LangConfig
     -> Maybe Data.LobbyJoinToken -> Storage -> (Model, Cmd Msg)
 init token api lang joinToken storage =
-    ( Model.init token lang joinToken storage
-    , Cmd.batch
-        [ Network.wsSend Network.FetchRoles
-        , Network.wsConnect api token
-        ]
-    )
+    let
+        (network, networkCmd) = Network.NetworkManager.connect api token
+    in
+        ( Model.init network token lang joinToken storage
+        , Cmd.batch
+            [ Network.wsSend Network.FetchRoles
+            , Cmd.map WrapNetwork networkCmd
+            ]
+        )
 
 viewTopLeftButtons : Model -> List (Layout.LayoutButton Msg)
 viewTopLeftButtons model =
@@ -203,7 +207,7 @@ view model = view_internal model <| Model.getLang model
 
 isLoading : Model -> Bool
 isLoading model =
-    (&&) (model.closeReason == Nothing)
+    (&&) (not <| Network.NetworkManager.hasError model.network)
     <| model.state == Nothing || model.roles == Nothing
 
 view_internal : Model -> Language -> List (Html Msg)
@@ -300,10 +304,10 @@ view_internal model lang =
                     , Html.span [] [ text r ]
                     ]
             ]
-    , case model.closeReason of
-        Nothing -> text ""
-        Just info ->
-            Views.ViewCloseReason.view lang info Noop Return
+    , case model.network of
+        Network.NetworkManager.DisruptedConnected _ close ->
+            Views.ViewCloseReason.view lang model.now close Noop Return
+        _ -> text ""
     ]
 
 tryViewGameFrame : Model -> Language -> Maybe (Html Msg)
@@ -634,20 +638,11 @@ update_internal msg model =
                     <| JD.errorToString err
                 }
                 Cmd.none
-        WsClose (Err err) ->
-            Tuple.pair
-                { model
-                | errors = (++) model.errors
-                    <| List.singleton
-                    <| JD.errorToString err
-                }
-                Cmd.none
-        WsClose (Ok reason) ->
-            Tuple.pair
-                { model
-                | closeReason = Just reason
-                }
-                Cmd.none
+        WrapNetwork sub ->
+            Network.NetworkManager.update sub model.network
+            |> Tuple.mapBoth
+                (\new -> { model | network = new })
+                (Cmd.map WrapNetwork)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -661,6 +656,7 @@ subscriptions model =
                 else 1000
             )
             SetTime
-        , Network.wsReceive WsMsg
-        , Network.wsClose WsClose
+        , Network.NetworkManager.receive WsMsg
+        , Network.NetworkManager.subscriptions model.network
+            |> Sub.map WrapNetwork
         ]

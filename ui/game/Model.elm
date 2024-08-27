@@ -12,6 +12,7 @@ import Data
 import EventData exposing (EventData)
 import Dict exposing (Dict)
 import Network exposing (NetworkResponse(..))
+import Network.NetworkManager exposing (NetworkManager)
 import Time exposing (Posix)
 import Level exposing (Level)
 import Language
@@ -45,7 +46,7 @@ type alias Model =
     , joinToken: Maybe Data.LobbyJoinToken
     , codeCopied: Maybe Posix
     , streamerMode: Bool
-    , closeReason: Maybe Network.SocketClose
+    , network: NetworkManager
     , maintenance: Maybe Posix
     , storage: Storage
     , missingImg: Set String
@@ -65,9 +66,9 @@ type Modal
     | RoleInfo String
     | Maintenance (Maybe String)
 
-init : String -> LangConfig -> Maybe Data.LobbyJoinToken
+init : NetworkManager -> String -> LangConfig -> Maybe Data.LobbyJoinToken
     -> Storage -> Model
-init token lang joinToken storage =
+init network token lang joinToken storage =
     { state = Nothing
     , roles = Nothing
     , removedUser = Dict.empty
@@ -95,7 +96,7 @@ init token lang joinToken storage =
     , codeCopied = Nothing
     , streamerMode = Storage.get .streamerMode storage
         |> Maybe.withDefault False
-    , closeReason = Nothing
+    , network = network
     , maintenance = Nothing
     , storage = storage
     , missingImg = Set.empty
