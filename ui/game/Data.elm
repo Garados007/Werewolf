@@ -120,6 +120,7 @@ type alias GameVotingOption =
 type alias GameParticipant =
     { tags: List String
     , role: Maybe String
+    , enabled: Bool
     }
 
 type alias GameUser =
@@ -164,7 +165,7 @@ decodeGameGlobalState =
                                 |> required "started" JD.bool
                                 |> required "can-vote" JD.bool
                                 |> required "max-voter" JD.int
-                                |> required "timeout" 
+                                |> required "timeout"
                                     (JD.nullable Iso8601.decoder)
                                 |> required "options"
                                     (JD.succeed GameVotingOption
@@ -183,6 +184,7 @@ decodeGameGlobalState =
                             (JD.succeed GameParticipant
                                 |> required "tags" (JD.list JD.string)
                                 |> required "role" (JD.nullable JD.string)
+                                |> required "enabled" JD.bool
                                 |> JD.nullable
                             )
                         |> required "user"

@@ -115,6 +115,7 @@ decodeEventData =
                     JD.succeed GameParticipant
                     |> required "tags" (JD.list JD.string)
                     |> required "role" (JD.nullable JD.string)
+                    |> required "enabled" JD.bool
                     |> JD.nullable
                     |> JD.dict
                     |> JD.field "participants"
@@ -137,6 +138,7 @@ decodeEventData =
                     JD.succeed GameParticipant
                     |> required "tags" (JD.list JD.string)
                     |> required "role" (JD.nullable JD.string)
+                    |> required "enabled" JD.bool
                     |> JD.map2 OnRoleInfoChanged
                         (JD.field "id" <| JD.nullable JD.string)
                 "PlayerNotification" ->

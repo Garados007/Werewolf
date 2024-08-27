@@ -138,8 +138,10 @@
             "Werewolf.Theme.Chats.RemoveParticipantLog": "{user} hat die Lobby wieder verlassen.",
             "Werewolf.Theme.Chats.SetVotingVoteLog": "{voter} hat für {option} in {voting} gestimmt."
         },
-        "roles": {
-            "unknown": "???"
+        "role": {
+            "unknown": {
+                "name": "???"
+            }
         },
         "voting": {
             "default": {

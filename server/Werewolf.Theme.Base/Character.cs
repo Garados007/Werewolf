@@ -36,9 +36,6 @@ public abstract class Character : ILabelHost<ICharacterLabel>
     /// <returns>a list of defined tags</returns>
     public virtual IEnumerable<string> GetTags(GameRoom game, Character? viewer)
     {
-        if (!Enabled)
-            yield return "disabled";
-
         foreach (var effect in Labels.GetEffects())
             if (effect.CanLabelBeSeen(game, this, viewer))
                 yield return effect.Name;

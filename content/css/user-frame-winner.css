@@ -9,7 +9,8 @@
   position: relative;
 }
 
-.user-frame.dead img {
+.user-frame.dead img,
+.user-frame.dead svg {
   filter: gray;
   /* IE6-9 */
   -webkit-filter: grayscale(1);
@@ -20,6 +21,7 @@
 
 .user-frame.dead .user-name {
   color: var(--text-color-light);
+  text-decoration: line-through var(--text-color);
 }
 
 .user-frame svg {

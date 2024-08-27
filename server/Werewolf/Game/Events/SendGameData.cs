@@ -97,6 +97,7 @@ public class SendGameData(GameRoom gameRoom, UserInfo user, UserFactory userFact
                     writer.WriteStringValue(tag);
                 writer.WriteEndArray(); // tags
                 writer.WriteString("role", seenRole is null ? null : GameRoom.Theme?.GetCharacterName(seenRole));
+                writer.WriteBoolean("enabled", entry.Character.Enabled);
 
                 writer.WriteEndObject(); // role
             }

@@ -73,10 +73,8 @@ view lang avatar now levels game myId joinToken codeCopyTimestamp streamerMode =
                     [ ("user-frame", True)
                     , ("me", myId == id)
                     , Tuple.pair "dead"
-                        <| not
                         <| case Dict.get id game.user |> Maybe.map .role of
-                            Just (Just player) ->
-                                not <| List.member "not-alive" player.tags
+                            Just (Just player) -> not <| player.enabled
                             _ -> True
                     ]
                 ]
@@ -298,10 +296,10 @@ view lang avatar now levels game myId joinToken codeCopyTimestamp streamerMode =
         |> List.sortBy
             (\(id, _) ->
                 ( case Dict.get id game.user |> Maybe.andThen .role of
-                    Just { tags } ->
-                        if List.member "not-alive" tags
-                        then 1
-                        else 0
+                    Just { enabled } ->
+                        if enabled
+                        then 0
+                        else 1
                     _ -> 2
                 , id
                 )
