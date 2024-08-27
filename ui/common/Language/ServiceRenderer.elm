@@ -50,21 +50,21 @@ parserSingle =
 rawTextKey : Data.ChatServiceMessage -> List String
 rawTextKey message = [ "theme", "logs", message.key ]
 
-render : Language -> Data.Game -> Data.ChatServiceMessage -> Html msg
-render language game message =
+render : Language -> Data.Game -> Dict String Data.GameUser -> Data.ChatServiceMessage -> Html msg
+render language game removedUser message =
     case Language.getText language (rawTextKey message) of
         Nothing -> renderDefault message
-        Just rawText -> renderFormat language game message rawText
+        Just rawText -> renderFormat language game removedUser message rawText
 
-renderEpic : Language -> Data.Game -> Data.ChatServiceMessage -> Html msg
-renderEpic language game message =
+renderEpic : Language -> Data.Game -> Dict String Data.GameUser -> Data.ChatServiceMessage -> Html msg
+renderEpic language game removedUser message =
     case Language.getText language (rawTextKey message) of
-        Nothing -> render language game message
-        Just rawText -> renderFormat language game message rawText
+        Nothing -> render language game removedUser message
+        Just rawText -> renderFormat language game removedUser message rawText
 
-renderFormat : Language -> Data.Game -> Data.ChatServiceMessage -> String -> Html msg
-renderFormat language game message formatString =
-    case renderText language game message.args formatString of
+renderFormat : Language -> Data.Game -> Dict String Data.GameUser -> Data.ChatServiceMessage -> String -> Html msg
+renderFormat language game removedUser message formatString =
+    case renderText language game removedUser message.args formatString of
         Ok html -> html
         Err err ->
             span [ class "parse-error" ]
@@ -79,14 +79,14 @@ renderFormat language game message formatString =
                 , err
                 ]
 
-renderText : Language -> Data.Game -> Dict String Data.TextVariable -> String -> Result String (Html msg)
-renderText language game messageArgs formatString =
+renderText : Language -> Data.Game -> Dict String Data.GameUser -> Dict String Data.TextVariable -> String -> Result String (Html msg)
+renderText language game removedUser messageArgs formatString =
     case Parser.run parser formatString of
         Err deadEnd -> Err <| Parser.deadEndsToString deadEnd
-        Ok tokens -> Ok <| renderTextTokens language game messageArgs tokens
+        Ok tokens -> Ok <| renderTextTokens language game removedUser messageArgs tokens
 
-renderTextTokens : Language -> Data.Game -> Dict String Data.TextVariable -> List TextToken -> Html msg
-renderTextTokens language game messageArgs tokens =
+renderTextTokens : Language -> Data.Game -> Dict String Data.GameUser -> Dict String Data.TextVariable -> List TextToken -> Html msg
+renderTextTokens language game removedUser messageArgs tokens =
     span [ class "special-content" ]
     <| List.map
         (\token ->
@@ -94,12 +94,12 @@ renderTextTokens language game messageArgs tokens =
                 TokenRaw x ->
                     span [ class "raw" ] [ text x ]
                 TokenVariable x ->
-                    renderTokenVariable language game messageArgs x
+                    renderTokenVariable language game removedUser messageArgs x
         )
     <| tokens
 
-renderTokenVariable : Language -> Data.Game -> Dict String Data.TextVariable -> String -> Html msg
-renderTokenVariable language game messageArgs token =
+renderTokenVariable : Language -> Data.Game -> Dict String Data.GameUser -> Dict String Data.TextVariable -> String -> Html msg
+renderTokenVariable language game removedUser messageArgs token =
     case Dict.get token messageArgs of
         Nothing ->
             span [ class "variable", class "not-found" ]
@@ -116,7 +116,9 @@ renderTokenVariable language game messageArgs token =
             <| text
             <| case Dict.get id game.user of
                 Just entry -> "[" ++ entry.user.name ++ "]"
-                Nothing -> renderDefaultVariable var
+                Nothing -> case Dict.get id removedUser of
+                    Just entry -> "[" ++ entry.name ++ "]"
+                    Nothing -> renderDefaultVariable var
         Just (Data.TextVarVoting id as var) ->
             span [ class "variable", class "voting", class "highlight" ]
             <| List.singleton
