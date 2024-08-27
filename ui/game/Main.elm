@@ -30,6 +30,7 @@ import Pronto
 import Language
 import Language.Config as LangConfig exposing (LangConfig)
 import Network
+import Network.NetworkManager
 import Styles
 import Storage exposing (Storage)
 import Avatar
@@ -453,7 +454,7 @@ urlChange model url =
                                         , loading = False
                                         , viewUser = viewUser
                                         }
-                                    , Network.wsExit
+                                    , Tuple.second Network.NetworkManager.exit
                                     )
                                 Nothing ->
                                     ( SelectUser
@@ -463,7 +464,7 @@ urlChange model url =
                                         , storage = storage
                                         , avatar = avatar
                                         }
-                                    , Network.wsExit
+                                    , Tuple.second Network.NetworkManager.exit
                                     )
                         InitGame _ ->
                             ( SelectUser
@@ -1163,7 +1164,7 @@ returnGame data =
                 )
         )
     |> Tuple.mapSecond
-        (\cmd -> Cmd.batch [ Network.wsExit, ncmd, cmd ])
+        (\cmd -> Cmd.batch [ Tuple.second Network.NetworkManager.exit, ncmd, cmd ])
 
 getGuestToken : LobbyInput.ConnectInfo -> String -> String -> String -> Cmd Msg
 getGuestToken info name image language =

@@ -79,13 +79,12 @@
                 "title": "Keine Verbindung zum Server"
             },
             "code": {
-                "1000": {
-                    "lobby not found": "Die Lobby existiert nicht mehr auf dem Server. Bitte erstelle eine Neue."
-                },
-                "1012": {
-                    "": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu können."
-                }
+                "1012": "Der Server wird gerade neugestartet. Bitte erstelle eine neue Lobby um weiterspielen zu können.",
+                "4404": "Die Lobby existiert nicht mehr auf dem Server. Bitte erstelle eine Neue."
             },
+            "timeout": "Kann keine Verbindung mit dem Server herstellen. Ein Neuverbinden ist nicht möglich.",
+            "reconnect": "Neu verbinden...",
+            "reconnect-in": "Neu verbinden in {sec}...",
             "go-back": "Zurück zur Lobbyauswahl"
         },
         "maintenance": {

@@ -11,10 +11,6 @@ module Network exposing
     , executeRequest
     , getLangInfo
     , getRootLang
-    , wsReceive
-    , wsConnect
-    , wsClose
-    , wsExit
     , wsSend
     , execute
     , versionUrl
@@ -23,47 +19,12 @@ module Network exposing
 import Http
 import Dict exposing (Dict)
 import Language exposing (Language, LanguageInfo)
-import Json.Decode as JD
 import Json.Encode as JE
 import WebSocket
 import EventData exposing (EventData(..))
 import Ports exposing (..)
 import Config
 import Url
-
-wsReceive : (Result JD.Error WebSocket.WebSocketMsg -> msg) -> Sub msg
-wsReceive tagger =
-    receiveSocketMsg
-        <| WebSocket.receive tagger
-
-wsConnect : String -> String -> Cmd msg
-wsConnect api token =
-    WebSocket.send sendSocketCommand
-        <| WebSocket.Connect
-            { name = "wss"
-            , address =
-                if String.startsWith "http" api
-                then "ws" ++ String.dropLeft 4 api
-                    ++ "/ws/" ++ token
-                else "wss://" ++ api ++ "/ws/" ++ token
-            , protocol = ""
-            }
-
-wsExit : Cmd msg
-wsExit =
-    WebSocket.send sendSocketCommand
-        <| WebSocket.Close
-            { name = "wss" }
-
-wsClose : (Result JD.Error SocketClose -> msg) -> Sub msg
-wsClose tagger =
-    receiveSocketClose
-        <| tagger
-        << JD.decodeValue
-            (JD.map2 SocketClose
-                (JD.field "code" JD.int)
-                (JD.field "reason" JD.string)
-            )
 
 wsSend : SocketRequest -> Cmd msg
 wsSend request =
