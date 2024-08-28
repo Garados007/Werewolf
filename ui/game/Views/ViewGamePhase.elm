@@ -30,15 +30,15 @@ view lang now game phase isLeader myId =
                                 case value of
                                     Just x -> x
                                     Nothing ->
-                                        "theme.voting-title." ++ voting.langId
+                                        "theme.voting." ++ voting.langId ++ ".title"
                             )
                         <| Maybe.Extra.orElseLazy
                             (\() ->
                                 Language.getText lang
-                                    [ "theme", "voting-title", "default" ]
+                                    [ "theme", "voting", "default", "title" ]
                             )
                         <| Language.getText lang
-                            [ "theme", "voting-title", voting.langId ]
+                            [ "theme", "voting", voting.langId, "title" ]
                     , div [ class "status" ]
                         [ div
                             [ HA.classList
@@ -123,11 +123,11 @@ view lang now game phase isLeader myId =
                                     <| Maybe.Extra.orElseLazy
                                         (\() ->
                                             Just <| Language.getTextFormatOrPath lang
-                                                [ "theme", "voting-options", "default", option.langId ]
+                                                [ "theme", "voting", "default", "options", option.langId ]
                                                 option.vars
                                         )
                                     <| Language.getTextFormat lang
-                                        [ "theme", "voting-options", voting.langId, option.langId ]
+                                        [ "theme", "voting", voting.langId, "options", option.langId ]
                                         option.vars
                                 ]
                         )
