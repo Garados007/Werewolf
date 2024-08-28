@@ -5,23 +5,29 @@
   align-items: center;
   justify-content: space-around;
 }
+
 .winner-box .winner {
   margin: 1em;
   display: flex;
   align-items: center;
   flex-direction: column;
 }
-.winner-box img {
+
+.winner-box img,
+.winner-box .avatar.loading,
+.winner-box .avatar svg {
   width: 10em;
   height: 10em;
   border-radius: 80%;
 }
+
 .winner-box .name {
   font-size: 1.6em;
   font-weight: bold;
   text-align: center;
   margin: 0.7em 0 0.2em;
 }
+
 .winner-box .role {
   text-align: center;
   margin: 0 0 0.65em;

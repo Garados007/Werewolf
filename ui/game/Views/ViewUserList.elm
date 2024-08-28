@@ -75,7 +75,7 @@ view lang avatar now levels game myId joinToken codeCopyTimestamp streamerMode =
                     , Tuple.pair "dead"
                         <| case Dict.get id game.user |> Maybe.map .role of
                             Just (Just player) -> not <| player.enabled
-                            _ -> True
+                            _ -> False
                     ]
                 ]
                 [ div [ class "user-image-box" ]

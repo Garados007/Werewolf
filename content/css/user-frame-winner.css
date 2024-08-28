@@ -98,8 +98,8 @@
 }
 
 .user-image img,
-.user-image svg,
-.user-image .avatar.loading {
+.avatar svg,
+.avatar.loading {
   width: 3em;
   height: 3em;
   border-radius: 40%;

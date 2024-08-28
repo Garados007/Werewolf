@@ -30,15 +30,15 @@ view lang now game phase isLeader myId =
                                 case value of
                                     Just x -> x
                                     Nothing ->
-                                        "theme.voting-title." ++ voting.langId
+                                        "theme.voting." ++ voting.langId ++ ".title"
                             )
                         <| Maybe.Extra.orElseLazy
                             (\() ->
                                 Language.getText lang
-                                    [ "theme", "voting-title", "default" ]
+                                    [ "theme", "voting", "default", "title" ]
                             )
                         <| Language.getText lang
-                            [ "theme", "voting-title", voting.langId ]
+                            [ "theme", "voting", voting.langId, "title" ]
                     , div [ class "status" ]
                         [ div
                             [ HA.classList
@@ -123,11 +123,11 @@ view lang now game phase isLeader myId =
                                     <| Maybe.Extra.orElseLazy
                                         (\() ->
                                             Just <| Language.getTextFormatOrPath lang
-                                                [ "theme", "voting-options", "default", option.langId ]
+                                                [ "theme", "voting", "default", "options", option.langId ]
                                                 option.vars
                                         )
                                     <| Language.getTextFormat lang
-                                        [ "theme", "voting-options", voting.langId, option.langId ]
+                                        [ "theme", "voting", voting.langId, "options", option.langId ]
                                         option.vars
                                 ]
                         )
@@ -236,7 +236,15 @@ view lang now game phase isLeader myId =
                     , div [ class "sequence-stepname" ]
                         <| List.singleton
                         <| text
-                        <| Language.getTextOrPath lang
+                        <| Maybe.withDefault ""
+                        <| Maybe.Extra.orElseLazy
+                            (\() -> Just
+                                <| Language.getTextOrPath lang
+                                <| case sequence.stepName of
+                                    Just name -> [ "theme", "sequence", "default", "step", name ]
+                                    Nothing -> [ "theme", "sequence", "default", "init" ]
+                            )
+                        <| Language.getText lang
                         <| case sequence.stepName of
                             Just name -> [ "theme", "sequence", sequence.name, "step", name ]
                             Nothing -> [ "theme", "sequence", sequence.name, "init" ]
