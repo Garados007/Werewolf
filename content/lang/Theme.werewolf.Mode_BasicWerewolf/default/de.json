@@ -128,6 +128,29 @@
                 "name": "Hexe"
             }
         },
+        "sequence": {
+            "HunterKill": {
+                "name": "Die Rache des Jägers",
+                "step": {
+                    "vote": "Der Jäger schießt zum letzten Mal",
+                    "die": "Der Jäger verstirbt"
+                }
+            },
+            "ScapeGoatKill": {
+                "name": "Die Rache des Sündenbocks",
+                "step": {
+                    "vote": "Die Rache des Sündenbocks",
+                    "die": "Der Sündenbock verstirbt"
+                }
+            },
+            "MajorInheritance": {
+                "name": "Das Testament des Hauptmanns",
+                "step": {
+                    "vote": "Das Testament wird vorgelesen",
+                    "die": "Der ehemalige Hauptmann wird zu Grabe getragen"
+                }
+            }
+        },
         "voting": {
             "AmorSelection": {
                 "options": {

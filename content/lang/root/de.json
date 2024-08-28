@@ -143,6 +143,11 @@
                 "name": "???"
             }
         },
+        "sequence": {
+            "default": {
+                "init": "Lädt..."
+            }
+        },
         "voting": {
             "default": {
                 "options": {
