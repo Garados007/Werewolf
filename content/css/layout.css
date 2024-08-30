@@ -6,6 +6,7 @@
   flex-wrap: nowrap;
   overflow: hidden;
 }
+
 .view-layout-header {
   display: flex;
   flex-direction: row;
@@ -13,52 +14,97 @@
   justify-content: center;
   background-color: var(--color-light);
 }
+
 .view-layout-title {
   flex-grow: 1;
   font-size: 1.4em;
   padding: 0.2em;
 }
+
 .view-layout-buttons-left,
-.view-layout-buttons-right {
+.view-layout-buttons-right,
+.view-layout-bottom-right-buttom {
   display: flex;
   flex-wrap: nowrap;
 }
+
+.view-layout-bottom-right-buttom {
+  position: absolute;
+  right: 1.5em;
+  bottom: 1.5em;
+}
+
 .view-layout-buttons-left .view-layout-button,
-.view-layout-buttons-right .view-layout-button {
+.view-layout-buttons-right .view-layout-button,
+.view-layout-bottom-right-buttom .view-layout-button {
   cursor: pointer;
   height: 2.5em;
   width: 2.5em;
   background-color: transparent;
   border: none;
 }
+
+.view-layout-bottom-right-buttom .view-layout-button {
+  background-color: var(--color-medium);
+  border-radius: 100%;
+  padding: 0.5em;
+  font-size: 2em;
+  box-shadow: 0em 0em 0.75em var(--color-light);
+}
+
 .view-layout-buttons-left .view-layout-button:hover,
 .view-layout-buttons-right .view-layout-button:hover {
   background-color: var(--color-medium);
 }
+
+.view-layout-bottom-right-buttom .view-layout-button:hover {
+  background-color: var(--color-dark);
+}
+
 .view-layout-button {
   position: relative;
 }
+
 .view-layout-button svg,
 .view-layout-button img {
   width: 100%;
   height: 100%;
   fill: var(--text-color);
 }
+
 .view-layout-button svg .hightlight {
-    fill: var(--text-hightlight);
+  fill: var(--text-hightlight);
+  animation-name: button-highlight-anim;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
 }
+
+@keyframes button-highlight-anim {
+  from {
+    fill: var(--text-hightlight);
+  }
+
+  to {
+    fill: var(--text-color);
+  }
+}
+
 .view-layout-main {
   display: flex;
   flex-direction: row;
   flex: 1 1 100%;
   overflow: hidden;
 }
+
 .view-layout-left-content {
   width: 20em;
   flex-shrink: 0;
   position: relative;
   transition: width 0.3s;
 }
+
 .view-layout-left-content-inner {
   overflow: auto;
   position: absolute;
@@ -69,59 +115,73 @@
   z-index: 1;
   transition: left 0.3s, background 0.3s;
 }
+
 .view-layout-main-body {
   display: flex;
   flex-direction: column;
   flex: 1 1 100%;
   overflow: auto;
 }
+
 .view-layout-main-content {
   flex-grow: 1;
   position: relative;
   overflow: auto;
 }
+
 .view-layout-banner {
   display: flex;
   flex-direction: row;
   background-color: var(--color-medium);
 }
+
 .view-layout-banner-content {
   flex: 1 1 100%;
   padding: 0.25em 0.5em;
   text-align: center;
 }
+
 .view-layout-banner-closer {
   padding: 0.25em 0.5em;
   cursor: pointer;
 }
+
 .view-layout-banner-closer:hover {
   background-color: var(--color-dark);
 }
+
 .view-layout-left-close {
   width: 0;
 }
+
 .view-layout-left-open {
   width: 20em;
 }
+
 .view-layout-left-show.view-layout-left-auto {
   display: none;
 }
+
 @media (max-width: 800px) {
   .view-layout-left-content {
     width: 0;
   }
+
   .view-layout-left-content-inner {
     max-width: 100vw;
     background-color: var(--color-light);
     right: unset;
     left: -20em;
   }
+
   .view-layout-left-content.view-layout-left-open .view-layout-left-content-inner {
     left: 0;
   }
+
   .view-layout-left-show.view-layout-left-auto {
     display: block;
   }
+
   .view-layout-left-hide.view-layout-left-auto {
     display: none;
   }

@@ -698,7 +698,8 @@ view model =
                 , contentClass = ""
                 , content = List.map (Html.map WrapGame)
                     <| GameMain.view data.game
-                , bottomRightButton = Nothing
+                , bottomRightButton = GameMain.viewBottomRightButton data.game
+                    |> Maybe.map (Layout.mapButton WrapGame)
                 }
 
         _ -> []
