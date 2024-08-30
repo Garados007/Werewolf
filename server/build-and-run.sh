@@ -6,7 +6,7 @@ dotnet run --project ../../tools/LogicCompiler/LogicCompiler.csproj -- \
     -s ../../logic/werewolf/ \
     -t ../../tools/bin \
     -n "Theme.werewolf" \
-    --write-ast --write-docs
+    --write-ast --write-docs --write-info
 if [ ! -f "../../tools/bin/bin.csproj" ]; then
     pushd ../../tools/bin
     dotnet new classlib
