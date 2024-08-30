@@ -77,6 +77,18 @@ init token api lang joinToken storage =
             ]
         )
 
+viewBottomRightButton : Model -> Maybe (Layout.LayoutButton Msg)
+viewBottomRightButton model =
+    if model.chatView == Nothing
+    then Just <| Layout.LayoutButton
+        ViewChat
+        (Layout.LayoutImageSvg
+            <| Views.Icons.svgChat model
+        )
+        (Layout.StaticLayoutText "Chat")
+        []
+    else Nothing
+
 viewTopLeftButtons : Model -> List (Layout.LayoutButton Msg)
 viewTopLeftButtons model =
     [ Layout.LayoutButton
@@ -89,13 +101,6 @@ viewTopLeftButtons model =
         )
         (Layout.LayoutImageSvg Views.Icons.svgGear)
         (Layout.StaticLayoutText "Settings")
-        []
-    , Layout.LayoutButton
-        ViewChat
-        (Layout.LayoutImageSvg
-            <| Views.Icons.svgChat model
-        )
-        (Layout.StaticLayoutText "Chat")
         []
     ]
 

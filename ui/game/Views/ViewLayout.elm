@@ -70,12 +70,12 @@ renderButton lang button =
             <| List.map (\x -> (x, True))
             <| button.class
         , HA.title <| render lang button.hint
+        , HE.onClick button.action
         ]
         [ case button.img of
             LayoutImageSrc src ->
                 Html.img
                     [ HA.src src
-                    , HE.onClick button.action
                     ] []
             LayoutImageSvg svg ->
                 Svg.map (always button.action) svg
