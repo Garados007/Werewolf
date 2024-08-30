@@ -496,6 +496,11 @@ internal sealed class CodeBlock : AstNode<W5LogicParser.CodeBlockContext>, IStat
         return result;
     }
 
+    public IEnumerable<ISourceNode> GetChildren()
+    {
+        return Statements;
+    }
+
     public Type GetPreType(Context context)
     {
         context = new(context);

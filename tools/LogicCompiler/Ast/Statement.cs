@@ -3,7 +3,30 @@ using LogicCompiler.Grammar;
 
 namespace LogicCompiler.Ast;
 
-internal interface IStatement : ISourceNode
+internal interface IAstQueryable
+{
+    IEnumerable<ISourceNode> GetChildren();
+
+    /// <summary>
+    /// Uses a depth search to find all nodes that match the specified condition. Does also include
+    /// the start node if it also matches the condition.
+    /// </summary>
+    /// <param name="checker">the filter function</param>
+    /// <returns>the sequence of all elements that matches the condition</returns>
+    IEnumerable<ISourceNode> GetAll(Func<ISourceNode, bool> checker)
+    {
+        if (this is ISourceNode source && checker(source))
+            yield return source;
+        foreach (var child in GetChildren())
+        {
+            if (child is IAstQueryable queryable)
+                foreach (var sub in queryable.GetAll(checker))
+                    yield return sub;
+        }
+    }
+}
+
+internal interface IStatement : ISourceNode, IAstQueryable
 {
     /// <summary>
     /// The type that is parsed and computed bottom up
@@ -92,6 +115,8 @@ internal abstract class Statement<T> : AstNode<T>, IStatement
 
 
     protected abstract void DoWrite(Output output);
+
+    public abstract IEnumerable<ISourceNode> GetChildren();
 }
 
 internal interface IExpression : IStatement
@@ -193,6 +218,13 @@ internal sealed class VotingSpawnStatement : SpawnStatement
             _ = exp.GetPreType(context);
         return ValueType.Void | ValueType.Mutable;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        foreach (var (_, exp) in With)
+            yield return exp;
+    }
 }
 
 internal sealed class SequenceSpawnStatement : SpawnStatement
@@ -220,6 +252,13 @@ internal sealed class SequenceSpawnStatement : SpawnStatement
         _ = Value?.GetPreType(context);
         return ValueType.Void | ValueType.Mutable;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Value is not null)
+            yield return Value;
+    }
 }
 
 internal sealed class AnyEventSpawnStatement : SpawnStatement
@@ -236,6 +275,11 @@ internal sealed class AnyEventSpawnStatement : SpawnStatement
     protected override Type CalcPreType(Context context)
     {
         return ValueType.Void | ValueType.Mutable;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        return [];
     }
 }
 internal sealed class NotifyPlayerStatement : Statement<W5LogicParser.StmtNotifyPlayerContext>
@@ -267,6 +311,13 @@ internal sealed class NotifyPlayerStatement : Statement<W5LogicParser.StmtNotify
     {
         _ = Value?.GetPreType(context);
         return ValueType.Void | ValueType.Mutable;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Value is not null)
+            yield return Value;
     }
 }
 
@@ -318,6 +369,13 @@ internal sealed class NotifyStatement : Statement<W5LogicParser.StmtNotifyContex
         }
         return ValueType.Void | ValueType.Mutable;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Sequence is not null)
+            yield return Sequence;
+        yield return variable is not null ? variable : Name;
+    }
 }
 
 internal sealed class ConditionalIfStatement : Statement<W5LogicParser.StmtCondIfContext>
@@ -367,6 +425,16 @@ internal sealed class ConditionalIfStatement : Statement<W5LogicParser.StmtCondI
         foreach (var stmt in Fail)
             mut |= stmt.GetPreType(context).Flag & ValueType.Mutable;
         return ValueType.Void | mut;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Expression is not null)
+            yield return Expression;
+        foreach (var stmt in Success)
+            yield return stmt;
+        foreach (var stmt in Fail)
+            yield return stmt;
     }
 }
 
@@ -438,6 +506,17 @@ internal sealed class IfLetStatement : Expression<W5LogicParser.ExprIfLetContext
         var fail = Fail?.GetPreType(context) ?? ValueType.Void;
         return success | fail;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Value is not null)
+            yield return Value;
+        if (Success is not null)
+            yield return Success;
+        if (Fail is not null)
+            yield return Fail;
+    }
 }
 
 internal sealed class IfStatement : Expression<W5LogicParser.ExprIfContext>
@@ -497,6 +576,16 @@ internal sealed class IfStatement : Expression<W5LogicParser.ExprIfContext>
         var success = Success?.GetPreType(context) ?? ValueType.Void;
         var fail = Fail?.GetPreType(context) ?? ValueType.Void;
         return success | fail;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Expression is not null)
+            yield return Expression;
+        if (Success is not null)
+            yield return Success;
+        if (Fail is not null)
+            yield return Fail;
     }
 }
 
@@ -563,6 +652,15 @@ internal sealed class ForLetStatement : Expression<W5LogicParser.ExprForLetConte
         loopContext.Check();
         return loop.AddCollection();
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Value is not null)
+            yield return Value;
+        if (Loop is not null)
+            yield return Loop;
+    }
 }
 
 internal sealed class LetStatement : Statement<W5LogicParser.StmtLetContext>
@@ -600,6 +698,13 @@ internal sealed class LetStatement : Statement<W5LogicParser.StmtLetContext>
         PreType = ValueType.Void | ValueType.Mutable;
         context.Add(this);
         return ValueType.Void | ValueType.Mutable;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Value is not null)
+            yield return Value;
     }
 }
 
@@ -647,9 +752,17 @@ internal sealed class PipeExpression : Expression<W5LogicParser.ExprPipeContext>
             consumed = pipe.GetPreType(context, consumed);
         return consumed;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        foreach (var stmt in Right)
+            yield return stmt;
+    }
 }
 
-internal sealed class PipeCall : AstNode<W5LogicParser.PipeCallContext>
+internal sealed class PipeCall : AstNode<W5LogicParser.PipeCallContext>, IAstQueryable
 {
     public Id Name { get; set; } = new();
 
@@ -689,6 +802,22 @@ internal sealed class PipeCall : AstNode<W5LogicParser.PipeCallContext>
         return !Functions.Registry.PipedFunctions.TryGetValue(Name.Text, out var func)
             ? (Type)ValueType.Void
             : func.SetPostType(Name, context, consumedType, Args, setType);
+    }
+
+    public IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Functions.Registry.PipedFunctions.TryGetValue(Name.Text, out var func) && func is Functions.ICustomChildrenIterator<IExpression> iter)
+        {
+            foreach (var arg in iter.GetChildren(Args))
+                yield return arg;
+        }
+        else
+        {
+            foreach (var arg in Args)
+                yield return arg;
+        }
+
     }
 }
 
@@ -771,6 +900,14 @@ internal sealed class CompExpression : Expression<W5LogicParser.ExprCompContext>
         _ = Right?.GetPreType(context);
         return ValueType.Bool;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
+    }
 }
 
 internal sealed class OrExpression : Expression<W5LogicParser.ExprOrAndContext>
@@ -799,6 +936,14 @@ internal sealed class OrExpression : Expression<W5LogicParser.ExprOrAndContext>
         _ = Left?.GetPreType(context);
         _ = Right?.GetPreType(context);
         return ValueType.Bool;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
     }
 }
 
@@ -829,6 +974,14 @@ internal sealed class AndExpression : Expression<W5LogicParser.ExprOrAndContext>
         _ = Right?.GetPreType(context);
         return ValueType.Bool;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
+    }
 }
 
 internal sealed class AddExpression : Expression<W5LogicParser.ExprAddSubContext>
@@ -857,6 +1010,14 @@ internal sealed class AddExpression : Expression<W5LogicParser.ExprAddSubContext
         _ = Left?.GetPreType(context);
         _ = Right?.GetPreType(context);
         return ValueType.Int;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
     }
 }
 
@@ -887,6 +1048,14 @@ internal sealed class SubExpression : Expression<W5LogicParser.ExprAddSubContext
         _ = Right?.GetPreType(context);
         return ValueType.Int;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
+    }
 }
 
 internal sealed class MulExpression : Expression<W5LogicParser.ExprMulDivContext>
@@ -915,6 +1084,14 @@ internal sealed class MulExpression : Expression<W5LogicParser.ExprMulDivContext
         _ = Left?.GetPreType(context);
         _ = Right?.GetPreType(context);
         return ValueType.Int;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
     }
 }
 
@@ -945,6 +1122,14 @@ internal sealed class DivExpression : Expression<W5LogicParser.ExprMulDivContext
         _ = Right?.GetPreType(context);
         return ValueType.Int;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Left is not null)
+            yield return Left;
+        if (Right is not null)
+            yield return Right;
+    }
 }
 
 internal sealed class NegateExpression : Expression<W5LogicParser.ExprNegateContext>
@@ -967,6 +1152,12 @@ internal sealed class NegateExpression : Expression<W5LogicParser.ExprNegateCont
     {
         _ = Value?.GetPreType(context);
         return ValueType.Bool;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Value is not null)
+            yield return Value;
     }
 }
 
@@ -1020,6 +1211,11 @@ internal sealed class GroupExpression : Expression<W5LogicParser.ExprGroupContex
             type |= expr.GetPreType(context);
         return type.AddCollection();
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        return Values;
+    }
 }
 
 internal sealed class GlobalExpression : Expression<W5LogicParser.ExprGlobalContext>
@@ -1044,6 +1240,11 @@ internal sealed class GlobalExpression : Expression<W5LogicParser.ExprGlobalCont
             return ValueType.Void;
         }
         return func.GetPreType(Name, context);
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
     }
 }
 
@@ -1075,6 +1276,11 @@ internal sealed class VariableExpression : Expression<W5LogicParser.ExprVariable
         }
         info.Use.Add(this);
         return info.Type;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
     }
 }
 
@@ -1144,6 +1350,11 @@ internal sealed class IdExpression : Expression<W5LogicParser.ExprCallContext>
         var type = result.Select(x => x.Item1).Aggregate(ValueType.None, (x, y) => x | y);
         return type == ValueType.None ? ValueType.Void : type;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return CalculatedType is null ? Name : CalculatedType;
+    }
 }
 
 internal sealed class CallExpression : Expression<W5LogicParser.ExprCallContext>
@@ -1180,6 +1391,18 @@ internal sealed class CallExpression : Expression<W5LogicParser.ExprCallContext>
         var result = func.GetPreType(Name, context, Values);
         return result;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+        if (Functions.Registry.CallFunctions.TryGetValue(Name.Text, out var func) && func is Functions.ICustomChildrenIterator<Argument> iter)
+        {
+            foreach (var arg in iter.GetChildren(Values))
+                yield return arg;
+        }
+        foreach (var arg in Values)
+            yield return arg;
+    }
 }
 
 internal sealed class Argument : AstNode<W5LogicParser.ArgumentContext>, IStatement
@@ -1195,6 +1418,14 @@ internal sealed class Argument : AstNode<W5LogicParser.ArgumentContext>, IStatem
     public Type PostType { get; set; }
 
     public Dictionary<string, Type> ContextVariables { get; } = [];
+
+    public IEnumerable<ISourceNode> GetChildren()
+    {
+        if (Name is not null)
+            yield return Name;
+        if (Value is not null)
+            yield return Value;
+    }
 
     public Type GetPreType(Context context)
     {
@@ -1231,6 +1462,11 @@ internal sealed class StringExpression : Expression<W5LogicParser.ExprStringCont
     {
         return ValueType.String;
     }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Value;
+    }
 }
 
 internal sealed class IntExpression : Expression<W5LogicParser.ExprIntContext>
@@ -1249,6 +1485,11 @@ internal sealed class IntExpression : Expression<W5LogicParser.ExprIntContext>
     protected override Type CalcPreType(Context context)
     {
         return ValueType.Int;
+    }
+
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Value;
     }
 }
 
@@ -1323,5 +1564,9 @@ internal sealed class TypedNameExpression : Expression<W5LogicParser.ExprTypeCon
         };
         return type | GetLabelTypeFlag(context, type);
     }
-}
 
+    public override IEnumerable<ISourceNode> GetChildren()
+    {
+        yield return Name;
+    }
+}
