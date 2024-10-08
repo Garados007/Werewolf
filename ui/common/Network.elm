@@ -10,7 +10,7 @@ module Network exposing
     , editUserConfig
     , executeRequest
     , getLangInfo
-    , getRootLang
+    , getGameLang
     , wsSend
     , execute
     , versionUrl
@@ -18,7 +18,8 @@ module Network exposing
 
 import Http
 import Dict exposing (Dict)
-import Language exposing (Language, LanguageInfo)
+import Language exposing (Language)
+import Language.Info exposing (LanguageInfo, ThemeKey, decodeLanguageInfo)
 import Json.Encode as JE
 import WebSocket
 import EventData exposing (EventData(..))
@@ -162,12 +163,12 @@ type SocketRequest
 
 type NetworkRequest
     = GetRootLang String
-    | GetLang Language.ThemeKey
+    | GetLang ThemeKey
 
 type NetworkResponse
     = RespError String
     | RespRootLang String Language
-    | RespLang Language.ThemeKey Language
+    | RespLang ThemeKey Language
 
 executeRequest : NetworkRequest -> Cmd NetworkResponse
 executeRequest request =
@@ -187,7 +188,7 @@ executeRequest request =
                     RespError <| "Http Error: Bad Body: " ++ msg
         )
     <| case request of
-        GetRootLang lang -> getRootLang lang
+        GetRootLang lang -> getGameLang lang
             |> Cmd.map (Result.map <| RespRootLang lang)
         GetLang key -> getLang key
             |> Cmd.map (Result.map <| RespLang key)
@@ -242,20 +243,20 @@ getLangInfo : Cmd (Response LanguageInfo)
 getLangInfo =
     Http.get
         { url = versionUrl "/content/lang/index.json"
-        , expect = Http.expectJson identity Language.decodeLanguageInfo
+        , expect = Http.expectJson identity decodeLanguageInfo
         }
 
-getRootLang : String -> Cmd (Response Language)
-getRootLang lang =
+getGameLang : String -> Cmd (Response Language)
+getGameLang lang =
     Http.get
-        { url = versionUrl <| "/content/lang/root/" ++ lang ++ ".json"
+        { url = versionUrl <| "/content/lang/game/" ++ lang ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }
 
-getLang : Language.ThemeKey -> Cmd (Response Language)
+getLang : ThemeKey -> Cmd (Response Language)
 getLang (k1, k2, k3) =
     Http.get
-        { url = versionUrl <| "/content/lang/" ++ k1 ++ "/" ++ k2 ++
+        { url = versionUrl <| "/content/lang/modes/" ++ k1 ++ "/" ++ k2 ++
             "/" ++ k3 ++ ".json"
         , expect = Http.expectJson identity Language.decodeLanguage
         }

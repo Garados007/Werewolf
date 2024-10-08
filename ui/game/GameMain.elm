@@ -45,6 +45,7 @@ import Views.ViewModal
 import Model
 import Storage exposing (Storage)
 import Set
+import Language.Config as Config
 
 type Msg
     = Response NetworkResponse
@@ -201,7 +202,7 @@ viewTitle model =
             Maybe.map
                 (\phase ->
                     Layout.LangLayoutText
-                        [ "theme", "phases", phase.langId ]
+                        [ "theme", "scene", phase.langId ]
                 )
             <| state.game.phase
         )
@@ -248,9 +249,9 @@ view_internal model lang =
                 <| List.singleton
                 <| Views.ViewThemeEditor.view
                     lang
-                    model.lang.info.icons
+                    (Config.unwrap model.lang).info.icons
                     conf
-                    model.lang.lang
+                    (Config.unwrap model.lang).lang
         Model.WinnerModal game list ->
             Html.map (always CloseModal)
                 <| Views.ViewModal.viewOnlyClose
@@ -284,7 +285,7 @@ view_internal model lang =
             Html.map (always CloseModal)
                 <| Views.ViewModal.viewOnlyClose
                     ( Language.getTextOrPath lang
-                        [ "theme", "role", roleKey, "name" ]
+                        [ "theme", "character", roleKey, "name" ]
                     )
                 <| List.singleton
                 <| Views.ViewRoleInfo.view lang roleKey
@@ -528,7 +529,7 @@ update_internal msg model =
 
                         (newLang, langEvents) =
                             LangConfig.setCurrent
-                                (Maybe.withDefault model.lang.lang
+                                (Maybe.withDefault (Config.unwrap model.lang).lang
                                     <| List.head
                                     <| List.filterMap
                                         (\event -> case event of

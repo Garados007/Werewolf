@@ -3,7 +3,7 @@ module Translation.Data exposing (..)
 
 import Dict exposing (Dict)
 import Json.Decode as JD
-import Json.Decode.Pipeline exposing (required)
+import Json.Decode.Pipeline exposing (required, optional)
 import Json.Encode as JE
 
 type Lang
@@ -46,7 +46,7 @@ decodeLangTranslation =
 type alias LangIndex =
     { languages: Dict String String
     , icons: Dict String String
-    , themes: Dict String (Dict String (Dict String String))
+    , modes: Dict String LangModeIndex
     }
 
 decodeLangIndex : JD.Decoder LangIndex
@@ -54,14 +54,40 @@ decodeLangIndex =
     JD.succeed LangIndex
     |> required "languages" (JD.dict JD.string)
     |> required "icons" (JD.dict JD.string)
-    |> required "themes" (JD.dict <| JD.dict <| JD.dict JD.string)
+    |> required "modes" (JD.dict decodeLangModeIndex)
+
+type alias LangModeIndex =
+    { title: Dict String String
+    , themes: Dict String LangThemeIndex
+    }
+
+decodeLangModeIndex : JD.Decoder LangModeIndex
+decodeLangModeIndex =
+    JD.succeed LangModeIndex
+    |> required "title" (JD.dict JD.string)
+    |> required "themes" (JD.dict decodeLangThemeIndex)
+
+type alias LangThemeIndex =
+    { title: Dict String String
+    , default: Maybe String
+    , enabled: Bool
+    , ignoreCharacter: List String
+    }
+
+decodeLangThemeIndex : JD.Decoder LangThemeIndex
+decodeLangThemeIndex =
+    JD.succeed LangThemeIndex
+    |> required "title" (JD.dict JD.string)
+    |> optional "default" (JD.nullable JD.string) Nothing
+    |> optional "enabled" JD.bool True
+    |> optional "ignore_character" (JD.list JD.string) []
 
 getSources : LangIndex -> List (LangSource, String)
 getSources index =
     List.map
         (\x -> (x, getSourcePath x))
     <| List.foldl
-        (\(theme, d1) l1 ->
+        (\(theme, { themes }) l1 ->
             List.foldl
                 (\cat l2 ->
                     List.foldl
@@ -72,12 +98,12 @@ getSources index =
                     <| Dict.keys index.icons
                 )
                 l1
-            <| Dict.keys d1
+            <| Dict.keys themes
         )
         ( List.map SourceRoot
             <| Dict.keys index.icons
         )
-    <| Dict.toList index.themes
+    <| Dict.toList index.modes
 
 getSourcePath : LangSource -> String
 getSourcePath source =
@@ -154,7 +180,7 @@ mergeEditData source lang data =
                 } :: el
         (LangLeaf ll, EditNode en) ->
             if en.source == []
-            then EditLeaf 
+            then EditLeaf
                 <| List.singleton
                     { source = source
                     , text = ll
@@ -252,7 +278,7 @@ resetEditText path source data =
                             l::ls ->
                                 if l.source == source
                                 then if l.translation == TranslationMissing
-                                    then ls 
+                                    then ls
                                     else { l | edit = Nothing } :: ls
                                 else l :: update ls
                 in update el
@@ -270,7 +296,7 @@ getChanges data =
     case data of
         EditNode info ->
             Dict.foldl
-                (\key child res1 -> 
+                (\key child res1 ->
                     Dict.foldl
                         (\path json ->
                             Dict.update path

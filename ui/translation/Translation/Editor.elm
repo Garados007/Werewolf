@@ -85,7 +85,7 @@ viewChanges editTheme data =
             [ text <| "Download your changes as a file and go to the "
             , Html.a
                 [ HA.href "https://github.com/Garados007/Werewolf/issues/new"
-                , HA.target "_blank" 
+                , HA.target "_blank"
                 ]
                 [ text "GitHub Issues" ]
             , text <| ", create one and upload your changes there. The author will verify and "
@@ -147,7 +147,7 @@ viewInputSelector sources index select =
                 )
                 sources
             |> Set.fromList
-        
+
         cats : Dict String (Set String)
         cats = sources
             |> List.filterMap
@@ -177,7 +177,7 @@ viewInputSelector sources index select =
             ]
             <| (::)
                 ( Html.option
-                    [ class "option", class "root" 
+                    [ class "option", class "root"
                     , HA.selected
                         <| case select of
                             Data.SourceRoot _ -> True
@@ -200,7 +200,7 @@ viewInputSelector sources index select =
                     <| List.map
                         (\b ->
                             Html.option
-                                [ class "option", class "theme" 
+                                [ class "option", class "theme"
                                 , HA.selected
                                     <| case select of
                                         Data.SourceRoot _ -> False
@@ -254,15 +254,15 @@ viewEditTheme model =
                     <| List.repeat 2
                     <| div [] []
                 , div
-                    [ class "text" 
+                    [ class "text"
                     , HA.title
                         <| "This is the name for the theme that should be shown in the selector. "
                         ++ "If this value is empty than the theme will not be listed. Language Root"
                         ++ " Resources does not have a theme name."
-                    ]  
+                    ]
                     [ text "Theme Name" ]
                 ]
-        
+
         viewRoot : Html Msg
         viewRoot =
             div [ class "edit-info-editor" ]
@@ -276,21 +276,21 @@ viewEditTheme model =
                     ++ "set for it."
                 ]
                 [ text "root resource - cannot edit" ]
-        
+
         getDefaultThemeName : Data.LangSource -> Maybe String
         getDefaultThemeName source =
             case source of
                 Data.SourceRoot _ -> Nothing
                 Data.SourceTheme a b c ->
-                    model.index.themes
+                    model.index.modes
                     |> Dict.get a
-                    |> Maybe.andThen (Dict.get b)
-                    |> Maybe.andThen (Dict.get c)
-        
+                    |> Maybe.andThen (.themes >> Dict.get b)
+                    |> Maybe.andThen (.title >> Dict.get c)
+
         viewThemeEditor : Data.LangSource -> Html Msg
         viewThemeEditor source =
             List.filter (Tuple.first >> (==) source) model.editTheme
-            |> List.map Tuple.second 
+            |> List.map Tuple.second
             |> List.head
             |> \edit ->
                 div [ class "edit-info-editor" ]
@@ -311,15 +311,15 @@ viewEditTheme model =
                                     [ text "reset" ]
                         ]
                     , Html.textarea
-                        [ HA.value 
+                        [ HA.value
                             <| Maybe.withDefault ""
                             <| Maybe.Extra.orElse (getDefaultThemeName source)
                             <| edit
                         , HE.onInput <| EditTheme source
                         ] []
                     ]
-        
-    in div 
+
+    in div
         [ class "edit-lang-group" ]
         [ viewHeadCell
         , div [ class "edit-lang-row" ]
@@ -351,7 +351,7 @@ viewEditor select revPath data =
     let
         key : String
         key = List.head revPath |> Maybe.withDefault ""
-        
+
         viewHeadCell : Maybe Bool -> Html Msg
         viewHeadCell open =
             div [ class "edit-lang-head" ]
@@ -380,7 +380,7 @@ viewEditor select revPath data =
                         <| String.concat
                         <| List.intersperse "/"
                         <| List.reverse revPath
-                    ]  
+                    ]
                     [ text key ]
                 ]
 
@@ -438,7 +438,7 @@ viewEditor select revPath data =
                                             "automatic by " ++ tr
                     , case Maybe.andThen .edit info of
                         Just _ -> div
-                            [ class "reset" 
+                            [ class "reset"
                             , HE.onClick <| ResetNode revPath source
                             ]
                             [ text "reset" ]
@@ -459,7 +459,7 @@ viewEditor select revPath data =
             (::)
                 ( div [ class "edit-lang-group" ]
                     [ viewHeadCell <| Just en.open
-                    , div [ class "edit-lang-row" ] [] 
+                    , div [ class "edit-lang-row" ] []
                     ]
                 )
             <| if en.open
@@ -474,9 +474,9 @@ viewEditor select revPath data =
                 , div [ class "edit-lang-row" ]
                     <| List.singleton
                     <| div []
-                    <| viewLeafBody info 
+                    <| viewLeafBody info
                 ]
-    
+
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
