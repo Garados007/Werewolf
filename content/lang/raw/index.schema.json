@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "lang-list": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-z_]+$": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    "type": "object",
+    "properties": {
+        "languages": {
+            "$ref": "#/definitions/lang-list"
+        },
+        "icons": {
+            "$ref": "#/definitions/lang-list"
+        },
+        "modes": {
+            "type": "object",
+            "patternProperties": {
+                "^[a-zA-Z0-9._]+$": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "$ref": "#/definitions/lang-list"
+                        },
+                        "themes": {
+                            "type": "object",
+                            "patternProperties": {
+                                "^[a-z0-9_]+$": {
+                                    "type": "object",
+                                    "properties": {
+                                        "title": {
+                                            "$ref": "#/definitions/lang-list"
+                                        },
+                                        "default": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "enabled": {
+                                            "type": "boolean",
+                                            "default": true
+                                        },
+                                        "ignore_character": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "pattern": "^[a-zA-Z0-9_]+$"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "title"
+                                    ]
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "themes"
+                    ]
+                }
+            },
+            "additionalItems": false
+        }
+    },
+    "required": [
+        "languages",
+        "icons",
+        "modes"
+    ]
+}
