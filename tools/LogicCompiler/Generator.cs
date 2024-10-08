@@ -1,5 +1,6 @@
 using LogicCompiler.Grammar;
 using LogicCompiler.Ast;
+using LogicTools;
 
 namespace LogicCompiler;
 
@@ -61,7 +62,7 @@ internal sealed class Generator
         {
             new System.Text.Json.Serialization.JsonStringEnumConverter()
         },
-        TypeInfoResolver = new PolymorphicTypeResolver(),
+        // TypeInfoResolver = new PolymorphicTypeResolver(),
     };
 
     public async Task DumpAsync(FileInfo target)
@@ -104,7 +105,12 @@ internal sealed class Generator
             Modes = { Modes.Keys.Order() },
             Phases = { Phases.Keys.Order() },
             Scenes = { Scenes.Keys.Order() },
-            Labels = { Labels.Keys.Order() },
+            Labels =
+            {
+                Labels
+                    .Select(x => (x.Key, new LogicTools.LabelInfo { Target = x.Value.Target }))
+                    .OrderBy(x => x.Key)
+            },
             Characters = { Characters.Keys.Order() },
             Votings =
             {

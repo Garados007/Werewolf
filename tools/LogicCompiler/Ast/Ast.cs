@@ -178,18 +178,9 @@ internal sealed class SceneNode : NodeBase, IResolvable<SceneNode>, ICodeContain
     }
 }
 
-internal enum LabelTarget
-{
-    Character = 1,
-    Phase = 2,
-    Scene = 4,
-    Voting = 8,
-    Mode = 16,
-}
-
 internal sealed class LabelNode : NodeBase, IResolvable<LabelNode>, ICodeContainer
 {
-    public LabelTarget Target { get; set; }
+    public LogicTools.LabelTarget Target { get; set; }
 
     public List<Func> Funcs { get; } = [];
 
