@@ -66,8 +66,47 @@ WORKDIR /src
 RUN apt-get update && \
     apt-get install -y jq
 COPY . .
-RUN git submodule update --init --recursive && \
-    docker/only-supported-lang.sh
+RUN git submodule update --init --recursive
+
+FROM bitnami/java:latest as grammar-builder
+WORKDIR /src
+COPY ./tools/LogicCompiler/grammar ./
+COPY ./tools/LogicCompiler/antlr-4.13.1-complete.jar ./
+RUN java -jar antlr-4.13.1-complete.jar -message-format vs2005 -long-messages -Werror -Dlanguage=CSharp -no-listener -package LogicCompiler.Grammar W5LogicLexer.g4 W5LogicParser.g4
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as logic-builder
+WORKDIR /src
+COPY ./Werewolf.sln ./Werewolf.sln
+# build tools
+COPY ./tools ./tools
+COPY --from=grammar-builder /src ./tools/LogicCompiler/grammar
+RUN mkdir -p /tools && \
+    dotnet publish --nologo -c RELEASE -o /tools \
+        tools/LogicCompiler/LogicCompiler.csproj
+# build logic files
+COPY ./logic ./logic
+RUN find /src/logic/ -mindepth 1 -maxdepth 1 -type d | \
+        xargs -I {} basename {} | \
+        while read -r name; do \
+            dotnet /tools/LogicCompiler.dll \
+                --no-build \
+                --write-info-path /data/themes/${name}.json \
+                --source /src/logic/${name} \
+                --target /src/server/Theme/${name} \
+                --namespace Theme.${name} || exit $?; \
+            echo -n " --mode /data/themes/${name}.json" >> /data/themes/call; \
+        done
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS lang-builder
+COPY --from=vendor /src/content/vendor/flag-icon-css /src/content/vendor/flag-icon-css
+COPY ./tools/LogicTools /src/tools/LogicTools
+COPY ./tools/LangConv /src/tools/LangConv
+WORKDIR /src/tools/LangConv
+RUN dotnet build
+COPY --from=logic-builder /data/themes /data/themes
+COPY ./content/lang/raw /src/content/lang/raw
+RUN dotnet run -d /src/content/lang --no-print-missing-lang-string-warning $(cat /data/themes/call) && \
+    rm -r /src/content/lang/raw
 
 # FROM mcr.microsoft.com/dotnet/sdk:6.0 as report
 # # RUN apt-get update && \
@@ -94,6 +133,8 @@ COPY --from=css-compressor /content/bin /usr/local/apache2/htdocs/content/css
 COPY ./test-report.html /usr/local/apache2/htdocs/content/test-report.html
 COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
 COPY --from=version /src/version /usr/local/apache2/htdocs/content/version
+RUN rm -r /usr/local/apache2/htdocs/content/lang
+COPY --from=lang-builder /src/content/lang /usr/local/apache2/htdocs/content/lang
 # COPY --from=report /src/content/report /usr/local/apache2/htdocs/content/report
 RUN ver="\$(cat /usr/local/apache2/htdocs/content/version)" && \
     sed -i "s@/content/index.js@/content/index.js?_v=\$ver@" \
