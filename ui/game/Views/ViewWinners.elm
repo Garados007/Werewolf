@@ -35,7 +35,7 @@ view lang avatar now levels game winners =
                     role : String
                     role = Language.getTextOrPath lang
                         [ "theme"
-                        , "role"
+                        , "character"
                         , Dict.get winner game.user
                             |> Maybe.andThen .role
                             |> Maybe.andThen .role

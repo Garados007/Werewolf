@@ -42,6 +42,12 @@ internal interface IGlobal : IFunction
     void WriteGlobalDoc(Output output);
 }
 
+internal interface ICustomChildrenIterator<T>
+    where T : IStatement
+{
+    public IEnumerable<ISourceNode> GetChildren(List<T> args);
+}
+
 internal static class Registry
 {
     public static Dictionary<string, ICallFunction> CallFunctions { get; } = [];

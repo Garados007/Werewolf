@@ -19,8 +19,17 @@ internal sealed record Configuration
     [Option("write-ast", HelpText = "Write ast to the output")]
     public bool WriteAst { get; set; }
 
+    [Option("write-info", HelpText = "Write information stats to the output directory. Usefull to analyse some properties of the code.")]
+    public bool WriteInfo { get; set; }
+
+    [Option("write-info-path", HelpText = "Write information stats to the specified file. Implies --write-info.")]
+    public FileInfo? WriteInfoPath { get; set; }
+
     [Option("test", HelpText = "Special mode for generating test projects")]
     public bool Test { get; set; }
+
+    [Option("no-build", HelpText = "Do not create any logic files and do validation and info creation only.")]
+    public bool NoBuild { get; set; }
 }
 
 public static class Program
@@ -123,7 +132,18 @@ public static class Program
             await generator.DumpAsync(new FileInfo(Path.Combine(config.TargetDir.FullName, "validated-data.json")));
         if (!validationResult)
             throw new AbortException();
+        if (config.WriteInfo || config.WriteInfoPath is not null)
+        {
+            if (config.WriteInfoPath is not null)
+            {
+                if (!(config.WriteInfoPath.Directory?.Exists ?? true))
+                    config.WriteInfoPath.Directory?.Create();
+            }
+            await generator.DumpInfo(config.WriteInfoPath ?? new(Path.Combine(config.TargetDir.FullName, "info.json")));
+        }
         // output generated file
+        if (config.NoBuild)
+            return;
         using var output = new Output(new FileStream(Path.Combine(config.TargetDir.FullName, "Logic.cs"), FileMode.OpenOrCreate));
         generator.Write(config, output);
     }

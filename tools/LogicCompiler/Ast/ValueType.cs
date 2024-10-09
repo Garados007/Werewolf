@@ -166,15 +166,15 @@ public enum NameType : byte
 
 internal static class TypeHelper
 {
-    public static ValueType ToType(this LabelTarget target)
+    public static ValueType ToType(this LogicTools.LabelTarget target)
     {
         return target switch
         {
-            LabelTarget.Character => ValueType.TargetCharacter,
-            LabelTarget.Phase => ValueType.TargetPhase,
-            LabelTarget.Scene => ValueType.TargetScene,
-            LabelTarget.Voting => ValueType.TargetVoting,
-            LabelTarget.Mode => ValueType.TargetMode,
+            LogicTools.LabelTarget.Character => ValueType.TargetCharacter,
+            LogicTools.LabelTarget.Phase => ValueType.TargetPhase,
+            LogicTools.LabelTarget.Scene => ValueType.TargetScene,
+            LogicTools.LabelTarget.Voting => ValueType.TargetVoting,
+            LogicTools.LabelTarget.Mode => ValueType.TargetMode,
             _ => ValueType.None,
         };
     }

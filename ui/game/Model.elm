@@ -17,12 +17,14 @@ import Time exposing (Posix)
 import Level exposing (Level)
 import Language
 import Language.Config as LangConfig exposing (LangConfig)
+import Language.Info exposing (toThemeKey)
 import Styles exposing (Styles)
 import Storage exposing (Storage)
 import Avatar
 
 import Views.ViewThemeEditor
 import Set exposing (Set)
+import Language.Config as Config
 
 type alias Model =
     { state: Maybe Data.GameGlobalState
@@ -176,9 +178,9 @@ applyEventData event model =
             }
             [ Network.NetReq
                 <| Network.GetLang
-                <| Language.toThemeKey
+                <| toThemeKey
                     state.game.theme
-                    model.lang.lang
+                    (Config.unwrap model.lang).lang
             ]
         EventData.AddParticipant id user -> Tuple.pair
             { model

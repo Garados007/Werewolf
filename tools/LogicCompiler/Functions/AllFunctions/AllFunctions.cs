@@ -794,9 +794,17 @@ internal sealed class Add : ICallFunction
     }
 }
 
-internal sealed class GetWith : ICallFunction, ICustomArgumentHandler
+internal sealed class GetWith : ICallFunction, ICustomArgumentHandler, ICustomChildrenIterator<Argument>
 {
     public string Name => "get_with";
+
+    public IEnumerable<ISourceNode> GetChildren(List<Argument> args)
+    {
+        if (args.Count >= 1)
+            yield return args[0];
+        if (args.Count >= 2)
+            yield return args[1];
+    }
 
     public Ast.Type GetPreType(Id name, Context context, List<Argument> Args)
     {

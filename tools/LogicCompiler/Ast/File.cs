@@ -549,18 +549,18 @@ internal sealed class File
         };
     }
 
-    private LabelTarget GetLabelTarget(IEnumerable<Antlr4.Runtime.IToken> tokens)
+    private LogicTools.LabelTarget GetLabelTarget(IEnumerable<Antlr4.Runtime.IToken> tokens)
     {
-        LabelTarget target = 0;
+        LogicTools.LabelTarget target = 0;
         foreach (var token in tokens)
         {
             target |= token.Type switch
             {
-                W5LogicParser.KW_MODE => LabelTarget.Mode,
-                W5LogicParser.KW_CHARACTER => LabelTarget.Character,
-                W5LogicParser.KW_PHASE => LabelTarget.Phase,
-                W5LogicParser.KW_SCENE => LabelTarget.Scene,
-                W5LogicParser.KW_VOTING => LabelTarget.Voting,
+                W5LogicParser.KW_MODE => LogicTools.LabelTarget.Mode,
+                W5LogicParser.KW_CHARACTER => LogicTools.LabelTarget.Character,
+                W5LogicParser.KW_PHASE => LogicTools.LabelTarget.Phase,
+                W5LogicParser.KW_SCENE => LogicTools.LabelTarget.Scene,
+                W5LogicParser.KW_VOTING => LogicTools.LabelTarget.Voting,
                 _ => throw Error.WriteFatal(Source, token, $"Unexpected token {token.ToString}"),
             };
         }

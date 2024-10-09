@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=index.schema.json
+
+languages:
+  de: Deutsch
+icons:
+  de: de
+  en: gb
+modes:
+  Theme.werewolf.Mode_BasicWerewolf:
+    title:
+      de: Standard Werwolf
+    themes:
+      default:
+        title:
+          de: Standard-Theme
+      rotlicht:
+        # enabled: false
+        default: default
+        title:
+          de: AIDS im Rotlichtviertel (Beta)
+        ignore_character:
+          - ThreeBrothers
+          - TwoSisters
+      military:
+        # enabled: false
+        default: default
+        title:
+          de: Saboteure beim Militär (Beta)
+        ignore_character:
+          - ThreeBrothers
+          - TwoSisters
+      bar:
+        # enabled: false
+        default: default
+        title:
+          de: Bierpanscher in der Kneipe (Beta)
+        ignore_character:
+          - ThreeBrothers
+          - TwoSisters

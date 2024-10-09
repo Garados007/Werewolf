@@ -130,7 +130,7 @@ renderTokenVariable language game removedUser messageArgs token =
             span [ class "variable", class "phase", class "highlight" ]
             <| List.singleton
             <| text
-            <| case Language.getText language [ "theme", "phases", id ] of
+            <| case Language.getText language [ "theme", "scene", id ] of
                 Just t -> "[" ++ t ++ "]"
                 Nothing -> renderDefaultVariable var
         Just (Data.TextVarVotingOption voting option args as var) ->

@@ -29,6 +29,7 @@ import Iso8601
 import Pronto
 import Language
 import Language.Config as LangConfig exposing (LangConfig)
+import Language.Info exposing (LanguageInfo)
 import Network
 import Network.NetworkManager
 import Styles
@@ -49,6 +50,7 @@ import AuthToken exposing (AuthToken)
 import Random
 import Random.String
 import Random.Char
+import Language.Config as Config
 
 {-| Large parts of the former Main.elm are moved now to GameMain.elm. Main.elm gets a whole new
 purpose and setup routines.
@@ -187,8 +189,8 @@ type Msg
     | GotUserInfo (Result Http.Error UserInfo)
     | ReceiveGuestToken LobbyInput.ConnectInfo (Result Http.Error String)
     | ReceiveLobbyToken LobbyInput.ConnectInfo (Result Http.Error LobbyJoinInfo)
-    | ReceiveLangInfo (Result Http.Error Language.LanguageInfo)
-    | ReceiveRootLang String (Result Http.Error Language.Language)
+    | ReceiveLangInfo (Result Http.Error LanguageInfo)
+    | ReceiveGameLang String (Result Http.Error Language.Language)
     | WrapGuestInput GuestInput.Msg
     | WrapLobbyInput LobbyInput.Msg
     | WrapGame GameMain.Msg
@@ -291,9 +293,9 @@ init () url key =
                     [ cmd
                     , Network.getLangInfo
                         |> Cmd.map ReceiveLangInfo
-                    , Network.getRootLang lang.lang
+                    , Network.getGameLang (Config.unwrap lang).lang
                         |> Cmd.map
-                            (ReceiveRootLang lang.lang)
+                            (ReceiveGameLang (Config.unwrap lang).lang)
                     , Cmd.map WrapStorage storageCmd
                     , Random.generate InitGuestCode
                         <| Random.String.rangeLengthString 4 12
@@ -901,7 +903,7 @@ update msg model =
                             info
                             data.user.username
                             data.user.picture
-                            data.lang.lang
+                            (Config.unwrap data.lang).lang
                     (Just info, Just token) ->
                         getEnterLobby
                             info
@@ -968,11 +970,11 @@ update msg model =
                 GameMain.Return -> returnGame data
                 _ ->
                     (\(new, cmd) ->
-                        if new.lang.lang /= data.game.lang.lang
+                        if (Config.unwrap new.lang).lang /= (Config.unwrap data.game.lang).lang
                         then data.nav
                             |> \old_nav -> navigateTo
                                 { old_nav
-                                | lang = new.lang.lang
+                                | lang = (Config.unwrap new.lang).lang
                                 , langFallback = Nothing
                                 }
                                 old_nav.url.path
@@ -998,28 +1000,34 @@ update msg model =
         (ReceiveLangInfo (Ok info), _) ->
             (setLang
                 (getLang model
-                    |> \lang ->
-                        { lang
-                        | info = info
-                        }
+                    |> Config.unwrap
+                    |>  (\lang ->
+                            { lang
+                            | info = info
+                            }
+                        )
+                    |> Config.wrap
                 )
                 model
             , Cmd.none
             )
         (ReceiveLangInfo (Err _), _) -> (model, Cmd.none)
-        (ReceiveRootLang l (Ok root), _) ->
+        (ReceiveGameLang l (Ok root), _) ->
             (setLang
                 (getLang model
-                    |> \lang ->
-                        { lang
-                        | root = Dict.insert l root lang.root
-                        }
+                    |> Config.unwrap
+                    |>  (\lang ->
+                            { lang
+                            | root = Dict.insert l root lang.root
+                            }
+                        )
+                    |> Config.wrap
                 )
                 model
             , Cmd.none
             )
-        (ReceiveRootLang "de" (Err _), _) -> (model, Cmd.none)
-        (ReceiveRootLang l (Err _), _) ->
+        (ReceiveGameLang "de" (Err _), _) -> (model, Cmd.none)
+        (ReceiveGameLang l (Err _), _) ->
             Tuple.pair model
             <| Browser.Navigation.load
             <| "?lang=de&lang-fallback-for=" ++ Url.percentEncode l

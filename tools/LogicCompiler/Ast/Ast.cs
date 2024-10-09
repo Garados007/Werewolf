@@ -178,18 +178,9 @@ internal sealed class SceneNode : NodeBase, IResolvable<SceneNode>, ICodeContain
     }
 }
 
-internal enum LabelTarget
-{
-    Character = 1,
-    Phase = 2,
-    Scene = 4,
-    Voting = 8,
-    Mode = 16,
-}
-
 internal sealed class LabelNode : NodeBase, IResolvable<LabelNode>, ICodeContainer
 {
-    public LabelTarget Target { get; set; }
+    public LogicTools.LabelTarget Target { get; set; }
 
     public List<Func> Funcs { get; } = [];
 
@@ -494,6 +485,11 @@ internal sealed class CodeBlock : AstNode<W5LogicParser.CodeBlockContext>, IStat
             result.Statements.AddRange(block.Statements);
         }
         return result;
+    }
+
+    public IEnumerable<ISourceNode> GetChildren()
+    {
+        return Statements;
     }
 
     public Type GetPreType(Context context)

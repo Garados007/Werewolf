@@ -18,6 +18,8 @@ import Json.Decode as JD
 import Url
 import Set exposing (Set)
 import Views.Icons
+import Language.Config as Config
+import Language.Info exposing (ThemeRawKey)
 
 type Msg
     = SetBuffer (Dict String Int) EditGameConfig
@@ -78,7 +80,7 @@ showImg missingImg imgClass fallback paths =
             ] []
         ]
 
-viewSingleRoleBox : Language -> Maybe Language.ThemeRawKey -> Dict String Int -> Set String -> Bool -> String -> Html Msg
+viewSingleRoleBox : Language -> Maybe ThemeRawKey -> Dict String Int -> Set String -> Bool -> String -> Html Msg
 viewSingleRoleBox = Html.Lazy.lazy6 <| \lang theme config missingImg editable id ->
     let
         current : Int
@@ -102,7 +104,7 @@ viewSingleRoleBox = Html.Lazy.lazy6 <| \lang theme config missingImg editable id
             <| List.singleton
             <| text
             <| Language.getTextOrPath lang
-                [ "theme", "role", id, "name" ]
+                [ "theme", "character", id, "name" ]
         , div
             [ HA.classList
                 [ ("editor-role-number", True)
@@ -142,10 +144,11 @@ viewSingleRoleBox = Html.Lazy.lazy6 <| \lang theme config missingImg editable id
 
 
 view : Language -> LangConfig -> Data.RoleTemplates
-    -> Maybe Language.ThemeRawKey -> Data.Game -> Bool
+    -> Maybe ThemeRawKey -> Data.Game -> Bool
     -> EditorPage -> Set String -> Html Msg
 view lang langConfig roles theme game editable page missingImg =
     let
+        config = Config.unwrap langConfig
 
         maxPlayer =
             if game.leaderIsPlayer
@@ -212,7 +215,7 @@ view lang langConfig roles theme game editable page missingImg =
                         [ div [ class "theme-selector-system-title" ]
                             [ text
                                 <| Maybe.withDefault system
-                                <| Dict.get langConfig.lang info.title
+                                <| Dict.get config.lang info.title
                             ]
                         , div [ class "theme-selector-variants" ]
                             <| List.map
@@ -244,7 +247,7 @@ view lang langConfig roles theme game editable page missingImg =
                                             <| List.singleton
                                             <| text
                                             <| Maybe.withDefault key
-                                            <| Dict.get langConfig.lang names
+                                            <| Dict.get config.lang names
                                         , div [ class "theme-selector-langs" ]
                                             <| List.map
                                                 (\icon ->
@@ -255,18 +258,20 @@ view lang langConfig roles theme game editable page missingImg =
                                                 )
                                             <| List.map
                                                 (\icon ->
-                                                    Dict.get icon langConfig.info.icons
+                                                    Dict.get icon config.info.icons
                                                     |> Maybe.withDefault icon
                                                 )
                                             <| Dict.keys names
                                         ]
                                 )
+                            <| List.map (Tuple.mapSecond .title)
                             <| Dict.toList
                             <| Maybe.withDefault Dict.empty
-                            <| Dict.get system langConfig.info.themes
+                            <| Maybe.map .themes
+                            <| Dict.get system config.info.modes
                         ]
                 )
-            <| Dict.toList langConfig.info.system
+            <| Dict.toList config.info.modes
 
     in div [ class "editor" ]
         [ viewPageSelector lang page

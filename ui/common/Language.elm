@@ -2,7 +2,6 @@ module Language exposing (..)
 
 import Dict exposing (Dict)
 import Json.Decode as JD exposing (Decoder)
-import Json.Decode.Pipeline exposing (required)
 import Maybe.Extra
 
 type Language
@@ -81,73 +80,3 @@ decodeLanguage =
             <| \() -> decodeLanguage
         , JD.succeed LanguageUnknown
         ]
-
-type alias ThemeKey = (String, String, String)
-type alias ThemeRawKey = (String, String)
-
-toThemeKey : ThemeRawKey -> String -> ThemeKey
-toThemeKey (k1, k2) k3 = (k1, k2, k3)
-
-toThemeRawKey : ThemeKey -> ThemeRawKey
-toThemeRawKey (k1, k2, _) = (k1, k2)
-
-type alias LanguageInfo =
-    { languages: Dict String String
-    , icons: Dict String String
-    , system: Dict String LanguageSystemInfo
-    , themes: Dict String (Dict String (Dict String String))
-    }
-
-type alias LanguageSystemInfo =
-    { title: Dict String String
-    }
-
-firstTheme : LanguageInfo -> Maybe ThemeKey
-firstTheme info =
-    Dict.foldl
-        (\k1 v1 r1 ->
-            case r1 of
-                Just r1_ -> Just r1_
-                Nothing ->
-                    Dict.foldl
-                        (\k2 v2 r2 ->
-                            case r2 of
-                                Just r2_ -> Just r2_
-                                Nothing ->
-                                    Dict.foldl
-                                        (\k3 _ ->
-                                            Just << Maybe.withDefault
-                                                (k1, k2, k3)
-                                        )
-                                        Nothing
-                                        v2
-                        )
-                        Nothing
-                        v1
-        )
-        Nothing
-        info.themes
-
-getThemeName : LanguageInfo -> ThemeKey -> Maybe String
-getThemeName info (impl, ui, lang) =
-    info.themes
-        |> Dict.get impl
-        |> Maybe.andThen (Dict.get ui)
-        |> Maybe.andThen (Dict.get lang)
-
-decodeLanguageInfo : Decoder LanguageInfo
-decodeLanguageInfo =
-    JD.succeed LanguageInfo
-        |> required "languages" (JD.dict JD.string)
-        |> required "icons" (JD.dict JD.string)
-        |> required "system" (JD.dict decodeLanguageSystemInfo)
-        |> required "themes" 
-            (JD.dict 
-                <| JD.dict 
-                <| JD.dict JD.string
-            )
-
-decodeLanguageSystemInfo : Decoder LanguageSystemInfo
-decodeLanguageSystemInfo =
-    JD.succeed LanguageSystemInfo
-        |> required "title" (JD.dict JD.string)

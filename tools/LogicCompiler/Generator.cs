@@ -1,5 +1,6 @@
 using LogicCompiler.Grammar;
 using LogicCompiler.Ast;
+using LogicTools;
 
 namespace LogicCompiler;
 
@@ -61,7 +62,7 @@ internal sealed class Generator
         {
             new System.Text.Json.Serialization.JsonStringEnumConverter()
         },
-        TypeInfoResolver = new PolymorphicTypeResolver(),
+        // TypeInfoResolver = new PolymorphicTypeResolver(),
     };
 
     public async Task DumpAsync(FileInfo target)
@@ -74,6 +75,89 @@ internal sealed class Generator
         await System.Text.Json.JsonSerializer.SerializeAsync(file, this, jsonSerializerOptions);
         await file.FlushAsync();
         file.SetLength(file.Position);
+    }
+
+    public async Task DumpInfo(FileInfo target)
+    {
+        if ((!target.Directory?.Exists) ?? false)
+        {
+            target.Directory!.Create();
+        }
+        using var file = new FileStream(target.FullName, FileMode.OpenOrCreate);
+        await System.Text.Json.JsonSerializer.SerializeAsync(file, GetInfo(), jsonSerializerOptions);
+        await file.FlushAsync();
+        file.SetLength(file.Position);
+    }
+
+    public Info GetInfo()
+    {
+        static IEnumerable<string> SearchForUsedOptions(CodeBlock block)
+        {
+            return ((IAstQueryable)block)
+                .GetAll(x => x is TypedNameExpression)
+                .Cast<TypedNameExpression>()
+                .Where(x => x.Type == NameType.Option)
+                .Select(x => x.Name.Text)
+                .Distinct();
+        }
+        return new Info
+        {
+            Modes = { Modes.Keys.Order() },
+            Phases = { Phases.Keys.Order() },
+            Scenes = { Scenes.Keys.Order() },
+            Labels =
+            {
+                Labels
+                    .Select(x => (x.Key, new LogicTools.LabelInfo { Target = x.Value.Target }))
+                    .OrderBy(x => x.Key)
+            },
+            Characters = { Characters.Keys.Order() },
+            Votings =
+            {
+                Votings.Select(x =>
+                    (x.Key, new VotingInfo
+                    {
+                        UsedOptions =
+                        {
+                            x.Value.Funcs.Select(x => x.Code)
+                            .SelectMany(x => SearchForUsedOptions(x))
+                            .Distinct()
+                            .Order()
+                        }
+                    })
+                ).Order()
+            },
+            Options = { Options.Keys.Order() },
+            Sequences =
+            {
+                Sequences.Select(x =>
+                    (x.Key, new SequenceInfo { Steps = { x.Value.Steps.Select(y => y.Id.Text).Order() } })
+                )
+                .Order()
+            },
+            Events = { Events.Keys.Order() },
+            PlayerNotification =
+            {
+                new List<CodeBlock>
+                {
+                    Phases.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Scenes.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Labels.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Characters.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Votings.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Wins.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Sequences.SelectMany(x => x.Value.Steps.Select(y => y.Code)),
+                    Events.SelectMany(x => x.Value.Funcs.Select(y => y.Code)),
+                    Events.SelectMany(x => x.Value.Targets.SelectMany(y => y.Steps.Select(z => z.Code))),
+                }
+                .Cast<IAstQueryable>()
+                .SelectMany(x => x.GetAll(y => y is NotifyPlayerStatement))
+                .Cast<NotifyPlayerStatement>()
+                .Select(x => x.Name.Text)
+                .Distinct()
+                .Order()
+            }
+        };
     }
 
     public void Write(Configuration config, Output output)
