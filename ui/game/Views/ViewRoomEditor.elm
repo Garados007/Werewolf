@@ -229,6 +229,23 @@ view lang langConfig roles theme game editable page missingImg =
                                             then SendConf
                                                 { editGameConfig
                                                 | theme = Just (system, key)
+                                                -- After changing the configuration we have to
+                                                -- remove all ignored characters
+                                                , newConfig =
+                                                    Language.Config.unwrap langConfig
+                                                    |> .info
+                                                    |> .modes
+                                                    |> Dict.get system
+                                                    |> Maybe.map .themes
+                                                    |> Maybe.withDefault Dict.empty
+                                                    |> Dict.get key
+                                                    |> Maybe.map .ignoreCharacter
+                                                    |> Maybe.map
+                                                        (\excl ->
+                                                            Dict.filter
+                                                                (\x _ -> not <| List.member x excl)
+                                                                game.config
+                                                        )
                                                 }
                                             else Noop
                                         ]
@@ -286,8 +303,23 @@ view lang langConfig roles theme game editable page missingImg =
                         <| List.map
                             (viewSingleRoleBox lang theme game.config missingImg editable)
                         <| Maybe.withDefault []
+                        -- filter the list to have only allowed characters for the current theme
+                        <| Maybe.map
+                            (\(list, (impl, ui)) ->
+                                case Language.Config.unwrap langConfig
+                                    |> .info
+                                    |> .modes
+                                    |> Dict.get impl
+                                    |> Maybe.map .themes
+                                    |> Maybe.withDefault Dict.empty
+                                    |> Dict.get ui
+                                    |> Maybe.map .ignoreCharacter
+                                of
+                                    Nothing -> list
+                                    Just excl -> List.filter (\x -> not <| List.member x excl) list
+                            )
                         <| Maybe.andThen
-                            (\(k, _) -> Dict.get k roles)
+                            (\key -> Maybe.map (\x -> (x, key)) <| Dict.get (Tuple.first key) roles)
                         <| theme
                     ]
             PageOptions ->
